@@ -14,15 +14,21 @@ var checkAuthorization = require('../utils/check-authorization');
 
 <% let associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input}, context){
-    if(input === undefined)
-    {
-      return this.get<%- associations_temp[i].target_pl%>({ include: [{all: true}] });
-    }else{
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order}, context){
+
+    let options = { include: [{all: true}]};
+
+    if(input!== undefined){
       let arg = new searchArg(input);
       let arg_sequelize = arg.toSequelize();
-      return this.get<%- associations_temp[i].target_pl%>({where: arg_sequelize, include: [{all: true}] });
+      options['where'] = arg_sequelize;
     }
+
+    if(order !== undefined){
+      options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+    }
+
+    return this.get<%- associations_temp[i].target_pl%>(options);
   }
 <%}-%>
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
@@ -41,12 +47,13 @@ var checkAuthorization = require('../utils/check-authorization');
 
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order}, context){
+
     if(input === undefined)
     {
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"} }, context);
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order }, context);
     }else{
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] } },context)
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] }, order },context)
     }
 
   }
@@ -55,15 +62,20 @@ var checkAuthorization = require('../utils/check-authorization');
 
 module.exports = {
 
-  <%- namePl -%>: function({input}, context){
+  <%- namePl -%>: function({input, order}, context){
     if(checkAuthorization(context,'<%- namePl -%>', 'read')==true){
-        if(input === undefined){
-          return <%- nameLc -%>.findAll({include: [{all: true}]});
-        }else{
+        let options = { include: [{all: true}]};
+        if(input!== undefined){
           let arg = new searchArg(input);
           let arg_sequelize = arg.toSequelize();
-          return <%- nameLc -%>.findAll({where: arg_sequelize,include: [{all: true}]});
+          options['where'] = arg_sequelize;
         }
+
+        if(order !== undefined){
+          options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+        }
+
+          return <%- nameLc -%>.findAll(options);
     }else{
         return "You don't have authorization to perform this action";
       }
