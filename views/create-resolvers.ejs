@@ -14,7 +14,7 @@ var checkAuthorization = require('../utils/check-authorization');
 
 <% let associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order,pagination}, context){
 
     let options = { include: [{all: true}]};
 
@@ -26,6 +26,11 @@ var checkAuthorization = require('../utils/check-authorization');
 
     if(order !== undefined){
       options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+    }
+
+    if(pagination !== undefined){
+      if(pagination.limit !== undefined){options['limit'] = pagination.limit;}
+      if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
     }
 
     return this.get<%- associations_temp[i].target_pl%>(options);
@@ -47,13 +52,13 @@ var checkAuthorization = require('../utils/check-authorization');
 
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order, pagination}, context){
 
     if(input === undefined)
     {
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order }, context);
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order, pagination }, context);
     }else{
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] }, order },context)
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] }, order, pagination },context)
     }
 
   }
@@ -62,7 +67,7 @@ var checkAuthorization = require('../utils/check-authorization');
 
 module.exports = {
 
-  <%- namePl -%>: function({input, order}, context){
+  <%- namePl -%>: function({input, order, pagination}, context){
     if(checkAuthorization(context,'<%- namePl -%>', 'read')==true){
         let options = { include: [{all: true}]};
         if(input!== undefined){
@@ -73,6 +78,11 @@ module.exports = {
 
         if(order !== undefined){
           options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+        }
+
+        if(pagination !== undefined){
+          if(pagination.limit !== undefined){options['limit'] = pagination.limit;}
+          if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
         }
 
           return <%- nameLc -%>.findAll(options);

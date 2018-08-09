@@ -9,7 +9,7 @@ module.exports = `
     <%= key %>: <%= associations.schema_attributes.one[key]%>
   <%}-%>
   <%for(var key in associations.schema_attributes.many){-%>
-    <%= key%>Filter(input: search<%= associations.schema_attributes.many[key] -%>Input, order: [ order<%= associations.schema_attributes.many[key] -%>Input ]): [<%= associations.schema_attributes.many[key]%>]
+    <%= key%>Filter(input: search<%= associations.schema_attributes.many[key] -%>Input, order: [ order<%= associations.schema_attributes.many[key] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key]%>]
   <%}-%>
 }
 
@@ -32,7 +32,7 @@ module.exports = `
   }
 
   type Query {
-    <%- namePl -%>(input: search<%- name -%>Input, order: [ order<%- name -%>Input ] ): [<%- name -%>]
+    <%- namePl -%>(input: search<%- name -%>Input, order: [ order<%- name -%>Input ], pagination: paginationInput ): [<%- name -%>]
     readOne<%- name -%>(id: ID!): <%- name %>
   }
 

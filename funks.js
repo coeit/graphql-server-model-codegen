@@ -60,14 +60,19 @@ writeSchemaCommons = function(dir_write){
     in
   }
 
+  enum Order{
+    DESC
+    ASC
+  }
+
   input typeValue{
     type: String
     value: String!
   }
 
-  enum Order{
-    DESC
-    ASC
+  input paginationInput{
+    limit: Int
+    offset: Int
   }
 
 \`;`;
