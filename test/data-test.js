@@ -4,7 +4,7 @@ module.exports = \`
       name: String
       description: String
         specie: Specie
-        researchersFilter(input: searchResearcherInput): [Researcher]
+        researchersFilter(input: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput): [Researcher]
   }
 
   enum ProjectField {
@@ -20,8 +20,13 @@ module.exports = \`
     searchArg: [searchProjectInput]
   }
 
+  input orderProjectInput{
+    field: ProjectField
+    order: Order
+  }
+
   type Query {
-    projects(input: searchProjectInput): [Project]
+    projects(input: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput ): [Project]
     readOneProject(id: ID!): Project
   }
 
@@ -42,7 +47,7 @@ module.exports = \`
       e_nombre_comun_principal: String
       e_foto_principal: String
       nombre_cientifico: String
-          projectsFilter(input: searchProjectInput): [Project]
+          projectsFilter(input: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
   }
 
   enum SpecieField {
@@ -60,8 +65,13 @@ module.exports = \`
     searchArg: [searchSpecieInput]
   }
 
+  input orderSpecieInput{
+    field: SpecieField
+    order: Order
+  }
+
   type Query {
-    species(input: searchSpecieInput): [Specie]
+    species(input: searchSpecieInput, order: [ orderSpecieInput ], pagination: paginationInput ): [Specie]
     readOneSpecie(id: ID!): Specie
   }
 
@@ -79,24 +89,39 @@ var checkAuthorization = require('../utils/check-authorization');
 const specie = require('./specie');
 
 project.prototype.researchersFilter = function({
-    input
+    input,
+    order,
+    pagination
 }, context) {
-    if (input === undefined) {
-        return this.getResearchers({
-            include: [{
-                all: true
-            }]
-        });
-    } else {
+
+    let options = {
+        include: [{
+            all: true
+        }]
+    };
+
+    if (input !== undefined) {
         let arg = new searchArg(input);
         let arg_sequelize = arg.toSequelize();
-        return this.getResearchers({
-            where: arg_sequelize,
-            include: [{
-                all: true
-            }]
+        options['where'] = arg_sequelize;
+    }
+
+    if (order !== undefined) {
+        options['order'] = order.map((orderItem) => {
+            return [orderItem.field, orderItem.order];
         });
     }
+
+    if (pagination !== undefined) {
+        if (pagination.limit !== undefined) {
+            options['limit'] = pagination.limit;
+        }
+        if (pagination.offset !== undefined) {
+            options['offset'] = pagination.offset;
+        }
+    }
+
+    return this.getResearchers(options);
 }
 project.prototype.specie = function(_, context) {
     return specie.readOneSpecie({
@@ -110,25 +135,38 @@ project.prototype.specie = function(_, context) {
 module.exports = {
 
     projects: function({
-        input
+        input,
+        order,
+        pagination
     }, context) {
         if (checkAuthorization(context, 'projects', 'read') == true) {
-            if (input === undefined) {
-                return project.findAll({
-                    include: [{
-                        all: true
-                    }]
-                });
-            } else {
+            let options = {
+                include: [{
+                    all: true
+                }]
+            };
+            if (input !== undefined) {
                 let arg = new searchArg(input);
                 let arg_sequelize = arg.toSequelize();
-                return project.findAll({
-                    where: arg_sequelize,
-                    include: [{
-                        all: true
-                    }]
+                options['where'] = arg_sequelize;
+            }
+
+            if (order !== undefined) {
+                options['order'] = order.map((orderItem) => {
+                    return [orderItem.field, orderItem.order];
                 });
             }
+
+            if (pagination !== undefined) {
+                if (pagination.limit !== undefined) {
+                    options['limit'] = pagination.limit;
+                }
+                if (pagination.offset !== undefined) {
+                    options['offset'] = pagination.offset;
+                }
+            }
+
+            return project.findAll(options);
         } else {
             return "You don't have authorization to perform this action";
         }
@@ -215,9 +253,10 @@ const specie = require('../models-webservice/specie');
 const searchArg = require('../utils/search-argument');
 const resolvers = require('./index');
 
-
 specie.prototype.projectsFilter = function({
-    input
+    input,
+    order,
+    pagination
 }, context) {
     if (input === undefined) {
         return resolvers.projects({
@@ -227,7 +266,9 @@ specie.prototype.projectsFilter = function({
                     "value": this.id
                 },
                 "operator": "eq"
-            }
+            },
+            order,
+            pagination
         }, context);
     } else {
         return resolvers.projects({
@@ -240,7 +281,9 @@ specie.prototype.projectsFilter = function({
                     },
                     "operator": "eq"
                 }, input]
-            }
+            },
+            order,
+            pagination
         }, context)
     }
 
@@ -263,7 +306,6 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
-
     }
 }
 `;
