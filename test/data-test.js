@@ -424,21 +424,22 @@ module.exports = {
                 type: Sequelize.DATE
             },
 
-            researcherId: {
-                type: Sequelize.INTEGER,
-                references: {
-                    model: 'researchers',
-                    key: 'id'
-                }
-            },
-
             projectId: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'projects',
                     key: 'id'
                 }
+            },
+
+            researcherId: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'researchers',
+                    key: 'id'
+                }
             }
+
         });
     },
 
