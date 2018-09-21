@@ -84,6 +84,7 @@ EXAMPLES OF VALIDS JSON FILES
 ```
 
 ```
+//Publisher.json
 {
   "model" : "Publisher",
   "storageType" : "webservice",
