@@ -1,5 +1,7 @@
 'use strict';
 
+const Sequelize = require('sequelize');
+
 module.exports = function(sequelize, DataTypes){
   var <%- name -%> = sequelize.define('<%- nameLc -%>',{
     <% for (var key in attributes) { %>

@@ -24,6 +24,13 @@ parseFile = function(jFile){
   return words;
 }
 
+isEmptyObject = function(obj){
+    for(let key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 
 // Generate the Javascript code (GraphQL-schema/resolvers/Sequelize-model) using EJS templates
 generateJs = async function(templateName, options) {
@@ -36,7 +43,8 @@ generateJs = async function(templateName, options) {
 
 attributesToString = function(attributes){
   let str_attributes="";
-  if(attributes==='undefined') return str_attributes;
+  console.log("DEBUG::",typeof attributes, attributes);
+  if(attributes==='undefined' || isEmptyObject(attributes)) return str_attributes;
 
   for(key in attributes)
   {
@@ -198,10 +206,11 @@ parseAssociations = function(associations, storageType)
           associations_info.explicit_resolvers[type].push( assoc );
         }
       });
-      associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
+
       console.log(associations_info);
       console.log(associations_info.implicit_associations);
     }
+    associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
     return associations_info;
   }
 
