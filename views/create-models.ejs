@@ -4,20 +4,25 @@ const Sequelize = require('sequelize');
 
 module.exports = function(sequelize, DataTypes){
   var <%- name -%> = sequelize.define('<%- nameLc -%>',{
-    <% for (var key in attributes) { %>
-      <% let type_seq =  attributes[key] -%>
+
+    <% let keys = Object.keys(attributes) -%>
+    <%for (let i=0; i< keys.length; i++) {-%>
+      <% let type_seq =  attributes[ keys[i] ] -%>
       <% if(type_seq === 'Int'){ type_seq = 'INTEGER' } -%>
-      <%= key %>: {
+      <%=  keys[i] %>: {
           type: Sequelize.<%= type_seq.toUpperCase() %>
-      },
-    <% } %>
-
-    <% for(let i=0; i < associations.explicit_resolvers.belongsTo.length; i++){-%>
-      <%=associations.explicit_resolvers.belongsTo[i].targetKey%>: {
-        type: Sequelize.INTEGER
-      },
+      }
+      <%if(i !== (keys.length -1) ){ -%>,<%}-%>
     <%}-%>
-
+    <%if(associations.explicit_resolvers.belongsTo.length > 0) {-%>
+      <%if( keys.length > 0){%>,<%}-%>
+      <% for(let i=0; i < associations.explicit_resolvers.belongsTo.length; i++){-%>
+        <%=associations.explicit_resolvers.belongsTo[i].targetKey%>: {
+          type: Sequelize.INTEGER
+        }
+        <%if(i !== (associations.explicit_resolvers.belongsTo.length -1) ){ -%>,<%}-%>
+      <%}-%>
+    <%}-%>
   });
 
   <%- name -%>.associate = function(models){
