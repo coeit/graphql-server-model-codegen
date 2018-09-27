@@ -141,7 +141,7 @@ getOptions = function(json_file)
   let dataModel = parseFile(json_file);
   console.log(dataModel.associations);
   let opts = {
-    name : dataModel.model,
+    name : inflection.capitalize(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
     table : inflection.pluralize(dataModel.model.toLowerCase()),
     nameLc: dataModel.model.toLowerCase(),
@@ -185,17 +185,17 @@ parseAssociations = function(associations, storageType)
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = association.target;
+          associations_info.schema_attributes["many"][name] = inflection.capitalize(association.target);
         }else if(associations_type["one"].includes(association.type))
         {
-          associations_info.schema_attributes["one"][name] = association.target;
+          associations_info.schema_attributes["one"][name] = inflection.capitalize(association.target);
         }else{
           console.log("Association type"+ association.type + "not supported.");
           return;
         }
 
         let assoc = association;
-        assoc["target_pl"] = inflection.pluralize(association.target);
+        assoc["target_pl"] = inflection.pluralize(inflection.capitalize(association.target));
 
         //in this case handle the resolver via sequelize
         if(storageType === 'sql' && association.targetStorageType === 'sql' )
