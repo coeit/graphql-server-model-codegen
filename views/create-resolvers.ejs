@@ -33,7 +33,7 @@ var checkAuthorization = require('../utils/check-authorization');
       if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
     }
 
-    return this.get<%- associations_temp[i].target_pl%>(options);
+    return this.get<%- associations_temp[i].target_cp%>(options);
   }
 <%}-%>
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
