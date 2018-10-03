@@ -12,11 +12,18 @@ var checkAuthorization = require('../utils/check-authorization');
   <%}-%>
 <%}-%>
 
+<%let associations_one = associations.implicit_associations["hasOne"].concat(associations.implicit_associations["belongsTo"])-%>
+<% for(let i=0; i < associations_one.length; i++){ -%>
+  <%- nameLc -%>.prototype.<%=associations_one[i].target.toLowerCase()%> = function(_, context){
+    return this.get<%- associations_one[i].target%>();
+  }
+<%}-%>
+
 <% let associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order,pagination}, context){
 
-    let options = { include: [{all: true}]};
+    let options = {};
 
     if(input!== undefined){
       let arg = new searchArg(input);
@@ -64,12 +71,11 @@ var checkAuthorization = require('../utils/check-authorization');
   }
 <%}-%>
 
-
 module.exports = {
 
   <%- namePl -%>: function({input, order, pagination}, context){
     if(checkAuthorization(context,'<%- namePl -%>', 'read')==true){
-        let options = { include: [{all: true}]};
+        let options = {};
         if(input!== undefined){
           let arg = new searchArg(input);
           let arg_sequelize = arg.toSequelize();
@@ -94,7 +100,7 @@ module.exports = {
   readOne<%- name -%>: function({id}, context){
     if(checkAuthorization(context, '<%- namePl -%>', 'read')==true)
     {
-      return <%- nameLc -%>.findOne({where: {id: id}, include:[{all: true}]});
+      return <%- nameLc -%>.findOne({where: {id: id}});
     }else{
         return "You don't have authorization to perform this action";
       }
