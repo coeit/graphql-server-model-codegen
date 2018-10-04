@@ -1,3 +1,236 @@
+module.exports.transcript_countSchema = `
+module.exports = \`
+  type transcript_count  {
+      gene: String
+      variable: String
+      count: Float
+      tissue_or_condition: String
+        individual: individual
+    }
+
+  enum transcript_countField {
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
+  }
+
+  input searchTranscript_countInput {
+    field: transcript_countField
+    value: typeValue
+    operator: Operator
+    searchArg: [searchTranscript_countInput]
+  }
+
+  input orderTranscript_countInput{
+    field: transcript_countField
+    order: Order
+  }
+
+  type Query {
+    transcript_counts(input: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
+    readOneTranscript_count(id: ID!): transcript_count
+  }
+
+    type Mutation {
+    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
+    deleteTranscript_count(id: ID!): String!
+    updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
+    bulkAddTranscript_countXlsx: [transcript_count]
+    bulkAddTranscript_countCsv: [transcript_count]
+}
+  \`;
+
+`
+
+module.exports.individualResolvers = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const individual = require('../models/index').individual;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+var checkAuthorization = require('../utils/check-authorization');
+
+individual.prototype.transcript_countsFilter = function({
+    input,
+    order,
+    pagination
+}, context) {
+
+    let options = {
+        include: [{
+            all: true
+        }]
+    };
+
+    if (input !== undefined) {
+        let arg = new searchArg(input);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    if (order !== undefined) {
+        options['order'] = order.map((orderItem) => {
+            return [orderItem.field, orderItem.order];
+        });
+    }
+
+    if (pagination !== undefined) {
+        if (pagination.limit !== undefined) {
+            options['limit'] = pagination.limit;
+        }
+        if (pagination.offset !== undefined) {
+            options['offset'] = pagination.offset;
+        }
+    }
+
+    return this.getTranscript_counts(options);
+}
+
+
+
+
+module.exports = {
+
+    individuals: function({
+        input,
+        order,
+        pagination
+    }, context) {
+        if (checkAuthorization(context, 'individuals', 'read') == true) {
+            let options = {
+                include: [{
+                    all: true
+                }]
+            };
+            if (input !== undefined) {
+                let arg = new searchArg(input);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+
+            if (order !== undefined) {
+                options['order'] = order.map((orderItem) => {
+                    return [orderItem.field, orderItem.order];
+                });
+            }
+
+            if (pagination !== undefined) {
+                if (pagination.limit !== undefined) {
+                    options['limit'] = pagination.limit;
+                }
+                if (pagination.offset !== undefined) {
+                    options['offset'] = pagination.offset;
+                }
+            }
+
+            return individual.findAll(options);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    readOneIndividual: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'individuals', 'read') == true) {
+            return individual.findOne({
+                where: {
+                    id: id
+                },
+                include: [{
+                    all: true
+                }]
+            });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    addIndividual: function(input, context) {
+        if (checkAuthorization(context, 'individuals', 'create') == true) {
+            return individual.create(input)
+                .then(individual => {
+                    return individual;
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    bulkAddIndividualXlsx: function(_, context) {
+        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+        return individual.bulkCreate(xlsxObjs, {
+            validate: true
+        });
+    },
+
+    bulkAddIndividualCsv: function(_, context) {
+        //delim = context.request.body.delim;
+        //cols = context.request.body.cols;
+        return fileTools.parseCsv(context.request.files.csv_file.data.toString())
+            .then((csvObjs) => {
+                return individual.bulkCreate(csvObjs, {
+                    validate: true
+                });
+            });
+    },
+
+    deleteIndividual: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'individuals', 'delete') == true) {
+            return individual.findById(id)
+                .then(individual => {
+                    return individual.destroy()
+                        .then(() => {
+                            return 'Item succesfully deleted';
+                        });
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    updateIndividual: function(input, context) {
+        if (checkAuthorization(context, 'individuals', 'update') == true) {
+            return individual.findById(input.id)
+                .then(individual => {
+                    return individual.update(input);
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    }
+}
+`
+
+module.exports.individualModel = `
+'use strict';
+
+const Sequelize = require('sequelize');
+
+module.exports = function(sequelize, DataTypes) {
+    var individual = sequelize.define('individual', {
+
+        name: {
+            type: Sequelize.STRING
+        }
+    });
+
+    individual.associate = function(models) {
+        individual.hasMany(models.transcript_count, {
+            foreignKey: 'individual_id'
+        });
+    };
+
+    return individual;
+};
+`
+
 module.exports.local_graphql_project = `
 module.exports = \`
   type Project  {
