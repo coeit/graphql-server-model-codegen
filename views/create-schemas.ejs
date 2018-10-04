@@ -33,16 +33,16 @@ module.exports = `
 
   type Query {
     <%- namePl -%>(input: search<%- name -%>Input, order: [ order<%- name -%>Input ], pagination: paginationInput ): [<%- name -%>]
-    readOne<%- name -%>(id: ID!): <%- name %>
+    readOne<%- nameCp -%>(id: ID!): <%- name %>
   }
 
   <% if(storageType === 'sql'){-%>
   type Mutation {
-    add<%- name -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%> ): <%- name %>
-    delete<%- name -%>(id: ID!): String!
-    update<%- name -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%>): <%- name %>!
-    bulkAdd<%- name -%>Xlsx: [<%- name -%>]
-    bulkAdd<%- name -%>Csv: [<%- name -%>]
+    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%> ): <%- name %>
+    delete<%- nameCp -%>(id: ID!): String!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%>): <%- name %>!
+    bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
+    bulkAdd<%- nameCp -%>Csv: [<%- name -%>]
 }
   <%}-%>
 `;

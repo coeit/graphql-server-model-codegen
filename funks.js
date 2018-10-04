@@ -142,6 +142,7 @@ getOptions = function(json_file)
   console.log(dataModel.associations);
   let opts = {
     name : dataModel.model,
+    nameCp: inflection.capitalize(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
     table : inflection.pluralize(dataModel.model.toLowerCase()),
     nameLc: dataModel.model.toLowerCase(),
