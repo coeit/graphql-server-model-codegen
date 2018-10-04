@@ -32,3 +32,22 @@ module.exports.individual = {
     }
   }
 }
+
+module.exports.individual_no_assoc = {
+  "model" : "individual",
+  "storageType" : "SQL",
+  "attributes" : {
+    "name" : "String"
+  }
+}
+
+module.exports.transcript_count_no_assoc =  {
+  "model" : "transcript_count",
+  "storageType" : "SQL",
+  "attributes" : {
+    "gene" : "String",
+    "variable" : "String",
+    "count" : "Float",
+    "tissue_or_condition": "String"
+  }
+}

@@ -22,7 +22,7 @@ describe('Lower-case models', function(){
     expect(g_resolvers).to.be.equal(test_resolvers);
   });
 
-  it('Sequelize model', async function(){
+  it('Sequelize Model', async function(){
     let opts = funks.getOptions(models.individual);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
@@ -32,6 +32,55 @@ describe('Lower-case models', function(){
 
 });
 
+describe('Empty associations', function(){
+
+  it('GraphQL Schema', async function(){
+    let opts = funks.getOptions(models.transcript_count_no_assoc);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.transcript_count_no_assoc_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers', async function(){
+    let opts = funks.getOptions(models.individual_no_assoc);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.individual_no_assoc_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Sequelize Model', async function(){
+    let opts = funks.getOptions(models.transcript_count_no_assoc);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.transcript_count_no_assoc_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+
+});
+
+describe('Superfluous comma', function(){
+
+  it('Sequelize Model', async function(){
+    let opts = funks.getOptions(models.individual_no_assoc);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.individual_no_assoc_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+  it('Migration', async function(){
+    let opts = funks.getOptions(models.transcript_count_no_assoc);
+    let generated_migration =await funks.generateJs('create-migrations', opts);
+    let g_migration = generated_migration.replace(/\s/g, '');
+    let test_migration = test.transcript_count_no_assoc_migration.replace(/\s/g, '');
+    expect(g_migration).to.be.equal(test_migration);
+  });
+
+
+});
 
 
 // if(!fs.existsSync(__dirname+'/test-data-output') ){
