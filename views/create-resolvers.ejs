@@ -33,13 +33,13 @@ var checkAuthorization = require('../utils/check-authorization');
       if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
     }
 
-    return this.get<%- associations_temp[i].target_pl%>(options);
+    return this.get<%- associations_temp[i].target_cp%>(options);
   }
 <%}-%>
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].target.toLowerCase()%> = function(_, context){
-    return <%=associations_temp[i].target.toLowerCase()%>.readOne<%=associations_temp[i].target%>({"id" : this.<%=associations_temp[i].targetKey%>}, context);
+    return <%=associations_temp[i].target.toLowerCase()%>.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>}, context);
   }
 <%}-%>
 
@@ -91,7 +91,7 @@ module.exports = {
       }
   },
 
-  readOne<%- name -%>: function({id}, context){
+  readOne<%- nameCp -%>: function({id}, context){
     if(checkAuthorization(context, '<%- namePl -%>', 'read')==true)
     {
       return <%- nameLc -%>.findOne({where: {id: id}, include:[{all: true}]});
@@ -100,7 +100,7 @@ module.exports = {
       }
   },
 
-  add<%- name -%>: function(input, context){
+  add<%- nameCp -%>: function(input, context){
     if(checkAuthorization(context,'<%- namePl -%>','create')==true)
     {
       return <%- nameLc -%>.create(input)
@@ -112,19 +112,19 @@ module.exports = {
       }
   },
 
-  bulkAdd<%- name -%>Xlsx: function(_, context){
+  bulkAdd<%- nameCp -%>Xlsx: function(_, context){
     let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
     return <%- nameLc -%>.bulkCreate(xlsxObjs, {validate: true});
   },
 
-  bulkAdd<%- name -%>Csv: function(_, context){
+  bulkAdd<%- nameCp -%>Csv: function(_, context){
     //delim = context.request.body.delim;
     //cols = context.request.body.cols;
     return fileTools.parseCsv(context.request.files.csv_file.data.toString())
     .then((csvObjs)=> {return <%- nameLc -%>.bulkCreate(csvObjs, {validate: true}); });
   },
 
-  delete<%- name -%>: function({id}, context){
+  delete<%- nameCp -%>: function({id}, context){
     if(checkAuthorization(context,'<%- namePl -%>','delete')==true)
     {
       return <%- nameLc -%>
@@ -139,7 +139,7 @@ module.exports = {
       }
   },
 
-  update<%- name -%>: function(input, context){
+  update<%- nameCp-%>: function(input, context){
     if(checkAuthorization(context,'<%- namePl -%>','update')==true)
     {
       return <%- nameLc -%>

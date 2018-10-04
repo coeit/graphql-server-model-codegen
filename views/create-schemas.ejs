@@ -9,7 +9,7 @@ module.exports = `
     <%= key %>: <%= associations.schema_attributes.one[key]%>
   <%}-%>
   <%for(var key in associations.schema_attributes.many){-%>
-    <%= key%>Filter(input: search<%= associations.schema_attributes.many[key] -%>Input, order: [ order<%= associations.schema_attributes.many[key] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key]%>]
+    <%= key%>Filter(input: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]%>]
   <%}-%>
 }
 
@@ -19,30 +19,30 @@ module.exports = `
   <% }%>
   }
 
-  input search<%- name -%>Input {
+  input search<%- nameCp -%>Input {
     field: <%- name -%>Field
     value: typeValue
     operator: Operator
-    searchArg: [search<%- name -%>Input]
+    searchArg: [search<%- nameCp-%>Input]
   }
 
-  input order<%- name -%>Input{
+  input order<%- nameCp -%>Input{
     field: <%- name -%>Field
     order: Order
   }
 
   type Query {
-    <%- namePl -%>(input: search<%- name -%>Input, order: [ order<%- name -%>Input ], pagination: paginationInput ): [<%- name -%>]
-    readOne<%- name -%>(id: ID!): <%- name %>
+    <%- namePl -%>(input: search<%- nameCp -%>Input, order: [ order<%- nameCp -%>Input ], pagination: paginationInput ): [<%- name -%>]
+    readOne<%- nameCp -%>(id: ID!): <%- name %>
   }
 
   <% if(storageType === 'sql'){-%>
   type Mutation {
-    add<%- name -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%> ): <%- name %>
-    delete<%- name -%>(id: ID!): String!
-    update<%- name -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%>): <%- name %>!
-    bulkAdd<%- name -%>Xlsx: [<%- name -%>]
-    bulkAdd<%- name -%>Csv: [<%- name -%>]
+    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%> ): <%- name %>
+    delete<%- nameCp -%>(id: ID!): String!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%>): <%- name %>!
+    bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
+    bulkAdd<%- nameCp -%>Csv: [<%- name -%>]
 }
   <%}-%>
 `;

@@ -33,7 +33,7 @@ isEmptyObject = function(obj){
 }
 
 // Generate the Javascript code (GraphQL-schema/resolvers/Sequelize-model) using EJS templates
-generateJs = async function(templateName, options) {
+module.exports.generateJs = async function(templateName, options) {
   let renderedStr = await ejsRenderFile(__dirname + '/views/' +
     templateName +
     '.ejs', options, {})
@@ -136,12 +136,13 @@ convertToType = function(many, model_name)
   return model_name;
 }
 
-getOptions = function(json_file)
+module.exports.getOptions = function(dataModel)
 {
-  let dataModel = parseFile(json_file);
-  console.log(dataModel.associations);
+  //let dataModel = parseFile(json_file);
+  //console.log(dataModel.associations);
   let opts = {
-    name : inflection.capitalize(dataModel.model),
+    name : dataModel.model,
+    nameCp: inflection.capitalize(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
     table : inflection.pluralize(dataModel.model.toLowerCase()),
     nameLc: dataModel.model.toLowerCase(),
@@ -185,18 +186,18 @@ parseAssociations = function(associations, storageType)
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = inflection.capitalize(association.target);
+          associations_info.schema_attributes["many"][name] = [ association.target, inflection.capitalize(association.target) ];
         }else if(associations_type["one"].includes(association.type))
         {
-          associations_info.schema_attributes["one"][name] = inflection.capitalize(association.target);
+          associations_info.schema_attributes["one"][name] = association.target;
         }else{
           console.log("Association type"+ association.type + "not supported.");
           return;
         }
 
         let assoc = association;
-        assoc["target_pl"] = inflection.pluralize(inflection.capitalize(association.target));
-
+        assoc["target_pl"] = inflection.pluralize(association.target);
+        assoc["target_cp"] = inflection.capitalize(inflection.pluralize(association.target));
         //in this case handle the resolver via sequelize
         if(storageType === 'sql' && association.targetStorageType === 'sql' )
         {
@@ -218,7 +219,7 @@ generateAssociationsMigrations =  function( opts, dir_write){
     opts.associations.implicit_associations.belongsTo.forEach( async (assoc) =>{
       assoc["source"] = opts.table;
       assoc["cross"] = false;
-      let generatedMigration = await generateJs('create-association-migration',assoc);
+      let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
       let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
       fs.writeFile( name_migration, generatedMigration, function(err){
         if (err)
@@ -232,7 +233,7 @@ generateAssociationsMigrations =  function( opts, dir_write){
 
     opts.associations.implicit_associations.belongsToMany.forEach( async (assoc) =>{
       assoc["source"] = opts.table;
-      let generatedMigration = await generateJs('create-through-migration',assoc);
+      let generatedMigration = await module.exports.generateJs('create-through-migration',assoc);
       let name_migration = createNameMigration(dir_write, 'z-through-'+assoc.keysIn);
       fs.writeFile( name_migration, generatedMigration, function(err){
         if (err)
@@ -247,7 +248,7 @@ generateAssociationsMigrations =  function( opts, dir_write){
 
 generateSection = async function(section, opts, dir_write )
 {
-  let generatedSection = await generateJs('create-'+section ,opts);
+  let generatedSection = await module.exports.generateJs('create-'+section ,opts);
   fs.writeFile(dir_write, generatedSection, function(err) {
     if (err)
     {
@@ -295,7 +296,8 @@ module.exports.generateCode = function(json_dir, dir_write)
   //test
   fs.readdirSync(json_dir).forEach((json_file) => {
       console.log("Reading...", json_file);
-      let opts = getOptions(json_dir+'/'+json_file);
+      let file_to_object = parseFile(json_dir+'/'+json_file);
+      let opts = module.exports.getOptions(file_to_object);
       models.push([opts.name , opts.namePl]);
       console.log(opts.name);
       //console.log(opts.associations);

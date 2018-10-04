@@ -5,7 +5,7 @@ const resolvers = require('./index');
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].target.toLowerCase()%> = function(_, context){
-    return resolvers.readOne<%=associations_temp[i].target%>({"id" : this.<%=associations_temp[i].targetKey%>},context);
+    return resolvers.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>},context);
   }
 <%}-%>
 
