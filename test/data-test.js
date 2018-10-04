@@ -54,17 +54,14 @@ const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 var checkAuthorization = require('../utils/check-authorization');
 
+
 individual.prototype.transcript_countsFilter = function({
     input,
     order,
     pagination
 }, context) {
 
-    let options = {
-        include: [{
-            all: true
-        }]
-    };
+    let options = {};
 
     if (input !== undefined) {
         let arg = new searchArg(input);
@@ -92,7 +89,6 @@ individual.prototype.transcript_countsFilter = function({
 
 
 
-
 module.exports = {
 
     individuals: function({
@@ -101,11 +97,7 @@ module.exports = {
         pagination
     }, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
-            let options = {
-                include: [{
-                    all: true
-                }]
-            };
+            let options = {};
             if (input !== undefined) {
                 let arg = new searchArg(input);
                 let arg_sequelize = arg.toSequelize();
@@ -140,10 +132,7 @@ module.exports = {
             return individual.findOne({
                 where: {
                     id: id
-                },
-                include: [{
-                    all: true
-                }]
+                }
             });
         } else {
             return "You don't have authorization to perform this action";
@@ -285,10 +274,6 @@ const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 var checkAuthorization = require('../utils/check-authorization');
 
-
-
-
-
 module.exports = {
 
     individuals: function({
@@ -297,11 +282,7 @@ module.exports = {
         pagination
     }, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
-            let options = {
-                include: [{
-                    all: true
-                }]
-            };
+            let options = {};
             if (input !== undefined) {
                 let arg = new searchArg(input);
                 let arg_sequelize = arg.toSequelize();
@@ -336,10 +317,7 @@ module.exports = {
             return individual.findOne({
                 where: {
                     id: id
-                },
-                include: [{
-                    all: true
-                }]
+                }
             });
         } else {
             return "You don't have authorization to perform this action";
