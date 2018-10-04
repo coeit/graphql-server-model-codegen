@@ -51,3 +51,30 @@ module.exports.transcript_count_no_assoc =  {
     "tissue_or_condition": "String"
   }
 }
+
+module.exports.person = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "sql_hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql"
+    },
+
+    "books":{
+      "type" : "sql_belongsToMany",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql"
+    }
+  }
+}

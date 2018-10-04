@@ -78,7 +78,24 @@ describe('Superfluous comma', function(){
     let test_migration = test.transcript_count_no_assoc_migration.replace(/\s/g, '');
     expect(g_migration).to.be.equal(test_migration);
   });
+});
 
+describe('No include associations by default', function(){
+  it('Resolvers - transcript_count', async function(){
+    let opts = funks.getOptions(models.transcript_count);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.transcript_count_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Resolvers - person', async function(){
+    let opts = funks.getOptions(models.person);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.person_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
 
 });
 

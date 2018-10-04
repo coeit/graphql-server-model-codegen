@@ -473,6 +473,312 @@ module.exports = {
 };
 `
 
+module.exports.transcript_count_resolvers =`
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const transcript_count = require('../models/index').transcript_count;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+var checkAuthorization = require('../utils/check-authorization');
+
+transcript_count.prototype.individual = function(_, context) {
+    return this.getIndividual();
+}
+
+module.exports = {
+
+    transcript_counts: function({
+        input,
+        order,
+        pagination
+    }, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
+            let options = {};
+            if (input !== undefined) {
+                let arg = new searchArg(input);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+
+            if (order !== undefined) {
+                options['order'] = order.map((orderItem) => {
+                    return [orderItem.field, orderItem.order];
+                });
+            }
+
+            if (pagination !== undefined) {
+                if (pagination.limit !== undefined) {
+                    options['limit'] = pagination.limit;
+                }
+                if (pagination.offset !== undefined) {
+                    options['offset'] = pagination.offset;
+                }
+            }
+
+            return transcript_count.findAll(options);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    readOneTranscript_count: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
+            return transcript_count.findOne({
+                where: {
+                    id: id
+                }
+            });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    addTranscript_count: function(input, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'create') == true) {
+            return transcript_count.create(input)
+                .then(transcript_count => {
+                    return transcript_count;
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    bulkAddTranscript_countXlsx: function(_, context) {
+        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+        return transcript_count.bulkCreate(xlsxObjs, {
+            validate: true
+        });
+    },
+
+    bulkAddTranscript_countCsv: function(_, context) {
+        //delim = context.request.body.delim;
+        //cols = context.request.body.cols;
+        return fileTools.parseCsv(context.request.files.csv_file.data.toString())
+            .then((csvObjs) => {
+                return transcript_count.bulkCreate(csvObjs, {
+                    validate: true
+                });
+            });
+    },
+
+    deleteTranscript_count: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'delete') == true) {
+            return transcript_count.findById(id)
+                .then(transcript_count => {
+                    return transcript_count.destroy()
+                        .then(() => {
+                            return 'Item succesfully deleted';
+                        });
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    updateTranscript_count: function(input, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'update') == true) {
+            return transcript_count.findById(input.id)
+                .then(transcript_count => {
+                    return transcript_count.update(input);
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    }
+}
+`
+
+module.exports.person_resolvers = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const person = require('../models/index').person;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+var checkAuthorization = require('../utils/check-authorization');
+
+
+person.prototype.dogsFilter = function({
+    input,
+    order,
+    pagination
+}, context) {
+
+    let options = {};
+
+    if (input !== undefined) {
+        let arg = new searchArg(input);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    if (order !== undefined) {
+        options['order'] = order.map((orderItem) => {
+            return [orderItem.field, orderItem.order];
+        });
+    }
+
+    if (pagination !== undefined) {
+        if (pagination.limit !== undefined) {
+            options['limit'] = pagination.limit;
+        }
+        if (pagination.offset !== undefined) {
+            options['offset'] = pagination.offset;
+        }
+    }
+
+    return this.getDogs(options);
+}
+person.prototype.booksFilter = function({
+    input,
+    order,
+    pagination
+}, context) {
+
+    let options = {};
+
+    if (input !== undefined) {
+        let arg = new searchArg(input);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    if (order !== undefined) {
+        options['order'] = order.map((orderItem) => {
+            return [orderItem.field, orderItem.order];
+        });
+    }
+
+    if (pagination !== undefined) {
+        if (pagination.limit !== undefined) {
+            options['limit'] = pagination.limit;
+        }
+        if (pagination.offset !== undefined) {
+            options['offset'] = pagination.offset;
+        }
+    }
+
+    return this.getBooks(options);
+}
+
+
+
+module.exports = {
+
+    people: function({
+        input,
+        order,
+        pagination
+    }, context) {
+        if (checkAuthorization(context, 'people', 'read') == true) {
+            let options = {};
+            if (input !== undefined) {
+                let arg = new searchArg(input);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+
+            if (order !== undefined) {
+                options['order'] = order.map((orderItem) => {
+                    return [orderItem.field, orderItem.order];
+                });
+            }
+
+            if (pagination !== undefined) {
+                if (pagination.limit !== undefined) {
+                    options['limit'] = pagination.limit;
+                }
+                if (pagination.offset !== undefined) {
+                    options['offset'] = pagination.offset;
+                }
+            }
+
+            return person.findAll(options);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    readOnePerson: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'people', 'read') == true) {
+            return person.findOne({
+                where: {
+                    id: id
+                }
+            });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    addPerson: function(input, context) {
+        if (checkAuthorization(context, 'people', 'create') == true) {
+            return person.create(input)
+                .then(person => {
+                    return person;
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    bulkAddPersonXlsx: function(_, context) {
+        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+        return person.bulkCreate(xlsxObjs, {
+            validate: true
+        });
+    },
+
+    bulkAddPersonCsv: function(_, context) {
+        //delim = context.request.body.delim;
+        //cols = context.request.body.cols;
+        return fileTools.parseCsv(context.request.files.csv_file.data.toString())
+            .then((csvObjs) => {
+                return person.bulkCreate(csvObjs, {
+                    validate: true
+                });
+            });
+    },
+
+    deletePerson: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'people', 'delete') == true) {
+            return person.findById(id)
+                .then(person => {
+                    return person.destroy()
+                        .then(() => {
+                            return 'Item succesfully deleted';
+                        });
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    updatePerson: function(input, context) {
+        if (checkAuthorization(context, 'people', 'update') == true) {
+            return person.findById(input.id)
+                .then(person => {
+                    return person.update(input);
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    }
+}
+`
+
 module.exports.local_graphql_project = `
 module.exports = \`
   type Project  {
