@@ -197,7 +197,8 @@ parseAssociations = function(associations, storageType)
 
         let assoc = association;
         assoc["target_pl"] = inflection.pluralize(association.target);
-        assoc["target_cp"] = inflection.capitalize(inflection.pluralize(association.target));
+        assoc["target_cp"] = inflection.capitalize(association.target);
+        assoc["target_cp_pl"] = inflection.capitalize(inflection.pluralize(association.target));
         //in this case handle the resolver via sequelize
         if(storageType === 'sql' && association.targetStorageType === 'sql' )
         {

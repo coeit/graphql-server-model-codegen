@@ -15,7 +15,7 @@ var checkAuthorization = require('../utils/check-authorization');
 <%let associations_one = associations.implicit_associations["hasOne"].concat(associations.implicit_associations["belongsTo"])-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_one[i].target.toLowerCase()%> = function(_, context){
-    return this.get<%- associations_one[i].target%>();
+    return this.get<%- associations_one[i].target_cp%>();
   }
 <%}-%>
 
@@ -40,7 +40,7 @@ var checkAuthorization = require('../utils/check-authorization');
       if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
     }
 
-    return this.get<%- associations_temp[i].target_cp%>(options);
+    return this.get<%- associations_temp[i].target_cp_pl%>(options);
   }
 <%}-%>
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
