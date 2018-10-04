@@ -186,7 +186,7 @@ parseAssociations = function(associations, storageType)
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = association.target;
+          associations_info.schema_attributes["many"][name] = [ association.target, inflection.capitalize(association.target) ];
         }else if(associations_type["one"].includes(association.type))
         {
           associations_info.schema_attributes["one"][name] = association.target;
