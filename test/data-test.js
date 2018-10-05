@@ -52,6 +52,7 @@ module.exports.individualResolvers = `
 const individual = require('../models/index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
 
@@ -69,22 +70,29 @@ individual.prototype.transcript_countsFilter = function({
         options['where'] = arg_sequelize;
     }
 
-    if (order !== undefined) {
-        options['order'] = order.map((orderItem) => {
-            return [orderItem.field, orderItem.order];
-        });
-    }
-
-    if (pagination !== undefined) {
-        if (pagination.limit !== undefined) {
-            options['limit'] = pagination.limit;
+    return this.countTranscript_counts(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
         }
-        if (pagination.offset !== undefined) {
-            options['offset'] = pagination.offset;
-        }
-    }
 
-    return this.getTranscript_counts(options);
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total transcript_countsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getTranscript_counts(options);
+    }).catch(error => {
+        console.log("Catched the error in transcript_countsFilter ", error);
+        return error;
+    });
 }
 
 
@@ -104,24 +112,31 @@ module.exports = {
                 options['where'] = arg_sequelize;
             }
 
-            if (order !== undefined) {
-                options['order'] = order.map((orderItem) => {
-                    return [orderItem.field, orderItem.order];
-                });
-            }
-
-            if (pagination !== undefined) {
-                if (pagination.limit !== undefined) {
-                    options['limit'] = pagination.limit;
+            return individual.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
                 }
-                if (pagination.offset !== undefined) {
-                    options['offset'] = pagination.offset;
-                }
-            }
 
-            return individual.findAll(options);
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
+
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total individuals exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return individual.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in individuals ", error);
+                return error;
+            });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
     },
 
@@ -272,6 +287,7 @@ module.exports.individual_no_assoc_resolvers = `
 const individual = require('../models/index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
 module.exports = {
@@ -289,24 +305,31 @@ module.exports = {
                 options['where'] = arg_sequelize;
             }
 
-            if (order !== undefined) {
-                options['order'] = order.map((orderItem) => {
-                    return [orderItem.field, orderItem.order];
-                });
-            }
-
-            if (pagination !== undefined) {
-                if (pagination.limit !== undefined) {
-                    options['limit'] = pagination.limit;
+            return individual.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
                 }
-                if (pagination.offset !== undefined) {
-                    options['offset'] = pagination.offset;
-                }
-            }
 
-            return individual.findAll(options);
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
+
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total individuals exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return individual.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in individuals ", error);
+                return error;
+            });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
     },
 
@@ -481,11 +504,15 @@ module.exports.transcript_count_resolvers =`
 const transcript_count = require('../models/index').transcript_count;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
 transcript_count.prototype.individual = function(_, context) {
     return this.getIndividual();
 }
+
+
+
 
 module.exports = {
 
@@ -502,24 +529,31 @@ module.exports = {
                 options['where'] = arg_sequelize;
             }
 
-            if (order !== undefined) {
-                options['order'] = order.map((orderItem) => {
-                    return [orderItem.field, orderItem.order];
-                });
-            }
-
-            if (pagination !== undefined) {
-                if (pagination.limit !== undefined) {
-                    options['limit'] = pagination.limit;
+            return transcript_count.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
                 }
-                if (pagination.offset !== undefined) {
-                    options['offset'] = pagination.offset;
-                }
-            }
 
-            return transcript_count.findAll(options);
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
+
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total transcript_counts exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return transcript_count.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in transcript_counts ", error);
+                return error;
+            });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
     },
 
@@ -603,6 +637,7 @@ module.exports.person_resolvers = `
 const person = require('../models/index').person;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
 
@@ -620,22 +655,29 @@ person.prototype.dogsFilter = function({
         options['where'] = arg_sequelize;
     }
 
-    if (order !== undefined) {
-        options['order'] = order.map((orderItem) => {
-            return [orderItem.field, orderItem.order];
-        });
-    }
-
-    if (pagination !== undefined) {
-        if (pagination.limit !== undefined) {
-            options['limit'] = pagination.limit;
+    return this.countDogs(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
         }
-        if (pagination.offset !== undefined) {
-            options['offset'] = pagination.offset;
-        }
-    }
 
-    return this.getDogs(options);
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total dogsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getDogs(options);
+    }).catch(error => {
+        console.log("Catched the error in dogsFilter ", error);
+        return error;
+    });
 }
 person.prototype.booksFilter = function({
     input,
@@ -651,22 +693,29 @@ person.prototype.booksFilter = function({
         options['where'] = arg_sequelize;
     }
 
-    if (order !== undefined) {
-        options['order'] = order.map((orderItem) => {
-            return [orderItem.field, orderItem.order];
-        });
-    }
-
-    if (pagination !== undefined) {
-        if (pagination.limit !== undefined) {
-            options['limit'] = pagination.limit;
+    return this.countBooks(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
         }
-        if (pagination.offset !== undefined) {
-            options['offset'] = pagination.offset;
-        }
-    }
 
-    return this.getBooks(options);
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total booksFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getBooks(options);
+    }).catch(error => {
+        console.log("Catched the error in booksFilter ", error);
+        return error;
+    });
 }
 
 
@@ -686,24 +735,31 @@ module.exports = {
                 options['where'] = arg_sequelize;
             }
 
-            if (order !== undefined) {
-                options['order'] = order.map((orderItem) => {
-                    return [orderItem.field, orderItem.order];
-                });
-            }
-
-            if (pagination !== undefined) {
-                if (pagination.limit !== undefined) {
-                    options['limit'] = pagination.limit;
+            return person.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
                 }
-                if (pagination.offset !== undefined) {
-                    options['offset'] = pagination.offset;
-                }
-            }
 
-            return person.findAll(options);
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
+
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total people exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return person.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in people ", error);
+                return error;
+            });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
     },
 
