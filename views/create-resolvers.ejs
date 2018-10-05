@@ -5,6 +5,7 @@
 const <%-  nameLc  -%> = require('../models/index').<%- nameLc -%>;
 const searchArg = require('../utils/search-argument');
 const fileTools =  require('../utils/file-tools');
+const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 <%for(let type in associations.explicit_resolvers){-%>
   <%for(let i=0; i < associations.explicit_resolvers[type].length; i++){-%>
@@ -31,16 +32,27 @@ var checkAuthorization = require('../utils/check-authorization');
       options['where'] = arg_sequelize;
     }
 
-    if(order !== undefined){
-      options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-    }
+    return this.count<%- associations_temp[i].target_cp_pl%>(options).then( items => {
+      if(order !== undefined){
+        options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+      }
 
-    if(pagination !== undefined){
-      if(pagination.limit !== undefined){options['limit'] = pagination.limit;}
-      if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
-    }
+      if(pagination !== undefined){
+        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+      }else{
+        options['offset'] = 0;
+        options['limit'] = items;
+      }
 
-    return this.get<%- associations_temp[i].target_cp_pl%>(options);
+      if(globals.LIMIT_RECORDS < options['limit']){
+        throw new Error(`Request of total <%=associations_temp[i].target_pl.toLowerCase()%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+      }
+      return this.get<%- associations_temp[i].target_cp_pl%>(options);
+    }).catch(error =>{
+      console.log("Catched the error in <%=associations_temp[i].target_pl.toLowerCase()%>Filter ", error);
+      return error;
+    });
   }
 <%}-%>
 <% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
@@ -82,18 +94,29 @@ module.exports = {
           options['where'] = arg_sequelize;
         }
 
-        if(order !== undefined){
-          options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-        }
+        return <%- nameLc -%>.count(options).then( items => {
+          if(order !== undefined){
+            options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+          }
 
-        if(pagination !== undefined){
-          if(pagination.limit !== undefined){options['limit'] = pagination.limit;}
-          if(pagination.offset !== undefined){options['offset'] = pagination.offset;}
-        }
+          if(pagination !== undefined){
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+          }else{
+            options['offset'] = 0;
+            options['limit'] = items;
+          }
 
+          if(globals.LIMIT_RECORDS < options['limit']){
+            throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+          }
           return <%- nameLc -%>.findAll(options);
+        }).catch(error =>{
+          console.log("Catched the error in <%- namePl -%> ", error);
+          return error;
+        });
     }else{
-        return "You don't have authorization to perform this action";
+        return new Error("You don't have authorization to perform this action");
       }
   },
 

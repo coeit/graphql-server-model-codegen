@@ -99,7 +99,15 @@ describe('No include associations by default', function(){
 
 });
 
-
+describe('Limit for resolvers', function(){
+  it('Resolvers - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.book_resolver_limit.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+});
 // if(!fs.existsSync(__dirname+'/test-data-output') ){
 //   fs.mkdirSync(__dirname+'/test-data-output');
 //   //Generate code
