@@ -6,7 +6,7 @@ const funks = require('../funks');
 
 describe('Lower-case models', function(){
 
-  it('GraphQL Schema', async function(){
+  it('GraphQL Schema - transcript_count', async function(){
     let opts = funks.getOptions(models.transcript_count);
     let generated_schema =await funks.generateJs('create-schemas', opts);
     let g_schema = generated_schema.replace(/\s/g, '');
@@ -14,7 +14,7 @@ describe('Lower-case models', function(){
     expect(g_schema).to.be.equal(test_schema);
   });
 
-  it('Resolver', async function(){
+  it('Resolver - individual', async function(){
     let opts = funks.getOptions(models.individual);
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
@@ -22,7 +22,7 @@ describe('Lower-case models', function(){
     expect(g_resolvers).to.be.equal(test_resolvers);
   });
 
-  it('Sequelize Model', async function(){
+  it('Sequelize Model - individual', async function(){
     let opts = funks.getOptions(models.individual);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
@@ -34,7 +34,7 @@ describe('Lower-case models', function(){
 
 describe('Empty associations', function(){
 
-  it('GraphQL Schema', async function(){
+  it('GraphQL Schema - transcript_count (no assoc)', async function(){
     let opts = funks.getOptions(models.transcript_count_no_assoc);
     let generated_schema =await funks.generateJs('create-schemas', opts);
     let g_schema = generated_schema.replace(/\s/g, '');
@@ -42,7 +42,7 @@ describe('Empty associations', function(){
     expect(g_schema).to.be.equal(test_schema);
   });
 
-  it('Resolvers', async function(){
+  it('Resolvers - individual (no assoc)', async function(){
     let opts = funks.getOptions(models.individual_no_assoc);
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
@@ -50,7 +50,7 @@ describe('Empty associations', function(){
     expect(g_resolvers).to.be.equal(test_resolvers);
   });
 
-  it('Sequelize Model', async function(){
+  it('Sequelize Model - transcript_count (no assoc)', async function(){
     let opts = funks.getOptions(models.transcript_count_no_assoc);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
@@ -63,7 +63,7 @@ describe('Empty associations', function(){
 
 describe('Superfluous comma', function(){
 
-  it('Sequelize Model', async function(){
+  it('Sequelize Model - individual (no assoc)', async function(){
     let opts = funks.getOptions(models.individual_no_assoc);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
@@ -71,7 +71,7 @@ describe('Superfluous comma', function(){
     expect(g_model).to.be.equal(test_model);
   });
 
-  it('Migration', async function(){
+  it('Migration - transcript_count (no assoc)', async function(){
     let opts = funks.getOptions(models.transcript_count_no_assoc);
     let generated_migration =await funks.generateJs('create-migrations', opts);
     let g_migration = generated_migration.replace(/\s/g, '');
@@ -124,6 +124,33 @@ describe('Better name for search argument', function(){
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolvers = test.researcher_resolver.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+});
+
+describe('Count for model', function(){
+
+  it('GraphQL Schema - individual', async function(){
+    let opts = funks.getOptions(models.individual);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.individual_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - individual', async function(){
+    let opts = funks.getOptions(models.individual);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.individualResolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Resolvers - specie', async function(){
+    let opts = funks.getOptions(models.specie);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.specie_resolvers.replace(/\s/g, '');
     expect(g_resolvers).to.be.equal(test_resolvers);
   });
 });

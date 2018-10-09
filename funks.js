@@ -147,6 +147,7 @@ module.exports.getOptions = function(dataModel)
     table : inflection.pluralize(dataModel.model.toLowerCase()),
     nameLc: dataModel.model.toLowerCase(),
     namePl: inflection.pluralize(dataModel.model.toLowerCase()),
+    namePlCp: inflection.pluralize(inflection.capitalize(dataModel.model)),
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
@@ -186,7 +187,7 @@ parseAssociations = function(associations, storageType)
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = [ association.target, inflection.capitalize(association.target) ];
+          associations_info.schema_attributes["many"][name] = [ association.target, inflection.capitalize(association.target), inflection.capitalize(inflection.pluralize(association.target))];
         }else if(associations_type["one"].includes(association.type))
         {
           associations_info.schema_attributes["one"][name] = association.target;

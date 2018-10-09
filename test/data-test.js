@@ -1,45 +1,46 @@
 module.exports.transcript_countSchema = `
-module.exports = \`
+  module.exports = \`
   type transcript_count  {
-      gene: String
-      variable: String
-      count: Float
-      tissue_or_condition: String
-        individual: individual
-    }
+    gene: String
+    variable: String
+    count: Float
+    tissue_or_condition: String
+      individual: individual
+  }
 
   enum transcript_countField {
-    id
-    gene
-    variable
-    count
-    tissue_or_condition
+  id
+  gene
+  variable
+  count
+  tissue_or_condition
   }
 
   input searchTranscript_countInput {
-    field: transcript_countField
-    value: typeValue
-    operator: Operator
-    search: [searchTranscript_countInput]
+  field: transcript_countField
+  value: typeValue
+  operator: Operator
+  search: [searchTranscript_countInput]
   }
 
   input orderTranscript_countInput{
-    field: transcript_countField
-    order: Order
+  field: transcript_countField
+  order: Order
   }
 
   type Query {
-    transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
-    readOneTranscript_count(id: ID!): transcript_count
+  transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
+  readOneTranscript_count(id: ID!): transcript_count
+  countTranscript_counts(search: searchTranscript_countInput ): Int
   }
 
-    type Mutation {
-    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
-    deleteTranscript_count(id: ID!): String!
-    updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
-    bulkAddTranscript_countXlsx: [transcript_count]
-    bulkAddTranscript_countCsv: [transcript_count]
-}
+  type Mutation {
+  addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
+  deleteTranscript_count(id: ID!): String!
+  updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
+  bulkAddTranscript_countXlsx: [transcript_count]
+  bulkAddTranscript_countCsv: [transcript_count]
+  }
   \`;
 `
 
@@ -94,7 +95,16 @@ individual.prototype.transcript_countsFilter = function({
     });
 }
 
+individual.prototype.countFilteredTranscript_counts = function({search},context){
+  let options = {};
 
+  if (search !== undefined) {
+      let arg = new searchArg(search);
+      let arg_sequelize = arg.toSequelize();
+      options['where'] = arg_sequelize;
+  }
+  return this.countTranscript_counts(options);
+}
 
 module.exports = {
 
@@ -207,6 +217,16 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
+    },
+
+    countIndividuals: function({search}, context){
+      let options = {};
+      if (search !== undefined) {
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+      }
+      return individual.count(options);
     }
 }
 `
@@ -266,6 +286,7 @@ module.exports = \`
   type Query {
     transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
+    countTranscript_counts(search: searchTranscript_countInput ): Int
   }
 
     type Mutation {
@@ -400,7 +421,17 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
-    }
+    },
+    countIndividuals: function({search}, context) {
+            let options = {};
+            if (search !== undefined) {
+                let arg = new searchArg(search);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+
+            return individual.count(options);
+        }
 }
 `
 
@@ -624,7 +655,18 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
+    },
+
+  countTranscript_counts: function({search}, context) {
+    let options = {};
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
     }
+
+    return transcript_count.count(options);
+  }
 }
 `
 
@@ -678,6 +720,22 @@ person.prototype.dogsFilter = function({
         return error;
     });
 }
+
+person.prototype.countFilteredDogs = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countDogs(options);
+}
+
 person.prototype.booksFilter = function({
     search,
     order,
@@ -716,6 +774,22 @@ person.prototype.booksFilter = function({
         return error;
     });
 }
+
+person.prototype.countFilteredBooks = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countBooks(options);
+}
+
 
 
 
@@ -830,6 +904,19 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
+    },
+
+    countPeople: function({
+        search
+    }, context) {
+        let options = {};
+        if (search !== undefined) {
+            let arg = new searchArg(search);
+            let arg_sequelize = arg.toSequelize();
+            options['where'] = arg_sequelize;
+        }
+
+        return person.count(options);
     }
 }
 `
@@ -885,6 +972,23 @@ book.prototype.peopleFilter = function({
         return error;
     });
 }
+
+
+book.prototype.countFilteredPeople = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countPeople(options);
+  }
+
 book.prototype.publisher = function(_, context) {
     return publisher.readOnePublisher({
         "id": this.publisherId
@@ -1004,7 +1108,19 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
+    },
+
+    countBooks: function({search}, context){
+      let options = {};
+      if (search !== undefined) {
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+      }
+      return book.count(options);
     }
+
+
 }
 
 `
@@ -1016,6 +1132,7 @@ module.exports = \`
       email: String
         dog: Dog
         projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
+    countFilteredProjects(search: searchProjectInput) : Int
   }
 
   enum ResearcherField {
@@ -1040,6 +1157,7 @@ module.exports = \`
   type Query {
     researchers(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput ): [Researcher]
     readOneResearcher(id: ID!): Researcher
+    countResearchers(search: searchResearcherInput ): Int
   }
 
     type Mutation {
@@ -1105,6 +1223,22 @@ researcher.prototype.projectsFilter = function({
         return error;
     });
 }
+
+researcher.prototype.countFilteredProjects = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countProjects(options);
+}
+
 
 
 
@@ -1219,10 +1353,159 @@ module.exports = {
         } else {
             return "You don't have authorization to perform this action";
         }
+    },
+
+    countResearchers: function({
+        search
+    }, context) {
+        let options = {};
+        if (search !== undefined) {
+            let arg = new searchArg(search);
+            let arg_sequelize = arg.toSequelize();
+            options['where'] = arg_sequelize;
+        }
+
+        return researcher.count(options);
     }
 }
 `
+module.exports.individual_schema = `
+module.exports = \`
+  type individual  {
+      name: String
+          transcript_countsFilter(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput): [transcript_count]
+      countFilteredTranscript_counts(search: searchTranscript_countInput): Int
+  }
 
+  enum individualField {
+    id
+    name
+  }
+
+  input searchIndividualInput {
+    field: individualField
+    value: typeValue
+    operator: Operator
+    search: [searchIndividualInput]
+  }
+
+  input orderIndividualInput{
+    field: individualField
+    order: Order
+  }
+
+  type Query {
+    individuals(search: searchIndividualInput, order: [ orderIndividualInput ], pagination: paginationInput ): [individual]
+    readOneIndividual(id: ID!): individual
+    countIndividuals(search: searchIndividualInput): Int
+  }
+
+    type Mutation {
+    addIndividual( name: String ): individual
+    deleteIndividual(id: ID!): String!
+    updateIndividual(id: ID!, name: String): individual!
+    bulkAddIndividualXlsx: [individual]
+    bulkAddIndividualCsv: [individual]
+}
+  \`;
+`
+
+module.exports.specie_resolvers = `
+const specie = require('../models-webservice/specie');
+const searchArg = require('../utils/search-argument');
+const resolvers = require('./index');
+
+
+
+specie.prototype.projectsFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+    if (search === undefined) {
+        return resolvers.projects({
+            "search": {
+                "field": "specieId",
+                "value": {
+                    "value": this.id
+                },
+                "operator": "eq"
+            },
+            order,
+            pagination
+        }, context);
+    } else {
+        return resolvers.projects({
+            "search": {
+                "operator": "and",
+                "search": [{
+                    "field": "specieId",
+                    "value": {
+                        "value": this.id
+                    },
+                    "operator": "eq"
+                }, search]
+            },
+            order,
+            pagination
+        }, context)
+    }
+
+}
+
+specie.prototype.countFilteredProjects = function({search},context){
+  if (search === undefined) {
+      return resolvers.countProjects({
+          "search": {
+              "field": "specieId",
+              "value": {
+                  "value": this.id
+              },
+              "operator": "eq"
+          }
+      }, context);
+  } else {
+      return resolvers.countProjects({
+          "search": {
+              "operator": "and",
+              "search": [{
+                  "field": "specieId",
+                  "value": {
+                      "value": this.id
+                  },
+                  "operator": "eq"
+              }, search]
+          }
+      }, context)
+  }
+}
+
+module.exports = {
+    species: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        /*
+        YOUR CODE GOES HERE
+        */
+    },
+
+    readOneSpecie: function({
+        id
+    }, context) {
+        /*
+        YOUR CODE GOES HERE
+        */
+    },
+
+    countSpecies: function({search}, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+    }
+}
+`
 
 module.exports.local_graphql_project = `
 module.exports = \`

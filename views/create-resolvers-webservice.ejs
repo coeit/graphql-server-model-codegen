@@ -23,7 +23,18 @@ const resolvers = require('./index');
     {
       return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
     }else{
-      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+    }
+
+  }
+
+  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].target_cp_pl%> = function({search}, context){
+
+    if(search === undefined)
+    {
+      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
+    }else{
+      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
     }
 
   }
@@ -39,6 +50,12 @@ module.exports = {
   },
 
   readOne<%- name -%>: function({id}, context){
+    /*
+    YOUR CODE GOES HERE
+    */
+  },
+
+  count<%- namePlCp -%>: function({search},context){
     /*
     YOUR CODE GOES HERE
     */

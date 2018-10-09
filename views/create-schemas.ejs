@@ -10,6 +10,7 @@ module.exports = `
   <%}-%>
   <%for(var key in associations.schema_attributes.many){-%>
     <%= key%>Filter(search: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]%>]
+    countFiltered<%= associations.schema_attributes.many[key][2]%>(search: search<%= associations.schema_attributes.many[key][1] -%>Input) : Int
   <%}-%>
 }
 
@@ -34,6 +35,7 @@ module.exports = `
   type Query {
     <%- namePl -%>(search: search<%- nameCp -%>Input, order: [ order<%- nameCp -%>Input ], pagination: paginationInput ): [<%- name -%>]
     readOne<%- nameCp -%>(id: ID!): <%- name %>
+    count<%- namePlCp -%>(search: search<%- nameCp -%>Input ): Int
   }
 
   <% if(storageType === 'sql'){-%>

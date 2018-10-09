@@ -130,3 +130,23 @@ module.exports.researcher = {
     }
   }
 }
+
+module.exports.specie = {
+  "model" : "Specie",
+  "storageType" : "webservice",
+  "attributes" : {
+    "nombre" : "String",
+    "e_nombre_comun_principal" : "String",
+    "e_foto_principal" : "String",
+    "nombre_cientifico" : "String"
+  },
+
+  "associations":{
+    "projects" : {
+      "type" : "cross_hasMany",
+      "target" : "Project",
+      "targetKey" : "specieId",
+      "targetStorageType" : "sql"
+    }
+  }
+}
