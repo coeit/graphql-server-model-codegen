@@ -108,6 +108,27 @@ describe('Limit for resolvers', function(){
     expect(g_resolvers).to.be.equal(test_resolvers);
   });
 });
+
+describe('Better name for search argument', function(){
+
+  it('GraphQL Schema - researcher', async function(){
+    let opts = funks.getOptions(models.researcher);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.researcher_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - researcher', async function(){
+    let opts = funks.getOptions(models.researcher);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.researcher_resolver.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+});
+
+
 // if(!fs.existsSync(__dirname+'/test-data-output') ){
 //   fs.mkdirSync(__dirname+'/test-data-output');
 //   //Generate code

@@ -104,3 +104,29 @@ module.exports.book = {
         }
   }
 }
+
+module.exports.researcher = {
+  "model" : "Researcher",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String"
+  },
+  "associations":{
+    "projects":{
+      "type" : "sql_belongsToMany",
+      "target" : "Project",
+      "targetKey" : "projectId",
+      "sourceKey" : "researcherId",
+      "keysIn" : "project_to_researcher",
+      "targetStorageType" : "sql"
+    },
+    "dog":{
+      "type": "sql_hasOne",
+      "target": "Dog",
+      "targetKey": "researcherId",
+      "targetStorageType": "sql"
+    }
+  }
+}

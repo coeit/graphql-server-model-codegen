@@ -12,18 +12,18 @@ const resolvers = require('./index');
 <% associations_temp = associations.explicit_resolvers["hasOne"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].target.toLowerCase()%> = function(_, context){
-    return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"input":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}},context);
+    return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}},context);
   }
 <%}-%>
 
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order, pagination}, context){
-    if(input === undefined)
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({search,order, pagination}, context){
+    if(search === undefined)
     {
-      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"input":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
+      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
     }else{
-      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] }, order, pagination },context)
+      return resolvers.<%=associations_temp[i].target_pl.toLowerCase()%>({"search":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
     }
 
   }
@@ -32,7 +32,7 @@ const resolvers = require('./index');
 
 
 module.exports = {
-  <%- namePl -%>: function({input}, context){
+  <%- namePl -%>: function({search,order,pagination}, context){
     /*
     YOUR CODE GOES HERE
     */

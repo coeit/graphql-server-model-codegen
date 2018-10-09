@@ -22,12 +22,12 @@ var checkAuthorization = require('../utils/check-authorization');
 
 <% let associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order,pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({search,order,pagination}, context){
 
     let options = {};
 
-    if(input!== undefined){
-      let arg = new searchArg(input);
+    if(search!== undefined){
+      let arg = new searchArg(search);
       let arg_sequelize = arg.toSequelize();
       options['where'] = arg_sequelize;
     }
@@ -65,19 +65,19 @@ var checkAuthorization = require('../utils/check-authorization');
 <% associations_temp = associations.explicit_resolvers["hasOne"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].target.toLowerCase()%> = function(_, context){
-    return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input": {"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"} }, context);
+    return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"search": {"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"} }, context);
   }
 <%}-%>
 
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({input,order, pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].target_pl.toLowerCase()%>Filter = function({search,order, pagination}, context){
 
-    if(input === undefined)
+    if(search === undefined)
     {
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order, pagination }, context);
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"search":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order, pagination }, context);
     }else{
-      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"input":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , input] }, order, pagination },context)
+      return <%=associations_temp[i].target.toLowerCase()%>.<%=associations_temp[i].target_pl%>({"search":{"operator":"and", "searchArg":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
     }
 
   }
@@ -85,11 +85,11 @@ var checkAuthorization = require('../utils/check-authorization');
 
 module.exports = {
 
-  <%- namePl -%>: function({input, order, pagination}, context){
+  <%- namePl -%>: function({search, order, pagination}, context){
     if(checkAuthorization(context,'<%- namePl -%>', 'read')==true){
         let options = {};
-        if(input!== undefined){
-          let arg = new searchArg(input);
+        if(search!== undefined){
+          let arg = new searchArg(search);
           let arg_sequelize = arg.toSequelize();
           options['where'] = arg_sequelize;
         }

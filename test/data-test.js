@@ -20,7 +20,7 @@ module.exports = \`
     field: transcript_countField
     value: typeValue
     operator: Operator
-    searchArg: [searchTranscript_countInput]
+    search: [searchTranscript_countInput]
   }
 
   input orderTranscript_countInput{
@@ -29,7 +29,7 @@ module.exports = \`
   }
 
   type Query {
-    transcript_counts(input: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
+    transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
   }
 
@@ -41,7 +41,6 @@ module.exports = \`
     bulkAddTranscript_countCsv: [transcript_count]
 }
   \`;
-
 `
 
 module.exports.individualResolvers = `
@@ -57,15 +56,15 @@ var checkAuthorization = require('../utils/check-authorization');
 
 
 individual.prototype.transcript_countsFilter = function({
-    input,
+    search,
     order,
     pagination
 }, context) {
 
     let options = {};
 
-    if (input !== undefined) {
-        let arg = new searchArg(input);
+    if (search !== undefined) {
+        let arg = new searchArg(search);
         let arg_sequelize = arg.toSequelize();
         options['where'] = arg_sequelize;
     }
@@ -100,14 +99,14 @@ individual.prototype.transcript_countsFilter = function({
 module.exports = {
 
     individuals: function({
-        input,
+        search,
         order,
         pagination
     }, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
             let options = {};
-            if (input !== undefined) {
-                let arg = new searchArg(input);
+            if (search !== undefined) {
+                let arg = new searchArg(search);
                 let arg_sequelize = arg.toSequelize();
                 options['where'] = arg_sequelize;
             }
@@ -256,7 +255,7 @@ module.exports = \`
     field: transcript_countField
     value: typeValue
     operator: Operator
-    searchArg: [searchTranscript_countInput]
+    search: [searchTranscript_countInput]
   }
 
   input orderTranscript_countInput{
@@ -265,7 +264,7 @@ module.exports = \`
   }
 
   type Query {
-    transcript_counts(input: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
+    transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
   }
 
@@ -293,14 +292,14 @@ var checkAuthorization = require('../utils/check-authorization');
 module.exports = {
 
     individuals: function({
-        input,
+        search,
         order,
         pagination
     }, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
             let options = {};
-            if (input !== undefined) {
-                let arg = new searchArg(input);
+            if (search !== undefined) {
+                let arg = new searchArg(search);
                 let arg_sequelize = arg.toSequelize();
                 options['where'] = arg_sequelize;
             }
@@ -517,14 +516,14 @@ transcript_count.prototype.individual = function(_, context) {
 module.exports = {
 
     transcript_counts: function({
-        input,
+        search,
         order,
         pagination
     }, context) {
         if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
             let options = {};
-            if (input !== undefined) {
-                let arg = new searchArg(input);
+            if (search !== undefined) {
+                let arg = new searchArg(search);
                 let arg_sequelize = arg.toSequelize();
                 options['where'] = arg_sequelize;
             }
@@ -642,15 +641,15 @@ var checkAuthorization = require('../utils/check-authorization');
 
 
 person.prototype.dogsFilter = function({
-    input,
+    search,
     order,
     pagination
 }, context) {
 
     let options = {};
 
-    if (input !== undefined) {
-        let arg = new searchArg(input);
+    if (search !== undefined) {
+        let arg = new searchArg(search);
         let arg_sequelize = arg.toSequelize();
         options['where'] = arg_sequelize;
     }
@@ -680,15 +679,15 @@ person.prototype.dogsFilter = function({
     });
 }
 person.prototype.booksFilter = function({
-    input,
+    search,
     order,
     pagination
 }, context) {
 
     let options = {};
 
-    if (input !== undefined) {
-        let arg = new searchArg(input);
+    if (search !== undefined) {
+        let arg = new searchArg(search);
         let arg_sequelize = arg.toSequelize();
         options['where'] = arg_sequelize;
     }
@@ -723,14 +722,14 @@ person.prototype.booksFilter = function({
 module.exports = {
 
     people: function({
-        input,
+        search,
         order,
         pagination
     }, context) {
         if (checkAuthorization(context, 'people', 'read') == true) {
             let options = {};
-            if (input !== undefined) {
-                let arg = new searchArg(input);
+            if (search !== undefined) {
+                let arg = new searchArg(search);
                 let arg_sequelize = arg.toSequelize();
                 options['where'] = arg_sequelize;
             }
@@ -849,44 +848,41 @@ const publisher = require('./publisher');
 
 
 book.prototype.peopleFilter = function({
-    input,
+    search,
     order,
     pagination
 }, context) {
 
     let options = {};
 
-    if (input !== undefined) {
-        let arg = new searchArg(input);
+    if (search !== undefined) {
+        let arg = new searchArg(search);
         let arg_sequelize = arg.toSequelize();
         options['where'] = arg_sequelize;
     }
 
-    return this.countPeople(options).then(items =>{
+    return this.countPeople(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        }
 
-      if (order !== undefined) {
-          options['order'] = order.map((orderItem) => {
-              return [orderItem.field, orderItem.order];
-          });
-      }
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
 
-      if(pagination !== undefined){
-        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-      }else{
-        options['offset'] = 0;
-        options['limit'] = items;
-      }
-
-      if(globals.LIMIT_RECORDS < options['limit']){
-        throw new Error(\`Request of total peopleFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-      }
-
-      return this.getPeople(options);
-
-    }).catch(error =>{
-      console.log("Catched the error in peopleFilter", error);
-      return error;
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total peopleFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getPeople(options);
+    }).catch(error => {
+        console.log("Catched the error in peopleFilter ", error);
+        return error;
     });
 }
 book.prototype.publisher = function(_, context) {
@@ -900,45 +896,41 @@ book.prototype.publisher = function(_, context) {
 module.exports = {
 
     books: function({
-        input,
+        search,
         order,
         pagination
     }, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             let options = {};
-            if (input !== undefined) {
-                let arg = new searchArg(input);
+            if (search !== undefined) {
+                let arg = new searchArg(search);
                 let arg_sequelize = arg.toSequelize();
                 options['where'] = arg_sequelize;
             }
 
-            return book.count(options).then(items =>{
+            return book.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
+                }
 
-              if (order !== undefined) {
-                  options['order'] = order.map((orderItem) => {
-                      return [orderItem.field, orderItem.order];
-                  });
-              }
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
 
-              if(pagination !== undefined){
-                options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-              }else{
-                options['offset'] = 0;
-                options['limit'] = items;
-              }
-
-              if(globals.LIMIT_RECORDS < options['limit']){
-                throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-              }
-
-              return book.findAll(options);
-
-            }).catch(error =>{
-              console.log("Catched the error in books ", error);
-              return error;
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return book.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in books ", error);
+                return error;
             });
-
         } else {
             return new Error("You don't have authorization to perform this action");
         }
@@ -1016,6 +1008,221 @@ module.exports = {
 }
 
 `
+module.exports.researcher_schema = `
+module.exports = \`
+  type Researcher  {
+      firstName: String
+      lastName: String
+      email: String
+        dog: Dog
+        projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
+  }
+
+  enum ResearcherField {
+    id
+    firstName
+    lastName
+    email
+  }
+
+  input searchResearcherInput {
+    field: ResearcherField
+    value: typeValue
+    operator: Operator
+    search: [searchResearcherInput]
+  }
+
+  input orderResearcherInput{
+    field: ResearcherField
+    order: Order
+  }
+
+  type Query {
+    researchers(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput ): [Researcher]
+    readOneResearcher(id: ID!): Researcher
+  }
+
+    type Mutation {
+    addResearcher( firstName: String, lastName: String, email: String ): Researcher
+    deleteResearcher(id: ID!): String!
+    updateResearcher(id: ID!, firstName: String, lastName: String, email: String): Researcher!
+    bulkAddResearcherXlsx: [Researcher]
+    bulkAddResearcherCsv: [Researcher]
+}
+  \`;
+`
+
+module.exports.researcher_resolver = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const researcher = require('../models/index').researcher;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+const globals = require('../config/globals');
+var checkAuthorization = require('../utils/check-authorization');
+
+researcher.prototype.dog = function(_, context) {
+    return this.getDog();
+}
+
+researcher.prototype.projectsFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countProjects(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        }
+
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total projectsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getProjects(options);
+    }).catch(error => {
+        console.log("Catched the error in projectsFilter ", error);
+        return error;
+    });
+}
+
+
+
+module.exports = {
+
+    researchers: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        if (checkAuthorization(context, 'researchers', 'read') == true) {
+            let options = {};
+            if (search !== undefined) {
+                let arg = new searchArg(search);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+
+            return researcher.count(options).then(items => {
+                if (order !== undefined) {
+                    options['order'] = order.map((orderItem) => {
+                        return [orderItem.field, orderItem.order];
+                    });
+                }
+
+                if (pagination !== undefined) {
+                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                } else {
+                    options['offset'] = 0;
+                    options['limit'] = items;
+                }
+
+                if (globals.LIMIT_RECORDS < options['limit']) {
+                    throw new Error(\`Request of total researchers exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                }
+                return researcher.findAll(options);
+            }).catch(error => {
+                console.log("Catched the error in researchers ", error);
+                return error;
+            });
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    },
+
+    readOneResearcher: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'researchers', 'read') == true) {
+            return researcher.findOne({
+                where: {
+                    id: id
+                }
+            });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    addResearcher: function(input, context) {
+        if (checkAuthorization(context, 'researchers', 'create') == true) {
+            return researcher.create(input)
+                .then(researcher => {
+                    return researcher;
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    bulkAddResearcherXlsx: function(_, context) {
+        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+        return researcher.bulkCreate(xlsxObjs, {
+            validate: true
+        });
+    },
+
+    bulkAddResearcherCsv: function(_, context) {
+        //delim = context.request.body.delim;
+        //cols = context.request.body.cols;
+        return fileTools.parseCsv(context.request.files.csv_file.data.toString())
+            .then((csvObjs) => {
+                return researcher.bulkCreate(csvObjs, {
+                    validate: true
+                });
+            });
+    },
+
+    deleteResearcher: function({
+        id
+    }, context) {
+        if (checkAuthorization(context, 'researchers', 'delete') == true) {
+            return researcher.findById(id)
+                .then(researcher => {
+                    return researcher.destroy()
+                        .then(() => {
+                            return 'Item succesfully deleted';
+                        });
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    },
+
+    updateResearcher: function(input, context) {
+        if (checkAuthorization(context, 'researchers', 'update') == true) {
+            return researcher.findById(input.id)
+                .then(researcher => {
+                    return researcher.update(input);
+                });
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    }
+}
+`
+
 
 module.exports.local_graphql_project = `
 module.exports = \`
