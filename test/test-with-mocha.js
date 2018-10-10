@@ -156,6 +156,26 @@ describe('Count for model', function(){
 });
 
 
+describe('VueTable', function(){
+
+  it('GraphQL Schema - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.book_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.book_resolver_table.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+});
+
+
 // if(!fs.existsSync(__dirname+'/test-data-output') ){
 //   fs.mkdirSync(__dirname+'/test-data-output');
 //   //Generate code

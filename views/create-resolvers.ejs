@@ -5,6 +5,7 @@
 const <%-  nameLc  -%> = require('../models/index').<%- nameLc -%>;
 const searchArg = require('../utils/search-argument');
 const fileTools =  require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 <%for(let type in associations.explicit_resolvers){-%>
@@ -215,5 +216,14 @@ module.exports = {
     }
 
     return <%- nameLc -%>.count(options);
+  },
+
+  vueTable<%- nameCp-%>: function(_,context){
+    if(checkAuthorization(context,'<%- namePl -%>','read')==true)
+    {
+      return helper.vueTable(context.request, <%- nameLc -%>, <%-  JSON.stringify(arrayAttributeString) -%>  );
+    }else{
+        return "You don't have authorization to perform this action";
+      }
   }
 }

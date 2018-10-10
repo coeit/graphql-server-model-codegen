@@ -14,6 +14,25 @@ module.exports = `
   <%}-%>
 }
 
+  type <%- nameCp -%>ID{
+    id: ID
+    <% for (var key in attributes){-%>
+      <%= key %>: <%= attributes[key]%>
+    <%}-%>
+  }
+
+  type VueTable<%- nameCp -%>{
+    data : [<%- nameCp -%>ID]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
+
   enum <%- name -%>Field {
     id <%for (var key in attributes) {%>
     <%= key -%>
@@ -36,6 +55,7 @@ module.exports = `
     <%- namePl -%>(search: search<%- nameCp -%>Input, order: [ order<%- nameCp -%>Input ], pagination: paginationInput ): [<%- name -%>]
     readOne<%- nameCp -%>(id: ID!): <%- name %>
     count<%- namePlCp -%>(search: search<%- nameCp -%>Input ): Int
+    vueTable<%- nameCp -%> : VueTable<%- nameCp -%>
   }
 
   <% if(storageType === 'sql'){-%>

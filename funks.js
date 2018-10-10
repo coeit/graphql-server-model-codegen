@@ -54,6 +54,20 @@ attributesToString = function(attributes){
 }
 
 
+attributesArrayString = function(attributes){
+  let array_attributes = ["id"];
+
+  for(key in attributes){
+    if(attributes[key]=== 'String')
+    {
+      array_attributes.push(key);
+    }
+  }
+
+  return array_attributes;
+}
+
+
 writeSchemaCommons = function(dir_write){
 
   let commons = `module.exports = \`
@@ -151,6 +165,7 @@ module.exports.getOptions = function(dataModel)
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
+    arrayAttributeString: attributesArrayString(dataModel.attributes)
   }
   return opts;
 }
