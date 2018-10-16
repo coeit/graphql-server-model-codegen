@@ -1,46 +1,67 @@
 module.exports.transcript_countSchema = `
   module.exports = \`
   type transcript_count  {
-    gene: String
-    variable: String
-    count: Float
-    tissue_or_condition: String
-      individual: individual
+    id: ID
+      gene: String
+      variable: String
+      count: Float
+      tissue_or_condition: String
+        individual: individual
+    }
+
+  type Transcript_countID{
+    id: ID
+          gene: String
+          variable: String
+          count: Float
+          tissue_or_condition: String
+      }
+
+  type VueTableTranscript_count{
+    data : [Transcript_countID]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
   }
 
   enum transcript_countField {
-  id
-  gene
-  variable
-  count
-  tissue_or_condition
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
   }
 
   input searchTranscript_countInput {
-  field: transcript_countField
-  value: typeValue
-  operator: Operator
-  search: [searchTranscript_countInput]
+    field: transcript_countField
+    value: typeValue
+    operator: Operator
+    search: [searchTranscript_countInput]
   }
 
   input orderTranscript_countInput{
-  field: transcript_countField
-  order: Order
+    field: transcript_countField
+    order: Order
   }
 
   type Query {
-  transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
-  readOneTranscript_count(id: ID!): transcript_count
-  countTranscript_counts(search: searchTranscript_countInput ): Int
-  }
+    transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
+    readOneTranscript_count(id: ID!): transcript_count
+    countTranscript_counts(search: searchTranscript_countInput ): Int
+    vueTableTranscript_count : VueTableTranscript_count  }
 
   type Mutation {
-  addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
-  deleteTranscript_count(id: ID!): String!
-  updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
-  bulkAddTranscript_countXlsx: [transcript_count]
-  bulkAddTranscript_countCsv: [transcript_count]
-  }
+    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
+    deleteTranscript_count(id: ID!): String!
+    updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
+    bulkAddTranscript_countXlsx: [transcript_count]
+    bulkAddTranscript_countCsv: [transcript_count]
+}
   \`;
 `
 
@@ -52,6 +73,7 @@ module.exports.individualResolvers = `
 const individual = require('../models/index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
@@ -227,6 +249,14 @@ module.exports = {
           options['where'] = arg_sequelize;
       }
       return individual.count(options);
+    },
+
+    vueTableIndividual: function(_, context) {
+        if (checkAuthorization(context, 'individuals', 'read') == true) {
+            return helper.vueTable(context.request, individual, ["id", "name"]);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
     }
 }
 `
@@ -257,11 +287,31 @@ module.exports = function(sequelize, DataTypes) {
 module.exports.transcript_count_no_assoc_schema = `
 module.exports = \`
   type transcript_count  {
+      id: ID
       gene: String
       variable: String
       count: Float
       tissue_or_condition: String
       }
+  type Transcript_countID{
+        id: ID
+        gene: String
+        variable: String
+        count: Float
+        tissue_or_condition: String
+    }
+
+    type VueTableTranscript_count{
+      data : [Transcript_countID]
+      total: Int
+      per_page: Int
+      current_page: Int
+      last_page: Int
+      prev_page_url: String
+      next_page_url: String
+      from: Int
+      to: Int
+    }
 
   enum transcript_countField {
     id
@@ -287,6 +337,7 @@ module.exports = \`
     transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
     countTranscript_counts(search: searchTranscript_countInput ): Int
+    vueTableTranscript_count : VueTableTranscript_count
   }
 
     type Mutation {
@@ -307,6 +358,7 @@ module.exports.individual_no_assoc_resolvers = `
 const individual = require('../models/index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
@@ -431,7 +483,15 @@ module.exports = {
             }
 
             return individual.count(options);
+        },
+
+    vueTableIndividual: function(_, context) {
+        if (checkAuthorization(context, 'individuals', 'read') == true) {
+            return helper.vueTable(context.request, individual, ["id", "name"]);
+        } else {
+            return "You don't have authorization to perform this action";
         }
+    }
 }
 `
 
@@ -534,6 +594,7 @@ module.exports.transcript_count_resolvers =`
 const transcript_count = require('../models/index').transcript_count;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
@@ -666,7 +727,15 @@ module.exports = {
     }
 
     return transcript_count.count(options);
-  }
+  },
+
+    vueTableTranscript_count: function(_, context) {
+        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
+            return helper.vueTable(context.request, transcript_count, ["id", "gene", "variable", "tissue_or_condition"]);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
+    }
 }
 `
 
@@ -678,6 +747,7 @@ module.exports.person_resolvers = `
 const person = require('../models/index').person;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
@@ -917,6 +987,14 @@ module.exports = {
         }
 
         return person.count(options);
+    },
+
+    vueTablePerson: function(_, context) {
+        if (checkAuthorization(context, 'people', 'read') == true) {
+            return helper.vueTable(context.request, person, ["id", "firstName", "lastName", "email"]);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
     }
 }
 `
@@ -929,6 +1007,7 @@ module.exports.book_resolver_limit = `
 const book = require('../models/index').book;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 const publisher = require('./publisher');
@@ -1118,6 +1197,14 @@ module.exports = {
           options['where'] = arg_sequelize;
       }
       return book.count(options);
+    },
+
+    vueTableBook: function(_, context) {
+        if (checkAuthorization(context, 'books', 'read') == true) {
+            return helper.vueTable(context.request, book, ["id", "title", "genre"]);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
     }
 
 
@@ -1127,12 +1214,31 @@ module.exports = {
 module.exports.researcher_schema = `
 module.exports = \`
   type Researcher  {
+    id: ID
       firstName: String
       lastName: String
       email: String
         dog: Dog
         projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
     countFilteredProjects(search: searchProjectInput) : Int
+  }
+  type ResearcherID{
+    id: ID
+          firstName: String
+          lastName: String
+          email: String
+      }
+
+  type VueTableResearcher{
+    data : [ResearcherID]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
   }
 
   enum ResearcherField {
@@ -1158,6 +1264,7 @@ module.exports = \`
     researchers(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput ): [Researcher]
     readOneResearcher(id: ID!): Researcher
     countResearchers(search: searchResearcherInput ): Int
+    vueTableResearcher : VueTableResearcher
   }
 
     type Mutation {
@@ -1178,6 +1285,7 @@ module.exports.researcher_resolver = `
 const researcher = require('../models/index').researcher;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
 const globals = require('../config/globals');
 var checkAuthorization = require('../utils/check-authorization');
 
@@ -1366,17 +1474,41 @@ module.exports = {
         }
 
         return researcher.count(options);
+    },
+
+    vueTableResearcher: function(_, context) {
+        if (checkAuthorization(context, 'researchers', 'read') == true) {
+            return helper.vueTable(context.request, researcher, ["id", "firstName", "lastName", "email"]);
+        } else {
+            return "You don't have authorization to perform this action";
+        }
     }
 }
 `
 module.exports.individual_schema = `
 module.exports = \`
   type individual  {
+    id: ID
       name: String
           transcript_countsFilter(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput): [transcript_count]
       countFilteredTranscript_counts(search: searchTranscript_countInput): Int
   }
+  type IndividualID{
+    id: ID
+          name: String
+      }
 
+  type VueTableIndividual{
+    data : [IndividualID]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
   enum individualField {
     id
     name
@@ -1398,6 +1530,7 @@ module.exports = \`
     individuals(search: searchIndividualInput, order: [ orderIndividualInput ], pagination: paginationInput ): [individual]
     readOneIndividual(id: ID!): individual
     countIndividuals(search: searchIndividualInput): Int
+    vueTableIndividual : VueTableIndividual
   }
 
     type Mutation {
@@ -1510,6 +1643,7 @@ module.exports = {
 module.exports.book_schema = `
 module.exports = \`
   type Book  {
+      id: ID
       title: String
       genre: String
         publisher: Publisher
