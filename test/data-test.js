@@ -9,16 +9,8 @@ module.exports.transcript_countSchema = `
         individual: individual
     }
 
-  type Transcript_countID{
-    id: ID
-          gene: String
-          variable: String
-          count: Float
-          tissue_or_condition: String
-      }
-
   type VueTableTranscript_count{
-    data : [Transcript_countID]
+    data : [Transcript_count]
     total: Int
     per_page: Int
     current_page: Int
@@ -293,16 +285,9 @@ module.exports = \`
       count: Float
       tissue_or_condition: String
       }
-  type Transcript_countID{
-        id: ID
-        gene: String
-        variable: String
-        count: Float
-        tissue_or_condition: String
-    }
 
     type VueTableTranscript_count{
-      data : [Transcript_countID]
+      data : [Transcript_count]
       total: Int
       per_page: Int
       current_page: Int
@@ -1222,15 +1207,9 @@ module.exports = \`
         projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
     countFilteredProjects(search: searchProjectInput) : Int
   }
-  type ResearcherID{
-    id: ID
-          firstName: String
-          lastName: String
-          email: String
-      }
 
   type VueTableResearcher{
-    data : [ResearcherID]
+    data : [Researcher]
     total: Int
     per_page: Int
     current_page: Int
@@ -1493,13 +1472,9 @@ module.exports = \`
           transcript_countsFilter(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput): [transcript_count]
       countFilteredTranscript_counts(search: searchTranscript_countInput): Int
   }
-  type IndividualID{
-    id: ID
-          name: String
-      }
 
   type VueTableIndividual{
-    data : [IndividualID]
+    data : [Individual]
     total: Int
     per_page: Int
     current_page: Int
@@ -1651,14 +1626,8 @@ module.exports = \`
     countFilteredPeople(search: searchPersonInput) : Int
   }
 
-  type BookID{
-    id: ID
-    title: String
-    genre: String
-  }
-
 type VueTableBook{
-  data : [BookID]
+  data : [Book]
   total: Int
   per_page: Int
   current_page: Int
