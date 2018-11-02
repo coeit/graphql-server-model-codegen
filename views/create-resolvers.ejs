@@ -160,6 +160,10 @@ module.exports = {
     {
       return <%- nameLc -%>.create(input)
       .then( <%- nameLc -%> =>{
+        <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
+        <%for(let i=0; i < associations_temp.length; i++){-%>
+            if(input.<%=associations_temp[i].target_pl.toLowerCase()%>){<%- nameLc -%>.set<%=associations_temp[i].target_cp_pl%>(input.<%=associations_temp[i].target_pl.toLowerCase()%>);}
+          <%}-%>
         return <%- nameLc -%>;
       });
     }else{

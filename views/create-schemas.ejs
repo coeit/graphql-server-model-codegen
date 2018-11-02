@@ -54,9 +54,9 @@ module.exports = `
 
   <% if(storageType === 'sql'){-%>
   type Mutation {
-    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%> ): <%- name %>
+    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, <%=key%>:[ID]<%}-%> ): <%- name %>
     delete<%- nameCp -%>(id: ID!): String!
-    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %>  <%}-%>): <%- name %>!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, <%=key%>:[ID]<%}-%>): <%- name %>!
     bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
     bulkAdd<%- nameCp -%>Csv: [<%- name -%>]
 }
