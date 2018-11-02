@@ -181,6 +181,9 @@ module.exports = {
         if (checkAuthorization(context, 'individuals', 'create') == true) {
             return individual.create(input)
                 .then(individual => {
+                    if (input.transcript_counts) {
+                        individual.setTranscript_counts(input.transcript_counts);
+                    }
                     return individual;
                 });
         } else {
@@ -1124,6 +1127,9 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
                 .then(book => {
+                    if (input.people) {
+                        book.setPeople(input.people);
+                    }
                     return book;
                 });
         } else {
@@ -1249,9 +1255,9 @@ module.exports = \`
   }
 
     type Mutation {
-    addResearcher( firstName: String, lastName: String, email: String ): Researcher
+    addResearcher( firstName: String, lastName: String, email: String, projects:[ID] ): Researcher
     deleteResearcher(id: ID!): String!
-    updateResearcher(id: ID!, firstName: String, lastName: String, email: String): Researcher!
+    updateResearcher(id: ID!, firstName: String, lastName: String, email: String, projects:[ID]): Researcher!
     bulkAddResearcherXlsx: [Researcher]
     bulkAddResearcherCsv: [Researcher]
 }
@@ -1392,6 +1398,9 @@ module.exports = {
         if (checkAuthorization(context, 'researchers', 'create') == true) {
             return researcher.create(input)
                 .then(researcher => {
+                    if (input.projects) {
+                        researcher.setProjects(input.projects);
+                    }
                     return researcher;
                 });
         } else {
@@ -1511,9 +1520,9 @@ module.exports = \`
   }
 
     type Mutation {
-    addIndividual( name: String ): individual
+    addIndividual( name: String, transcript_counts:[ID] ): individual
     deleteIndividual(id: ID!): String!
-    updateIndividual(id: ID!, name: String): individual!
+    updateIndividual(id: ID!, name: String, transcript_counts:[ID]): individual!
     bulkAddIndividualXlsx: [individual]
     bulkAddIndividualCsv: [individual]
 }
@@ -1666,9 +1675,9 @@ type VueTableBook{
   }
 
     type Mutation {
-    addBook( title: String, genre: String, publisherId: Int   ): Book
+    addBook( title: String, genre: String, publisherId: Int, people:[ID]   ): Book
     deleteBook(id: ID!): String!
-    updateBook(id: ID!, title: String, genre: String, publisherId: Int  ): Book!
+    updateBook(id: ID!, title: String, genre: String, publisherId: Int, people:[ID]  ): Book!
     bulkAddBookXlsx: [Book]
     bulkAddBookCsv: [Book]
 }
@@ -1812,6 +1821,9 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
                 .then(book => {
+                    if (input.people) {
+                        book.setPeople(input.people);
+                    }
                     return book;
                 });
         } else {
