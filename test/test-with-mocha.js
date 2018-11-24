@@ -194,6 +194,17 @@ describe('Add instances query with associated records', function(){
   });
 });
 
+describe('Stream upload file', function(){
+
+  it('Resolver - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.dog_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+});
 
 // if(!fs.existsSync(__dirname+'/test-data-output') ){
 //   fs.mkdirSync(__dirname+'/test-data-output');

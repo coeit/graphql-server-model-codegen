@@ -150,3 +150,30 @@ module.exports.specie = {
     }
   }
 }
+
+module.exports.dog = {
+  "model" : "Dog",
+  "storageType" : "Sql",
+  "attributes" : {
+    "name" : "String",
+    "breed" : "String"
+  },
+
+  "associations" : {
+    "person" : {
+      "type" : "sql_belongsTo",
+      "target" : "Person",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql",
+      "label": "firstName",
+      "sublabel": "lastName"
+    },
+    "researcher":{
+      "type" : "sql_belongsTo",
+      "target": "Researcher",
+      "targetKey": "researcherId",
+      "targetStorageType": "SQL",
+      "label": "firstName"
+    }
+  }
+}

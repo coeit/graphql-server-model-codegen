@@ -7,7 +7,10 @@ const searchArg = require('../utils/search-argument');
 const fileTools =  require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
-var checkAuthorization = require('../utils/check-authorization');
+const checkAuthorization = require('../utils/check-authorization');
+const path = require('path')
+const fs = require('fs')
+const uuidv4 = require('uuidv4')
 <%for(let type in associations.explicit_resolvers){-%>
   <%for(let i=0; i < associations.explicit_resolvers[type].length; i++){-%>
     const <%=associations.explicit_resolvers[type][i].target.toLowerCase()-%> = require('./<%=associations.explicit_resolvers[type][i].target.toLowerCase()-%>');
@@ -177,10 +180,16 @@ module.exports = {
   },
 
   bulkAdd<%- nameCp -%>Csv: function(_, context){
-    //delim = context.request.body.delim;
-    //cols = context.request.body.cols;
-    return fileTools.parseCsv(context.request.files.csv_file.data.toString())
-    .then((csvObjs)=> {return <%- nameLc -%>.bulkCreate(csvObjs, {validate: true}); });
+    delim = context.request.body.delim;
+    cols = context.request.body.cols;
+    tmpFile = path.join(__dirname, uuidv4()+'.csv')
+    return context.request.files.csv_file.mv(tmpFile).then(() => {
+      return fileTools.parseCsvStream(tmpFile, <%- nameLc -%>, delim, cols)
+    }).catch((err) => {
+      return new Error(err);
+    }).then(() => {
+      fs.unlinkSync(tmpFile)
+    })
   },
 
   delete<%- nameCp -%>: function({id}, context){
