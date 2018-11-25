@@ -5,6 +5,7 @@
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha ./test/test-with-mocha.js"
   },
   "author": "vsuaste",
