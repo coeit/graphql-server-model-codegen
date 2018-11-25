@@ -11,14 +11,15 @@ $ npm install
 
 ## Usage:
 
+To run the test case:
 ```
-$ code-generator generate <input-json-files> <output-directory>
-```
-or with the alias:
-```
-$ code-generator g <input-json-files> <output-directory>
+$ npm test
 ```
 
+And to generate the structure files:
+```
+$ npm start generate <input-json-files> <output-directory>
+```
 ```
 INPUT:
 <input-json-files> - directory where json models are stored
@@ -43,7 +44,7 @@ make ```/your_path_directory``` the same directory where the server repository i
 
 NOTE: For displaying the explanation about usage we can run the help flag:
 ```
-code-generator -h
+$ npm start -- -h
 ```
 
 ## JSON files Spec
@@ -59,7 +60,7 @@ Name | Type | Description
 *attributes* | Object | The key of each entry is the name of the attribute and the value should be the a string indicating the type of the attribute. See [table](types-spec) below for allowed types. Example: ```{ "attribute1" : "String", "attribute2: "Int" }```
 *associations* | Object | The key of each entry is the name of the association and the value should be an object describing the associations. See [Associations Spec](associations-spec) section below for the specifications of the associations. 
 
-EXAMPLES OF VALIDS JSON FILES
+EXAMPLES OF VALID JSON FILES
 
 ```
 //Dog.json
