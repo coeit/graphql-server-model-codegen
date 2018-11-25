@@ -1,6 +1,6 @@
 # Code-generator
 
-Command line utility to auto-generate the structure files that [this server](https://github.com/vsuaste/server-graphql-sequelize)
+Command line utility to auto-generate the structure files that [this server](https://github.com/ScienceDb/server-graphql-sequelize)
 will use to perform CRUD operations for each model created.
 
 ## Set up:
@@ -39,7 +39,7 @@ In the same directory of this repository run:
 ```
 $ npm start generate ./example_json_files /your_path_directory
 ```
-If you want to complete the example with the [server](https://github.com/vsuaste/server-graphql-sequelize)
+If you want to complete the example with the [server](https://github.com/ScienceDb/server-graphql-sequelize)
 make ```/your_path_directory``` the same directory where the server repository is stored.
 
 NOTE: For displaying the explanation about usage we can run the help flag:
