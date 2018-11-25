@@ -37,7 +37,7 @@ This command will create(if doesn't exist) four folders containing the generated
 In the same directory of this repository run:
 
 ```
-$ code-generator generate ./example_json_files /your_path_directory
+$ npm start generate ./example_json_files /your_path_directory
 ```
 If you want to complete the example with the [server](https://github.com/vsuaste/server-graphql-sequelize)
 make ```/your_path_directory``` the same directory where the server repository is stored.
