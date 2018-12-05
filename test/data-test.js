@@ -234,8 +234,11 @@ module.exports = {
         if (checkAuthorization(context, 'individuals', 'update') == true) {
             return individual.findById(input.id)
                 .then(individual => {
-                  if (input.transcript_counts) {
-                      individual.setTranscript_counts(input.transcript_counts);
+                  if (input.addTranscript_counts) {
+                      individual.addTranscript_counts(input.addTranscript_counts);
+                  }
+                  if (input.removeTranscript_counts) {
+                      individual.removeTranscript_counts(input.removeTranscript_counts);
                   }
                     return individual.update(input);
                 });
@@ -981,8 +984,18 @@ module.exports = {
         if (checkAuthorization(context, 'people', 'update') == true) {
             return person.findById(input.id)
                 .then(person => {
-                  if(input.dogs){person.setDogs(input.dogs);}
-                  if(input.books){person.setBooks(input.books);}
+                  if (input.addDogs) {
+                    person.addDogs(input.addDogs);
+                  }
+                  if (input.removeDogs) {
+                    person.removeDogs(input.removeDogs);
+                  }
+                  if (input.addBooks) {
+                      person.addBooks(input.addBooks);
+                  }
+                  if (input.removeBooks) {
+                      person.removeBooks(input.removeBooks);
+                  }
                     return person.update(input);
                 });
         } else {
@@ -1204,8 +1217,11 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'update') == true) {
             return book.findById(input.id)
                 .then(book => {
-                  if (input.people) {
-                      book.setPeople(input.people);
+                  if (input.addPeople) {
+                    book.addPeople(input.addPeople);
+                  }
+                  if (input.removePeople) {
+                    book.removePeople(input.removePeople);
                   }
                     return book.update(input);
                 });
@@ -1483,8 +1499,11 @@ module.exports = {
         if (checkAuthorization(context, 'researchers', 'update') == true) {
             return researcher.findById(input.id)
                 .then(researcher => {
-                  if (input.projects) {
-                      researcher.setProjects(input.projects);
+                  if (input.addProjects) {
+                      researcher.addProjects(input.addProjects);
+                  }
+                  if (input.removeProjects) {
+                      researcher.removeProjects(input.removeProjects);
                   }
                     return researcher.update(input);
                 });
@@ -1914,8 +1933,11 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'update') == true) {
             return book.findById(input.id)
                 .then(book => {
-                  if (input.people) {
-                    book.setPeople(input.people);
+                  if (input.addPeople) {
+                    book.addPeople(input.addPeople);
+                  }
+                  if (input.removePeople) {
+                    book.removePeople(input.removePeople);
                   }
                   return book.update(input);
                 });
