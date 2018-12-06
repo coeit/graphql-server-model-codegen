@@ -1305,7 +1305,7 @@ module.exports = \`
     type Mutation {
     addResearcher( firstName: String, lastName: String, email: String, projects:[ID] ): Researcher
     deleteResearcher(id: ID!): String!
-    updateResearcher(id: ID!, firstName: String, lastName: String, email: String, projects:[ID]): Researcher!
+    updateResearcher(id: ID!, firstName: String, lastName: String, email: String, addProjects:[ID], removeProjects:[ID]): Researcher!
     bulkAddResearcherXlsx: [Researcher]
     bulkAddResearcherCsv: [Researcher]
 }
@@ -1581,7 +1581,7 @@ module.exports = \`
     type Mutation {
     addIndividual( name: String, transcript_counts:[ID] ): individual
     deleteIndividual(id: ID!): String!
-    updateIndividual(id: ID!, name: String, transcript_counts:[ID]): individual!
+    updateIndividual(id: ID!, name: String, addTranscript_counts:[ID], removeTranscript_counts:[ID]): individual!
     bulkAddIndividualXlsx: [individual]
     bulkAddIndividualCsv: [individual]
 }
@@ -1736,7 +1736,7 @@ type VueTableBook{
     type Mutation {
     addBook( title: String, genre: String, publisherId: Int, people:[ID]   ): Book
     deleteBook(id: ID!): String!
-    updateBook(id: ID!, title: String, genre: String, publisherId: Int, people:[ID]  ): Book!
+    updateBook(id: ID!, title: String, genre: String, publisherId: Int, addPeople:[ID], removePeople:[ID]  ): Book!
     bulkAddBookXlsx: [Book]
     bulkAddBookCsv: [Book]
 }
@@ -2022,7 +2022,7 @@ module.exports = \`
     type Mutation {
     addPerson( firstName: String, lastName: String, email: String, dogs:[ID], books:[ID]): Person
     deletePerson(id: ID!): String!
-    updatePerson(id: ID!, firstName: String, lastName: String, email: String, dogs:[ID], books:[ID]): Person!
+    updatePerson(id: ID!, firstName: String, lastName: String, email: String, addDogs:[ID], removeDogs:[ID], addBooks:[ID], removeBooks:[ID]): Person!
     bulkAddPersonXlsx: [Person]
     bulkAddPersonCsv: [Person]
 }
