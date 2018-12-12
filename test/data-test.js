@@ -184,8 +184,8 @@ module.exports = {
         if (checkAuthorization(context, 'individuals', 'create') == true) {
             return individual.create(input)
                 .then(individual => {
-                    if (input.transcript_counts) {
-                        individual.setTranscript_counts(input.transcript_counts);
+                    if (input.addTranscript_counts) {
+                        individual.setTranscript_counts(input.addTranscript_counts);
                     }
                     return individual;
                 });
@@ -935,8 +935,12 @@ module.exports = {
         if (checkAuthorization(context, 'people', 'create') == true) {
             return person.create(input)
                 .then(person => {
-                  if(input.dogs){person.setDogs(input.dogs);}
-                  if(input.books){person.setBooks(input.books);}
+                  if (input.addDogs) {
+                      person.setDogs(input.addDogs);
+                  }
+                  if (input.addBooks) {
+                      person.setBooks(input.addBooks);
+                  }
                   return person;
                 });
         } else {
@@ -1167,8 +1171,8 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
                 .then(book => {
-                    if (input.people) {
-                        book.setPeople(input.people);
+                    if (input.addPeople) {
+                        book.setPeople(input.addPeople);
                     }
                     return book;
                 });
@@ -1449,8 +1453,8 @@ module.exports = {
         if (checkAuthorization(context, 'researchers', 'create') == true) {
             return researcher.create(input)
                 .then(researcher => {
-                    if (input.projects) {
-                        researcher.setProjects(input.projects);
+                    if (input.addProjects) {
+                        researcher.setProjects(input.addProjects);
                     }
                     return researcher;
                 });
@@ -1883,8 +1887,8 @@ module.exports = {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
                 .then(book => {
-                    if (input.people) {
-                        book.setPeople(input.people);
+                    if (input.addPeople) {
+                        book.setPeople(input.addPeople);
                     }
                     return book;
                 });
