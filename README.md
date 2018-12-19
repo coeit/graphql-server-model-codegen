@@ -6,8 +6,9 @@ will use to perform CRUD operations for each model created.
 ## Set up:
 Clone the repository and run:
 ```
-$ npm install
+$ npm install -g
 ```
+If you only want to install it locally run `npm install` instead
 
 ## Usage:
 
@@ -18,7 +19,7 @@ $ npm test
 
 And to generate the structure files:
 ```
-$ npm start generate <input-json-files> <output-directory>
+$ code-generator generate <input-json-files> <output-directory>
 ```
 ```
 INPUT:
@@ -37,14 +38,14 @@ This command will create(if doesn't exist) four folders containing the generated
 In the same directory of this repository run:
 
 ```
-$ npm start generate ./example_json_files /your_path_directory
+$ code-generator generate ./example_json_files /your_path_directory
 ```
 If you want to complete the example with the [server](https://github.com/ScienceDb/graphql-server)
 make ```/your_path_directory``` the same directory where the server repository is stored.
 
 NOTE: For displaying the explanation about usage we can run the help flag:
 ```
-$ npm start -- -h
+$ code-generator -h
 ```
 
 ## JSON files Spec
