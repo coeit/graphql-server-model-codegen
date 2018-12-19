@@ -138,7 +138,10 @@ name | Type | Description
 *type* | String | Type of association (one of the six described above).
 *target* | String | Name of model to which the current model will be associated with
 *targetKey* | String | Key to identify the field in the target
- 
+*targetStorageType* | String | Type of storage where the target model is stored. So far can be one of __sql__ or __Webservice__
+*label* | String | Name of the column in the target model to be used as a display name in the GUI
+*sublabel* | String | Optional name of the column in the target model to be used as a sub-label in the GUI
+
 When the association is of the type 4, it's necessary to describe a couple of two extra arguments given that the association is made with a cross table. The extra two arguments will be:
 
 name | Type | Description
@@ -146,8 +149,13 @@ name | Type | Description
 *sourceKey* | String | Key to identify the source id
 *keysIn* | String | Name of the cross table
 
+## NOTE: 
+THE SAME DATA MODELS DESCRIPTION(.json files) WILL BE USEFUL FOR GENERATING BOTH, THE BACKEND DESCRIBED HERE AND [THE FRONTEND OR GUI](https://github.com/ScienceDb/single-page-app-codegen).
+
+Fields *`label`* and *`sublabel`* in the specification are only needed by the GUI generator, but backend generator will only read required information, therefore extra fields such as *`label`* and *`sublabel`* will be ignored by the backend generator.
 Example:
 ```
+//book.json
 {
  "model" : "Book",
  "storageType" : "SQL",
@@ -162,7 +170,10 @@ Example:
             "target" : "Person",
             "targetKey" : "person_id",
             "sourceKey" : "book_id",
-            "keysIn" : "person_to_book"
+            "keysIn" : "person_to_book",
+            "targetStorageType" : "sql",
+            "label": "name",
+            "sublabel": "lastname"
         }
     }
 }
