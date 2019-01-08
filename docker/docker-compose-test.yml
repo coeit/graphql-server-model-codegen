@@ -1,0 +1,17 @@
+version: "3.2"
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+
+  science_db_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.graphql_server
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+    command: sh -c './node_modules/.bin/sequelize db:migrate && npm start'

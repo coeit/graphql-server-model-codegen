@@ -180,3 +180,10 @@ Example:
 }
 ```
 
+## Testing
+
+### Integration tests
+
+Integration tests are carried out using Docker to setup a GraphQL web server and generate code for example data models. The last step of the setup is to create databases and migrate schemas. After that the server is started using `localhost:3000`, which can than be accessed using HTTP. Solely via such HTTP connections the generated API (GraphQL web server) is tested, just as a user might be doing with e.g. `curl`.
+
+All related Docker files are stored in `./docker`; especially `docker-compose-test.yml`.
