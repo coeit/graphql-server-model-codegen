@@ -16,6 +16,6 @@ COPY ./integration_test_run/models ./models
 COPY ./integration_test_run/migrations ./migrations
 
 # Configure the database connections
-COPY sequelize_config.json ./config
+COPY sequelize_config.json ./config/config.json
 
 EXPOSE 3000
