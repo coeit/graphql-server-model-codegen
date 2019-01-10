@@ -12,4 +12,3 @@ models
 models-webservice
 resolvers
 schemas
-integration_test_run
