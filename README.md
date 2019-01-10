@@ -182,8 +182,28 @@ Example:
 
 ## Testing
 
+For relevant files see `package.json` (section scripts), directories `.test` and `docker`. Test framework is `mocha` and `chai`.
+
+### Unit tests
+
+Run all existing unit tests with
+```
+npm run test-unit
+```
+
 ### Integration tests
+
+#### Requirements
+
+You need to be on a \*nix operating system, and have bash and Docker installed and running.
 
 Integration tests are carried out using Docker to setup a GraphQL web server and generate code for example data models. The last step of the setup is to create databases and migrate schemas. After that the server is started using `localhost:3000`, which can than be accessed using HTTP. Solely via such HTTP connections the generated API (GraphQL web server) is tested, just as a user might be doing with e.g. `curl`.
 
 All related Docker files are stored in `./docker`; especially `docker-compose-test.yml`.
+
+The test pipeline is defined and executed in `./test/integration-test.bash` for reasons of simplicity. The actual integration tests are written using `mocha` and can be found in `./test/integration-tests-mocha.js`, which is invoked by the above bash script.
+
+To ecexute the integration tests run
+```
+npm run test-integration
+```
