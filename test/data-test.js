@@ -351,6 +351,13 @@ module.exports.individualModel = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
@@ -645,6 +652,13 @@ module.exports.transcript_count_no_assoc_model = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var transcript_count = sequelize.define('transcript_count', {
 
@@ -672,6 +686,13 @@ module.exports.individual_no_assoc_model = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
