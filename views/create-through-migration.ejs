@@ -1,7 +1,17 @@
 'use strict';
 
+/**
+ * @module - Migrations to creates a through table correspondant to manay-to-many association between two sequelize models.
+ */
 module.exports = {
 
+  /**
+   * up - Creates a table in the database for storing a many-to-many association
+   *
+   * @param  {object} queryInterface Used to modify the table in the database.
+   * @param  {object} Sequelize      Sequelize instance with data types included
+   * @return {promise}                Resolved if the table was succesfully created.
+   */
   up: function(queryInterface, Sequelize){
     return queryInterface.createTable('<%-keysIn-%>', {
 
@@ -31,6 +41,13 @@ module.exports = {
     });
   },
 
+  /**
+   * down - Deletes a table in the database for storing a many-to-many association
+   *
+   * @param  {object} queryInterface Used to modify the table in the database.
+   * @param  {object} Sequelize      Sequelize instance with data types included
+   * @return {promise}                Resolved if the table was succesfully deleted.
+   */
   down: function(queryInterface, Sequelize){
     return queryInterface.dropTable('<%-keysIn-%>');
   }
