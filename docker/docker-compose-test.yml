@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.postgres
+    ports:
+     - 1234:5432
 
   science_db_graphql_server:
     depends_on:
@@ -16,7 +18,7 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-    # Await POSTGRES role and DB creation (5s), migrate schema, then start web
-    # server:
+    # TODO: It is better to wait for DB with /etc/init.d script on server
+    # TODO: Change DB to Tests. Hint: NODE_ENV = 'development' || 'production' || 'test'
     command: >
       sh -c 'sleep 5 && ./node_modules/.bin/sequelize db:migrate && npm start'
