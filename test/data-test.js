@@ -2886,8 +2886,18 @@ module.exports = {
 module.exports.project_to_researcher_migration = `
 'use strict';
 
+/**
+ * @module - Migrations to creates a through table correspondant to manay-to-many association between two sequelize models.
+ */
 module.exports = {
 
+  /**
+   * up - Creates a table in the database for storing a many-to-many association
+   *
+   * @param  {object} queryInterface Used to modify the table in the database.
+   * @param  {object} Sequelize      Sequelize instance with data types included
+   * @return {promise}                Resolved if the table was succesfully created.
+   */
     up: function(queryInterface, Sequelize) {
         return queryInterface.createTable('project_to_researcher', {
 
@@ -2923,6 +2933,13 @@ module.exports = {
         });
     },
 
+    /**
+     * down - Deletes a table in the database for storing a many-to-many association
+     *
+     * @param  {object} queryInterface Used to modify the table in the database.
+     * @param  {object} Sequelize      Sequelize instance with data types included
+     * @return {promise}                Resolved if the table was succesfully deleted.
+     */
     down: function(queryInterface, Sequelize) {
         return queryInterface.dropTable('project_to_researcher');
     }
@@ -2934,6 +2951,13 @@ module.exports.researcher_model = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var Researcher = sequelize.define('researcher', {
 
@@ -2964,8 +2988,18 @@ module.exports = function(sequelize, DataTypes) {
 module.exports.add_column_dogs_migration = `
 'use strict';
 
+/**
+ * @module - Migrations to add a column and to delete a column from a table correpondant to a sequelize model.
+ */
 module.exports = {
 
+  /**
+   * up - Adds a column to a specified table
+   *
+   * @param  {object} queryInterface Used to modify the table in the database.
+   * @param  {object} Sequelize      Sequelize instance with data types included
+   * @return {promise}                Resolved if the column was succesfully added.
+   */
     up: function(queryInterface, Sequelize) {
         return queryInterface.addColumn('dogs', 'researcherId', {
             type: Sequelize.INTEGER,
@@ -2978,6 +3012,13 @@ module.exports = {
         });
     },
 
+    /**
+     * down - Deletes a column to a specified table
+     *
+     * @param  {type} queryInterface Used to modify the table in the database.
+     * @param  {object} Sequelize      Sequelize instance with data types included
+     * @return {promise}                Resolved if the column was succesfully deleted.
+     */
     down: function(queryInterface, Sequelize) {
         return queryInterface.removeColumn('dogs', 'researcherId');
     }
