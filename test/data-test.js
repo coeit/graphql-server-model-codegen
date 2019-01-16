@@ -72,7 +72,17 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
-
+/**
+ * individual.prototype.transcript_countsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
 individual.prototype.transcript_countsFilter = function({
     search,
     order,
@@ -112,6 +122,13 @@ individual.prototype.transcript_countsFilter = function({
     });
 }
 
+/**
+ * individual.prototype.countFilteredTranscript_counts - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
 individual.prototype.countFilteredTranscript_counts = function({search},context){
   let options = {};
 
@@ -125,6 +142,16 @@ individual.prototype.countFilteredTranscript_counts = function({search},context)
 
 module.exports = {
 
+  /**
+   * individuals - Check user authorization and return certain number, specified in pagination argument, of records that
+   * holds the condition of search argument, all of them sorted as specified by the order argument.
+   *
+   * @param  {object} search     Search argument for filtering records
+   * @param  {array} order       Type of sorting (ASC, DESC) for each field
+   * @param  {object} pagination Offset and limit to get the records from and to respectively
+   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+   */
     individuals: function({
         search,
         order,
@@ -166,6 +193,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOneIndividual - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneIndividual: function({
         id
     }, context) {
@@ -180,6 +214,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addIndividual - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addIndividual: function(input, context) {
         if (checkAuthorization(context, 'individuals', 'create') == true) {
             return individual.create(input)
@@ -194,6 +235,12 @@ module.exports = {
         }
     },
 
+    /**
+     * bulkAddIndividualXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddIndividualXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return individual.bulkCreate(xlsxObjs, {
@@ -201,6 +248,12 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddIndividualCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddIndividualCsv: function(_, context) {
       delim = context.request.body.delim;
       cols = context.request.body.cols;
@@ -214,6 +267,13 @@ module.exports = {
       })
     },
 
+    /**
+     * deleteIndividual - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deleteIndividual: function({
         id
     }, context) {
@@ -230,6 +290,13 @@ module.exports = {
         }
     },
 
+    /**
+     * updateIndividual - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateIndividual: function(input, context) {
         if (checkAuthorization(context, 'individuals', 'update') == true) {
             return individual.findById(input.id)
@@ -246,7 +313,13 @@ module.exports = {
             return "You don't have authorization to perform this action";
         }
     },
-
+    /**
+     * countIndividuals - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
     countIndividuals: function({search}, context){
       let options = {};
       if (search !== undefined) {
@@ -256,7 +329,13 @@ module.exports = {
       }
       return individual.count(options);
     },
-
+    /**
+     * vueTableIndividual - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableIndividual: function(_, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
             return helper.vueTable(context.request, individual, ["id", "name"]);
@@ -272,6 +351,13 @@ module.exports.individualModel = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
@@ -366,6 +452,16 @@ const uuidv4 = require('uuidv4')
 
 module.exports = {
 
+  /**
+   * individuals - Check user authorization and return certain number, specified in pagination argument, of records that
+   * holds the condition of search argument, all of them sorted as specified by the order argument.
+   *
+   * @param  {object} search     Search argument for filtering records
+   * @param  {array} order       Type of sorting (ASC, DESC) for each field
+   * @param  {object} pagination Offset and limit to get the records from and to respectively
+   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+   */
     individuals: function({
         search,
         order,
@@ -407,6 +503,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOneIndividual - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneIndividual: function({
         id
     }, context) {
@@ -421,6 +524,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addIndividual - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addIndividual: function(input, context) {
         if (checkAuthorization(context, 'individuals', 'create') == true) {
             return individual.create(input)
@@ -432,6 +542,12 @@ module.exports = {
         }
     },
 
+    /**
+     * bulkAddIndividualXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddIndividualXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return individual.bulkCreate(xlsxObjs, {
@@ -439,6 +555,12 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddIndividualCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddIndividualCsv: function(_, context) {
       delim = context.request.body.delim;
       cols = context.request.body.cols;
@@ -452,6 +574,13 @@ module.exports = {
       })
     },
 
+    /**
+     * deleteIndividual - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deleteIndividual: function({
         id
     }, context) {
@@ -468,6 +597,13 @@ module.exports = {
         }
     },
 
+    /**
+     * updateIndividual - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateIndividual: function(input, context) {
         if (checkAuthorization(context, 'individuals', 'update') == true) {
             return individual.findById(input.id)
@@ -478,17 +614,29 @@ module.exports = {
             return "You don't have authorization to perform this action";
         }
     },
-    countIndividuals: function({search}, context) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
-            }
-
-            return individual.count(options);
-        },
-
+    /**
+     * countIndividuals - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countIndividuals: function({search}, context){
+      let options = {};
+      if (search !== undefined) {
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+      }
+      return individual.count(options);
+    },
+    /**
+     * vueTableIndividual - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableIndividual: function(_, context) {
         if (checkAuthorization(context, 'individuals', 'read') == true) {
             return helper.vueTable(context.request, individual, ["id", "name"]);
@@ -504,6 +652,13 @@ module.exports.transcript_count_no_assoc_model = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var transcript_count = sequelize.define('transcript_count', {
 
@@ -531,6 +686,13 @@ module.exports.individual_no_assoc_model = `
 
 const Sequelize = require('sequelize');
 
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
 module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
@@ -548,8 +710,18 @@ module.exports = function(sequelize, DataTypes) {
 module.exports.transcript_count_no_assoc_migration = `
 'use strict';
 
+/**
+ * @module - Migrations to create and to undo a table correpondant to a sequelize model.
+ */
 module.exports = {
 
+  /**
+   * up - Creates a table with the fields specified in the the createTable function.
+   *
+   * @param  {object} queryInterface Used to modify the table in the database.
+   * @param  {object} Sequelize      Sequelize instance with data types included
+   * @return {promise}                Resolved if the table was created successfully, rejected otherwise.
+   */
     up: function(queryInterface, Sequelize) {
         return queryInterface.createTable('transcript_counts', {
 
@@ -583,6 +755,13 @@ module.exports = {
         });
     },
 
+    /**
+     * down - Deletes a table.
+     *
+     * @param  {object} queryInterface Used to modify the table in the database.
+     * @param  {object} Sequelize      Sequelize instance with data types included
+     * @return {promise}                Resolved if the table was deleted successfully, rejected otherwise.
+     */
     down: function(queryInterface, Sequelize) {
         return queryInterface.dropTable('transcript_counts');
     }
@@ -605,6 +784,13 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
+/**
+ * transcript_count.prototype.individual - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 transcript_count.prototype.individual = function(_, context) {
     return this.getIndividual();
 }
@@ -614,6 +800,16 @@ transcript_count.prototype.individual = function(_, context) {
 
 module.exports = {
 
+    /**
+     * transcript_counts - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
     transcript_counts: function({
         search,
         order,
@@ -655,6 +851,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOneTranscript_count - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneTranscript_count: function({
         id
     }, context) {
@@ -669,6 +872,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addTranscript_count - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addTranscript_count: function(input, context) {
         if (checkAuthorization(context, 'transcript_counts', 'create') == true) {
             return transcript_count.create(input)
@@ -680,6 +890,12 @@ module.exports = {
         }
     },
 
+    /**
+     * bulkAddTranscript_countXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddTranscript_countXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return transcript_count.bulkCreate(xlsxObjs, {
@@ -687,19 +903,32 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddTranscript_countCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddTranscript_countCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        delim = context.request.body.delim;
+        cols = context.request.body.cols;
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
+        return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols)
+        }).catch((err) => {
+            return new Error(err);
+        }).then(() => {
+            fs.unlinkSync(tmpFile)
+        })
     },
 
+    /**
+     * deleteTranscript_count - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deleteTranscript_count: function({
         id
     }, context) {
@@ -716,6 +945,13 @@ module.exports = {
         }
     },
 
+    /**
+     * updateTranscript_count - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateTranscript_count: function(input, context) {
         if (checkAuthorization(context, 'transcript_counts', 'update') == true) {
             return transcript_count.findById(input.id)
@@ -727,17 +963,33 @@ module.exports = {
         }
     },
 
-  countTranscript_counts: function({search}, context) {
-    let options = {};
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
+    /**
+     * countTranscript_counts - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countTranscript_counts: function({
+        search
+    }, context) {
+        let options = {};
+        if (search !== undefined) {
+            let arg = new searchArg(search);
+            let arg_sequelize = arg.toSequelize();
+            options['where'] = arg_sequelize;
+        }
 
-    return transcript_count.count(options);
-  },
+        return transcript_count.count(options);
+    },
 
+    /**
+     * vueTableTranscript_count - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableTranscript_count: function(_, context) {
         if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
             return helper.vueTable(context.request, transcript_count, ["id", "gene", "variable", "tissue_or_condition"]);
@@ -763,6 +1015,19 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
+
+
+/**
+ * person.prototype.dogsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
 person.prototype.dogsFilter = function({
     search,
     order,
@@ -802,6 +1067,13 @@ person.prototype.dogsFilter = function({
     });
 }
 
+/**
+ * person.prototype.countFilteredDogs - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
 person.prototype.countFilteredDogs = function({
     search
 }, context) {
@@ -817,6 +1089,18 @@ person.prototype.countFilteredDogs = function({
     return this.countDogs(options);
 }
 
+
+/**
+ * person.prototype.booksFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
 person.prototype.booksFilter = function({
     search,
     order,
@@ -856,6 +1140,13 @@ person.prototype.booksFilter = function({
     });
 }
 
+/**
+ * person.prototype.countFilteredBooks - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
 person.prototype.countFilteredBooks = function({
     search
 }, context) {
@@ -876,6 +1167,16 @@ person.prototype.countFilteredBooks = function({
 
 module.exports = {
 
+    /**
+     * people - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
     people: function({
         search,
         order,
@@ -917,6 +1218,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOnePerson - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOnePerson: function({
         id
     }, context) {
@@ -931,23 +1239,36 @@ module.exports = {
         }
     },
 
+    /**
+     * addPerson - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addPerson: function(input, context) {
         if (checkAuthorization(context, 'people', 'create') == true) {
             return person.create(input)
                 .then(person => {
-                  if (input.addDogs) {
-                      person.setDogs(input.addDogs);
-                  }
-                  if (input.addBooks) {
-                      person.setBooks(input.addBooks);
-                  }
-                  return person;
+                    if (input.addDogs) {
+                        person.setDogs(input.addDogs);
+                    }
+                    if (input.addBooks) {
+                        person.setBooks(input.addBooks);
+                    }
+                    return person;
                 });
         } else {
             return "You don't have authorization to perform this action";
         }
     },
 
+    /**
+     * bulkAddPersonXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddPersonXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return person.bulkCreate(xlsxObjs, {
@@ -955,19 +1276,32 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddPersonCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddPersonCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, person, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        delim = context.request.body.delim;
+        cols = context.request.body.cols;
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
+        return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, person, delim, cols)
+        }).catch((err) => {
+            return new Error(err);
+        }).then(() => {
+            fs.unlinkSync(tmpFile)
+        })
     },
 
+    /**
+     * deletePerson - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deletePerson: function({
         id
     }, context) {
@@ -984,22 +1318,29 @@ module.exports = {
         }
     },
 
+    /**
+     * updatePerson - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updatePerson: function(input, context) {
         if (checkAuthorization(context, 'people', 'update') == true) {
             return person.findById(input.id)
                 .then(person => {
-                  if (input.addDogs) {
-                    person.addDogs(input.addDogs);
-                  }
-                  if (input.removeDogs) {
-                    person.removeDogs(input.removeDogs);
-                  }
-                  if (input.addBooks) {
-                      person.addBooks(input.addBooks);
-                  }
-                  if (input.removeBooks) {
-                      person.removeBooks(input.removeBooks);
-                  }
+                    if (input.addDogs) {
+                        person.addDogs(input.addDogs);
+                    }
+                    if (input.removeDogs) {
+                        person.removeDogs(input.removeDogs);
+                    }
+                    if (input.addBooks) {
+                        person.addBooks(input.addBooks);
+                    }
+                    if (input.removeBooks) {
+                        person.removeBooks(input.removeBooks);
+                    }
                     return person.update(input);
                 });
         } else {
@@ -1007,6 +1348,13 @@ module.exports = {
         }
     },
 
+    /**
+     * countPeople - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
     countPeople: function({
         search
     }, context) {
@@ -1020,6 +1368,13 @@ module.exports = {
         return person.count(options);
     },
 
+    /**
+     * vueTablePerson - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTablePerson: function(_, context) {
         if (checkAuthorization(context, 'people', 'read') == true) {
             return helper.vueTable(context.request, person, ["id", "firstName", "lastName", "email"]);
@@ -1047,11 +1402,18 @@ const uuidv4 = require('uuidv4')
 const publisher = require('./publisher');
 
 
-book.prototype.peopleFilter = function({
-    search,
-    order,
-    pagination
-}, context) {
+/**
+ * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+book.prototype.peopleFilter = function({search,order,pagination}, context) {
 
     let options = {};
 
@@ -1087,9 +1449,14 @@ book.prototype.peopleFilter = function({
 }
 
 
-book.prototype.countFilteredPeople = function({
-    search
-}, context) {
+/**
+ * book.prototype.countFilteredPeople - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+book.prototype.countFilteredPeople = function({search}, context) {
 
     let options = {};
 
@@ -1100,8 +1467,16 @@ book.prototype.countFilteredPeople = function({
     }
 
     return this.countPeople(options);
-  }
+}
 
+
+/**
+ * book.prototype.publisher - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 book.prototype.publisher = function(_, context) {
     return publisher.readOnePublisher({
         "id": this.publisherId
@@ -1112,11 +1487,18 @@ book.prototype.publisher = function(_, context) {
 
 module.exports = {
 
-    books: function({
-        search,
-        order,
-        pagination
-    }, context) {
+
+    /**
+     * books - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    books: function({search,order,pagination}, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             let options = {};
             if (search !== undefined) {
@@ -1134,7 +1516,7 @@ module.exports = {
 
                 if (pagination !== undefined) {
                     options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    options['limit'] = pagination.limit === undefined ? (items - optio ns['offset']) : pagination.limit;
                 } else {
                     options['offset'] = 0;
                     options['limit'] = items;
@@ -1153,9 +1535,14 @@ module.exports = {
         }
     },
 
-    readOneBook: function({
-        id
-    }, context) {
+    /**
+     * readOneBook - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneBook: function({id}, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             return book.findOne({
                 where: {
@@ -1167,6 +1554,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addBook - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addBook: function(input, context) {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
@@ -1181,6 +1575,13 @@ module.exports = {
         }
     },
 
+
+    /**
+     * bulkAddBookXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddBookXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return book.bulkCreate(xlsxObjs, {
@@ -1188,22 +1589,35 @@ module.exports = {
         });
     },
 
+
+    /**
+     * bulkAddBookCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddBookCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        delim = context.request.body.delim;
+        cols = context.request.body.cols;
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
+        return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, book, delim, cols)
+        }).catch((err) => {
+            return new Error(err);
+        }).then(() => {
+            fs.unlinkSync(tmpFile)
+        })
     },
 
-    deleteBook: function({
-        id
-    }, context) {
+
+    /**
+     * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteBook: function({id}, context) {
         if (checkAuthorization(context, 'books', 'delete') == true) {
             return book.findById(id)
                 .then(book => {
@@ -1217,16 +1631,24 @@ module.exports = {
         }
     },
 
+
+    /**
+     * updateBook - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateBook: function(input, context) {
         if (checkAuthorization(context, 'books', 'update') == true) {
             return book.findById(input.id)
                 .then(book => {
-                  if (input.addPeople) {
-                    book.addPeople(input.addPeople);
-                  }
-                  if (input.removePeople) {
-                    book.removePeople(input.removePeople);
-                  }
+                    if (input.addPeople) {
+                        book.addPeople(input.addPeople);
+                    }
+                    if (input.removePeople) {
+                        book.removePeople(input.removePeople);
+                    }
                     return book.update(input);
                 });
         } else {
@@ -1234,16 +1656,33 @@ module.exports = {
         }
     },
 
-    countBooks: function({search}, context){
-      let options = {};
-      if (search !== undefined) {
-          let arg = new searchArg(search);
-          let arg_sequelize = arg.toSequelize();
-          options['where'] = arg_sequelize;
-      }
-      return book.count(options);
+
+    /**
+     * countBooks - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countBooks: function({search}, context) {
+        let options = {};
+        if (search !== undefined) {
+            let arg = new searchArg(search);
+            let arg_sequelize = arg.toSequelize();
+            options['where'] = arg_sequelize;
+        }
+
+        return book.count(options);
     },
 
+
+    /**
+     * vueTableBook - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableBook: function(_, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             return helper.vueTable(context.request, book, ["id", "title", "genre"]);
@@ -1251,8 +1690,6 @@ module.exports = {
             return "You don't have authorization to perform this action";
         }
     }
-
-
 }
 
 `
@@ -1331,10 +1768,29 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
+/**
+ * researcher.prototype.dog - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 researcher.prototype.dog = function(_, context) {
     return this.getDog();
 }
 
+
+/**
+ * researcher.prototype.projectsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
 researcher.prototype.projectsFilter = function({
     search,
     order,
@@ -1374,6 +1830,13 @@ researcher.prototype.projectsFilter = function({
     });
 }
 
+/**
+ * researcher.prototype.countFilteredProjects - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
 researcher.prototype.countFilteredProjects = function({
     search
 }, context) {
@@ -1394,6 +1857,16 @@ researcher.prototype.countFilteredProjects = function({
 
 module.exports = {
 
+    /**
+     * researchers - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
     researchers: function({
         search,
         order,
@@ -1435,6 +1908,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOneResearcher - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneResearcher: function({
         id
     }, context) {
@@ -1449,6 +1929,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addResearcher - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addResearcher: function(input, context) {
         if (checkAuthorization(context, 'researchers', 'create') == true) {
             return researcher.create(input)
@@ -1463,6 +1950,12 @@ module.exports = {
         }
     },
 
+    /**
+     * bulkAddResearcherXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddResearcherXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return researcher.bulkCreate(xlsxObjs, {
@@ -1470,19 +1963,32 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddResearcherCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddResearcherCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, researcher, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        delim = context.request.body.delim;
+        cols = context.request.body.cols;
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
+        return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, researcher, delim, cols)
+        }).catch((err) => {
+            return new Error(err);
+        }).then(() => {
+            fs.unlinkSync(tmpFile)
+        })
     },
 
+    /**
+     * deleteResearcher - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deleteResearcher: function({
         id
     }, context) {
@@ -1499,16 +2005,23 @@ module.exports = {
         }
     },
 
+    /**
+     * updateResearcher - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateResearcher: function(input, context) {
         if (checkAuthorization(context, 'researchers', 'update') == true) {
             return researcher.findById(input.id)
                 .then(researcher => {
-                  if (input.addProjects) {
-                      researcher.addProjects(input.addProjects);
-                  }
-                  if (input.removeProjects) {
-                      researcher.removeProjects(input.removeProjects);
-                  }
+                    if (input.addProjects) {
+                        researcher.addProjects(input.addProjects);
+                    }
+                    if (input.removeProjects) {
+                        researcher.removeProjects(input.removeProjects);
+                    }
                     return researcher.update(input);
                 });
         } else {
@@ -1516,6 +2029,13 @@ module.exports = {
         }
     },
 
+    /**
+     * countResearchers - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
     countResearchers: function({
         search
     }, context) {
@@ -1529,6 +2049,13 @@ module.exports = {
         return researcher.count(options);
     },
 
+    /**
+     * vueTableResearcher - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableResearcher: function(_, context) {
         if (checkAuthorization(context, 'researchers', 'read') == true) {
             return helper.vueTable(context.request, researcher, ["id", "firstName", "lastName", "email"]);
@@ -1764,11 +2291,18 @@ const uuidv4 = require('uuidv4')
 const publisher = require('./publisher');
 
 
-book.prototype.peopleFilter = function({
-    search,
-    order,
-    pagination
-}, context) {
+/**
+ * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+book.prototype.peopleFilter = function({search,order,pagination}, context) {
 
     let options = {};
 
@@ -1803,9 +2337,15 @@ book.prototype.peopleFilter = function({
     });
 }
 
-book.prototype.countFilteredPeople = function({
-    search
-}, context) {
+
+/**
+ * book.prototype.countFilteredPeople - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+book.prototype.countFilteredPeople = function({search}, context) {
 
     let options = {};
 
@@ -1818,6 +2358,14 @@ book.prototype.countFilteredPeople = function({
     return this.countPeople(options);
 }
 
+
+/**
+ * book.prototype.publisher - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 book.prototype.publisher = function(_, context) {
     return publisher.readOnePublisher({
         "id": this.publisherId
@@ -1828,11 +2376,18 @@ book.prototype.publisher = function(_, context) {
 
 module.exports = {
 
-    books: function({
-        search,
-        order,
-        pagination
-    }, context) {
+
+    /**
+     * books - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    books: function({search,order,pagination}, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             let options = {};
             if (search !== undefined) {
@@ -1850,7 +2405,7 @@ module.exports = {
 
                 if (pagination !== undefined) {
                     options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    options['limit'] = pagination.limit === undefined ? (items - optio ns['offset']) : pagination.limit;
                 } else {
                     options['offset'] = 0;
                     options['limit'] = items;
@@ -1869,9 +2424,14 @@ module.exports = {
         }
     },
 
-    readOneBook: function({
-        id
-    }, context) {
+    /**
+     * readOneBook - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneBook: function({id}, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
             return book.findOne({
                 where: {
@@ -1883,6 +2443,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addBook - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addBook: function(input, context) {
         if (checkAuthorization(context, 'books', 'create') == true) {
             return book.create(input)
@@ -1897,6 +2464,13 @@ module.exports = {
         }
     },
 
+
+    /**
+     * bulkAddBookXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddBookXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return book.bulkCreate(xlsxObjs, {
@@ -1904,22 +2478,35 @@ module.exports = {
         });
     },
 
+
+    /**
+     * bulkAddBookCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddBookCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        delim = context.request.body.delim;
+        cols = context.request.body.cols;
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
+        return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, book, delim, cols)
+        }).catch((err) => {
+            return new Error(err);
+        }).then(() => {
+            fs.unlinkSync(tmpFile)
+        })
     },
 
-    deleteBook: function({
-        id
-    }, context) {
+
+    /**
+     * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteBook: function({id}, context) {
         if (checkAuthorization(context, 'books', 'delete') == true) {
             return book.findById(id)
                 .then(book => {
@@ -1933,26 +2520,40 @@ module.exports = {
         }
     },
 
+
+    /**
+     * updateBook - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateBook: function(input, context) {
         if (checkAuthorization(context, 'books', 'update') == true) {
             return book.findById(input.id)
                 .then(book => {
-                  if (input.addPeople) {
-                    book.addPeople(input.addPeople);
-                  }
-                  if (input.removePeople) {
-                    book.removePeople(input.removePeople);
-                  }
-                  return book.update(input);
+                    if (input.addPeople) {
+                        book.addPeople(input.addPeople);
+                    }
+                    if (input.removePeople) {
+                        book.removePeople(input.removePeople);
+                    }
+                    return book.update(input);
                 });
         } else {
             return "You don't have authorization to perform this action";
         }
     },
 
-    countBooks: function({
-        search
-    }, context) {
+
+    /**
+     * countBooks - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countBooks: function({search}, context) {
         let options = {};
         if (search !== undefined) {
             let arg = new searchArg(search);
@@ -1963,13 +2564,21 @@ module.exports = {
         return book.count(options);
     },
 
-    vueTableBook: function(_, context){
+
+    /**
+     * vueTableBook - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableBook: function(_, context) {
         if (checkAuthorization(context, 'books', 'read') == true) {
-          return helper.vueTable(context.request, book, ["id","title","genre" ]);
+            return helper.vueTable(context.request, book, ["id", "title", "genre"]);
         } else {
-            return  "You don't have authorization to perform this action";
+            return "You don't have authorization to perform this action";
         }
-      }
+    }
 }
 `
 
@@ -2048,9 +2657,23 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
+/**
+ * dog.prototype.person - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 dog.prototype.person = function(_, context) {
     return this.getPerson();
 }
+/**
+ * dog.prototype.researcher - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
 dog.prototype.researcher = function(_, context) {
     return this.getResearcher();
 }
@@ -2060,6 +2683,16 @@ dog.prototype.researcher = function(_, context) {
 
 module.exports = {
 
+    /**
+     * dogs - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
     dogs: function({
         search,
         order,
@@ -2101,6 +2734,13 @@ module.exports = {
         }
     },
 
+    /**
+     * readOneDog - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneDog: function({
         id
     }, context) {
@@ -2115,6 +2755,13 @@ module.exports = {
         }
     },
 
+    /**
+     * addDog - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
     addDog: function(input, context) {
         if (checkAuthorization(context, 'dogs', 'create') == true) {
             return dog.create(input)
@@ -2126,6 +2773,12 @@ module.exports = {
         }
     },
 
+    /**
+     * bulkAddDogXlsx - Load xlsx file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddDogXlsx: function(_, context) {
         let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
         return dog.bulkCreate(xlsxObjs, {
@@ -2133,19 +2786,32 @@ module.exports = {
         });
     },
 
+    /**
+     * bulkAddDogCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
     bulkAddDogCsv: function(_, context) {
         delim = context.request.body.delim;
         cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4()+'.csv')
+        tmpFile = path.join(__dirname, uuidv4() + '.csv')
         return context.request.files.csv_file.mv(tmpFile).then(() => {
-          return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
+            return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
         }).catch((err) => {
-          return new Error(err);
+            return new Error(err);
         }).then(() => {
-          fs.unlinkSync(tmpFile)
+            fs.unlinkSync(tmpFile)
         })
     },
 
+    /**
+     * deleteDog - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
     deleteDog: function({
         id
     }, context) {
@@ -2162,6 +2828,13 @@ module.exports = {
         }
     },
 
+    /**
+     * updateDog - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
     updateDog: function(input, context) {
         if (checkAuthorization(context, 'dogs', 'update') == true) {
             return dog.findById(input.id)
@@ -2173,6 +2846,13 @@ module.exports = {
         }
     },
 
+    /**
+     * countDogs - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
     countDogs: function({
         search
     }, context) {
@@ -2186,6 +2866,13 @@ module.exports = {
         return dog.count(options);
     },
 
+    /**
+     * vueTableDog - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
     vueTableDog: function(_, context) {
         if (checkAuthorization(context, 'dogs', 'read') == true) {
             return helper.vueTable(context.request, dog, ["id", "name", "breed"]);
