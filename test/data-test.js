@@ -2229,6 +2229,10 @@ module.exports = {
                     key: 'id'
                 }
             }
+        }).then(()=> {
+            return queryInterface.addIndex('project_to_researcher', ['researcherId']);
+        }).then(()=>{
+            return queryInterface.addIndex('project_to_researcher', ['projectId']);
         });
     },
 
