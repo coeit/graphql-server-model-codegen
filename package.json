@@ -10,7 +10,7 @@
   "bin": "./index.js",
   "scripts": {
     "test-unit": "mocha ./test/test-with-mocha.js",
-    "test-integration": "bash ./test/integration-test.bash"
+    "test-integration": "bash ./test/integration-test.sh"
   },
   "author": "Science-DB team",
   "license": "GPL-3.0",

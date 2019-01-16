@@ -7,12 +7,14 @@ WORKDIR /usr/src/app
 RUN apk update && \
  apk add git && apk add bash && \
  git clone https://github.com/ScienceDb/graphql-server.git . && \
+ chmod u+x ./migrateDbAndStartServer.sh && \
  npm install
 
 # Copy generated code into the skeleton GraphQL-Server
 COPY ./integration_test_run/schemas ./schemas
 COPY ./integration_test_run/resolvers ./resolvers
 COPY ./integration_test_run/models ./models
+COPY ./integration_test_run/models-webservice ./models-webservice
 COPY ./integration_test_run/migrations ./migrations
 
 # Configure the database connections

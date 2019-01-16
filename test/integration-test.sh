@@ -23,7 +23,7 @@ do
   if [ $waited == 240 ]; then
     echo -e '\nERROR: While awaiting dockerized start-up of the Science-DB GraphQL web server, the time out limit was reached.\n'
     cleanup
-    exit 0
+    exit 1
   fi
   sleep 2
   waited=$(expr $waited + 2)

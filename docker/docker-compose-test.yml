@@ -16,7 +16,6 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-    # Await POSTGRES role and DB creation (5s), migrate schema, then start web
+    # Await POSTGRES role and DB creation, migrate schema, then start web
     # server:
-    command: >
-      sh -c 'sleep 5 && ./node_modules/.bin/sequelize db:migrate && npm start'
+    command: bash -C './migrateDbAndStartServer.sh'
