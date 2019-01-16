@@ -19,6 +19,8 @@ module.exports = {
                  model: '<%=target_pl.toLowerCase() %>',
                  key: 'id'
                }
+        }).then(()=>{
+          return queryInterface.addIndex('<%= source %>', ['<%= targetKey %>']);
         });
     },
 

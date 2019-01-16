@@ -25,6 +25,7 @@ module.exports = {
 
       <%- sourceKey-%>:{
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
         references:{
           model: '<%-source-%>',
           key: 'id'
@@ -33,11 +34,16 @@ module.exports = {
 
       <%- targetKey-%>:{
         type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
         references:{
           model: '<%-target_pl.toLowerCase()-%>',
           key: 'id'
         }
       }
+    }).then(()=>{
+      return queryInterface.addIndex('<%-keysIn-%>', ['<%- sourceKey-%>']);
+    }).then(()=>{
+      return queryInterface.addIndex('<%-keysIn-%>', ['<%- targetKey-%>']);
     });
   },
 

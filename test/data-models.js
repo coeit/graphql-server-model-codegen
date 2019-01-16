@@ -177,3 +177,28 @@ module.exports.dog = {
     }
   }
 }
+
+module.exports.assoc_through_project_researcher = {
+  "type" : "sql_belongsToMany",
+  "target" : "Project",
+  "targetKey" : "projectId",
+  "sourceKey" : "researcherId",
+  "keysIn" : "project_to_researcher",
+  "targetStorageType" : "sql",
+  "source": "researchers",
+  "target_pl": "Projects",
+  "target_cp": "Project",
+  "target_cp_pl": "Projects"
+}
+
+module.exports.assoc_dogs_researcher = {
+  "type" : "sql_belongsTo",
+  "target": "Researcher",
+  "targetKey": "researcherId",
+  "targetStorageType": "SQL",
+  "target_pl": "Researchers",
+  "target_cp": "Researcher",
+  "target_cp_pl": "Researchers",
+  "source": "dogs",
+  "cross": false
+}
