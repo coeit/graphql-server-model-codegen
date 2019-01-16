@@ -190,3 +190,15 @@ module.exports.assoc_through_project_researcher = {
   "target_cp": "Project",
   "target_cp_pl": "Projects"
 }
+
+module.exports.assoc_dogs_researcher = {
+  "type" : "sql_belongsTo",
+  "target": "Researcher",
+  "targetKey": "researcherId",
+  "targetStorageType": "SQL",
+  "target_pl": "Researchers",
+  "target_cp": "Researcher",
+  "target_cp_pl": "Researchers",
+  "source": "dogs",
+  "cross": false
+}

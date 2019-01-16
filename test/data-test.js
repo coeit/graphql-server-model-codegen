@@ -2274,3 +2274,26 @@ module.exports = function(sequelize, DataTypes) {
     return Researcher;
 };
 `
+module.exports.add_column_dogs_migration = `
+'use strict';
+
+module.exports = {
+
+    up: function(queryInterface, Sequelize) {
+        return queryInterface.addColumn('dogs', 'researcherId', {
+            type: Sequelize.INTEGER,
+            references: {
+                model: 'researchers',
+                key: 'id'
+            }
+        }).then(()=>{
+          return queryInterface.addIndex('dogs',['researcherId']);
+        });
+    },
+
+    down: function(queryInterface, Sequelize) {
+        return queryInterface.removeColumn('dogs', 'researcherId');
+    }
+
+};
+`

@@ -206,13 +206,21 @@ describe('Stream upload file', function(){
 
 });
 
-describe('Migration through table', function(){
+describe('Migrations extend table', function(){
 
-  it('Migration - project_to_researcher', async function(){
+  it('Migration cross table - project_to_researcher', async function(){
     let assoc = models.assoc_through_project_researcher;
     let generated_migration =await funks.generateJs('create-through-migration', assoc);
     let g_migration = generated_migration.replace(/\s/g, '');
     let test_migration = test.project_to_researcher_migration.replace(/\s/g, '');
+    expect(g_migration).to.be.equal(test_migration);
+  });
+
+  it('Migration add column - dogs', async function(){
+    let assoc = models.assoc_dogs_researcher;
+    let generated_migration =await funks.generateJs('create-association-migration', assoc);
+    let g_migration = generated_migration.replace(/\s/g, '');
+    let test_migration = test.add_column_dogs_migration.replace(/\s/g, '');
     expect(g_migration).to.be.equal(test_migration);
   });
 
