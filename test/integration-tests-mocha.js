@@ -350,7 +350,7 @@ describe(
 
     // Test belongs-to relation between transcript_ount and individual data
     // model:
-    it('21. Add Individual and assign it to TranscriptCount (ID: 1)', function() {
+    it('21. Add Individual and assign it to TranscriptCount', function() {
         // Create Plant to subjected to RNA-Seq analysis from which the
       // transcript_counts result:
         let res = request('POST', baseUrl, {
