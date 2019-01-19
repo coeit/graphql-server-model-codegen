@@ -72,6 +72,8 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 
+
+
 /**
  * individual.prototype.transcript_countsFilter - Check user authorization and return certain number, specified in pagination argument, of records
  * associated with the current instance, this records should also
@@ -129,68 +131,79 @@ individual.prototype.transcript_countsFilter = function({
  * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {type}          Number of associated records that holds the conditions specified in the search argument
  */
-individual.prototype.countFilteredTranscript_counts = function({search},context){
-  let options = {};
+individual.prototype.countFilteredTranscript_counts = function({
+    search
+}, context) {
 
-  if (search !== undefined) {
-      let arg = new searchArg(search);
-      let arg_sequelize = arg.toSequelize();
-      options['where'] = arg_sequelize;
-  }
-  return this.countTranscript_counts(options);
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countTranscript_counts(options);
 }
+
+
+
 
 module.exports = {
 
-  /**
-   * individuals - Check user authorization and return certain number, specified in pagination argument, of records that
-   * holds the condition of search argument, all of them sorted as specified by the order argument.
-   *
-   * @param  {object} search     Search argument for filtering records
-   * @param  {array} order       Type of sorting (ASC, DESC) for each field
-   * @param  {object} pagination Offset and limit to get the records from and to respectively
-   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {array}             Array of records holding conditions specified by search, order and pagination argument
-   */
+    /**
+     * individuals - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
     individuals: function({
         search,
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return individual.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total individuals exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return individual.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in individuals ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return individual.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total individuals exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return individual.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in individuals ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -203,15 +216,19 @@ module.exports = {
     readOneIndividual: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
-            return individual.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+            if (authorization === true) {
+                return individual.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -222,30 +239,42 @@ module.exports = {
      * @return {object}         New record created
      */
     addIndividual: function(input, context) {
-        if (checkAuthorization(context, 'individuals', 'create') == true) {
-            return individual.create(input)
-                .then(individual => {
-                    if (input.addTranscript_counts) {
-                        individual.setTranscript_counts(input.addTranscript_counts);
-                    }
-                    return individual;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+            if (authorization === true) {
+                return individual.create(input)
+                    .then(individual => {
+                        if (input.addTranscript_counts) {
+                            individual.setTranscript_counts(input.addTranscript_counts);
+                        }
+                        return individual;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
-     * bulkAddIndividualXlsx - Load xlsx file of records
+     * bulkAddIndividualXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return individual.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return individual.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -255,16 +284,24 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
-      })
+        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -277,17 +314,21 @@ module.exports = {
     deleteIndividual: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'delete') == true) {
-            return individual.findById(id)
-                .then(individual => {
-                    return individual.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'individuals', 'delete').then(authorization => {
+            if (authorization === true) {
+                return individual.findById(id)
+                    .then(individual => {
+                        return individual.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -298,21 +339,26 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateIndividual: function(input, context) {
-        if (checkAuthorization(context, 'individuals', 'update') == true) {
-            return individual.findById(input.id)
-                .then(individual => {
-                  if (input.addTranscript_counts) {
-                      individual.addTranscript_counts(input.addTranscript_counts);
-                  }
-                  if (input.removeTranscript_counts) {
-                      individual.removeTranscript_counts(input.removeTranscript_counts);
-                  }
-                    return individual.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'individuals', 'update').then(authorization => {
+            if (authorization === true) {
+                return individual.findById(input.id)
+                    .then(individual => {
+                        if (input.addTranscript_counts) {
+                            individual.addTranscript_counts(input.addTranscript_counts);
+                        }
+                        if (input.removeTranscript_counts) {
+                            individual.removeTranscript_counts(input.removeTranscript_counts);
+                        }
+                        return individual.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
+
     /**
      * countIndividuals - Count number of records that holds the conditions specified in the search argument
      *
@@ -320,15 +366,27 @@ module.exports = {
      * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {number}          Number of records that holds the conditions specified in the search argument
      */
-    countIndividuals: function({search}, context){
-      let options = {};
-      if (search !== undefined) {
-          let arg = new searchArg(search);
-          let arg_sequelize = arg.toSequelize();
-          options['where'] = arg_sequelize;
-      }
-      return individual.count(options);
+    countIndividuals: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return individual.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
+
     /**
      * vueTableIndividual - Return table of records as needed for displaying a vuejs table
      *
@@ -337,11 +395,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
-            return helper.vueTable(context.request, individual, ["id", "name"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, individual, ["id", "name"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 `
@@ -467,7 +529,8 @@ module.exports = {
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
+      return checkAuthorization(context, 'individuals', 'read').then( authorization =>{
+          if (authorization === true) {
             let options = {};
             if (search !== undefined) {
                 let arg = new searchArg(search);
@@ -498,9 +561,12 @@ module.exports = {
                 console.log("Catched the error in individuals ", error);
                 return error;
             });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
 
     /**
@@ -513,15 +579,19 @@ module.exports = {
     readOneIndividual: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
+      return checkAuthorization(context, 'individuals', 'read').then( authorization =>{
+        if (authorization === true) {
             return individual.findOne({
                 where: {
                     id: id
                 }
             });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
 
     /**
@@ -532,27 +602,39 @@ module.exports = {
      * @return {object}         New record created
      */
     addIndividual: function(input, context) {
-        if (checkAuthorization(context, 'individuals', 'create') == true) {
+      return checkAuthorization(context, 'individuals', 'create').then( authorization =>{
+        if (authorization === true) {
             return individual.create(input)
                 .then(individual => {
                     return individual;
                 });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+              } else {
+                  return new Error("You don't have authorization to perform this action");
+              }
+            }).catch( error =>{
+                return error;
+            })
     },
 
     /**
-     * bulkAddIndividualXlsx - Load xlsx file of records
+     * bulkAddIndividualXlsx - Load xlsx file of records  NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return individual.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+      return checkAuthorization(context, 'individuals', 'create').then( authorization =>{
+        if (authorization === true) {
+          let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+          return individual.bulkCreate(xlsxObjs, {
+              validate: true
+          });
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -562,15 +644,23 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualCsv: function(_, context) {
-      delim = context.request.body.delim;
-      cols = context.request.body.cols;
-      tmpFile = path.join(__dirname, uuidv4()+'.csv')
-      return context.request.files.csv_file.mv(tmpFile).then(() => {
-        return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
-      }).catch((err) => {
-        return new Error(err);
-      }).then(() => {
-        fs.unlinkSync(tmpFile)
+      return checkAuthorization(context, 'individuals', 'create').then( authorization =>{
+        if (authorization === true) {
+          delim = context.request.body.delim;
+          cols = context.request.body.cols;
+          tmpFile = path.join(__dirname, uuidv4()+'.csv')
+          return context.request.files.csv_file.mv(tmpFile).then(() => {
+            return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
+          }).catch((err) => {
+            return new Error(err);
+          }).then(() => {
+            fs.unlinkSync(tmpFile)
+          })
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+      }).catch( error =>{
+          return error;
       })
     },
 
@@ -584,7 +674,8 @@ module.exports = {
     deleteIndividual: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'individuals', 'delete') == true) {
+      return checkAuthorization(context, 'individuals', 'delete').then( authorization =>{
+        if (authorization === true) {
             return individual.findById(id)
                 .then(individual => {
                     return individual.destroy()
@@ -592,9 +683,12 @@ module.exports = {
                             return 'Item succesfully deleted';
                         });
                 });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+              } else {
+                  return new Error("You don't have authorization to perform this action");
+              }
+            }).catch( error =>{
+                return error;
+            })
     },
 
     /**
@@ -605,14 +699,18 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateIndividual: function(input, context) {
-        if (checkAuthorization(context, 'individuals', 'update') == true) {
+      return checkAuthorization(context, 'individuals', 'update').then( authorization =>{
+        if (authorization === true) {
             return individual.findById(input.id)
                 .then(individual => {
                     return individual.update(input);
                 });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+              } else {
+                  return new Error("You don't have authorization to perform this action");
+              }
+            }).catch( error =>{
+                return error;
+            })
     },
     /**
      * countIndividuals - Count number of records that holds the conditions specified in the search argument
@@ -622,13 +720,21 @@ module.exports = {
      * @return {number}          Number of records that holds the conditions specified in the search argument
      */
     countIndividuals: function({search}, context){
-      let options = {};
-      if (search !== undefined) {
-          let arg = new searchArg(search);
-          let arg_sequelize = arg.toSequelize();
-          options['where'] = arg_sequelize;
-      }
-      return individual.count(options);
+      return checkAuthorization(context, 'individuals', 'read').then( authorization =>{
+          if (authorization === true) {
+            let options = {};
+            if (search !== undefined) {
+                let arg = new searchArg(search);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+            return individual.count(options);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
     /**
      * vueTableIndividual - Return table of records as needed for displaying a vuejs table
@@ -638,11 +744,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
-        if (checkAuthorization(context, 'individuals', 'read') == true) {
+      return checkAuthorization(context, 'individuals', 'read').then( authorization =>{
+        if (authorization === true) {
             return helper.vueTable(context.request, individual, ["id", "name"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     }
 }
 `
@@ -815,40 +925,44 @@ module.exports = {
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return transcript_count.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total transcript_counts exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return transcript_count.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in transcript_counts ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return transcript_count.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total transcript_counts exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return transcript_count.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in transcript_counts ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -861,15 +975,19 @@ module.exports = {
     readOneTranscript_count: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
-            return transcript_count.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+            if (authorization === true) {
+                return transcript_count.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -880,27 +998,39 @@ module.exports = {
      * @return {object}         New record created
      */
     addTranscript_count: function(input, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'create') == true) {
-            return transcript_count.create(input)
-                .then(transcript_count => {
-                    return transcript_count;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+            if (authorization === true) {
+                return transcript_count.create(input)
+                    .then(transcript_count => {
+                        return transcript_count;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
-     * bulkAddTranscript_countXlsx - Load xlsx file of records
+     * bulkAddTranscript_countXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscript_countXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return transcript_count.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return transcript_count.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -910,15 +1040,23 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscript_countCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
+        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
         })
     },
 
@@ -932,17 +1070,21 @@ module.exports = {
     deleteTranscript_count: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'delete') == true) {
-            return transcript_count.findById(id)
-                .then(transcript_count => {
-                    return transcript_count.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'transcript_counts', 'delete').then(authorization => {
+            if (authorization === true) {
+                return transcript_count.findById(id)
+                    .then(transcript_count => {
+                        return transcript_count.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -953,14 +1095,18 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateTranscript_count: function(input, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'update') == true) {
-            return transcript_count.findById(input.id)
-                .then(transcript_count => {
-                    return transcript_count.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'transcript_counts', 'update').then(authorization => {
+            if (authorization === true) {
+                return transcript_count.findById(input.id)
+                    .then(transcript_count => {
+                        return transcript_count.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -973,14 +1119,22 @@ module.exports = {
     countTranscript_counts: function({
         search
     }, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
+        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
 
-        return transcript_count.count(options);
+                return transcript_count.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -991,11 +1145,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableTranscript_count: function(_, context) {
-        if (checkAuthorization(context, 'transcript_counts', 'read') == true) {
-            return helper.vueTable(context.request, transcript_count, ["id", "gene", "variable", "tissue_or_condition"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, transcript_count, ["id", "gene", "variable", "tissue_or_condition"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 `
@@ -1182,40 +1340,44 @@ module.exports = {
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'people', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+        return checkAuthorization(context, 'people', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return person.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total people exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return person.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in people ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return person.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total people exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return person.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in people ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1228,15 +1390,19 @@ module.exports = {
     readOnePerson: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'people', 'read') == true) {
-            return person.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'people', 'read').then(authorization => {
+            if (authorization === true) {
+                return person.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1247,33 +1413,45 @@ module.exports = {
      * @return {object}         New record created
      */
     addPerson: function(input, context) {
-        if (checkAuthorization(context, 'people', 'create') == true) {
-            return person.create(input)
-                .then(person => {
-                    if (input.addDogs) {
-                        person.setDogs(input.addDogs);
-                    }
-                    if (input.addBooks) {
-                        person.setBooks(input.addBooks);
-                    }
-                    return person;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'people', 'create').then(authorization => {
+            if (authorization === true) {
+                return person.create(input)
+                    .then(person => {
+                        if (input.addDogs) {
+                            person.setDogs(input.addDogs);
+                        }
+                        if (input.addBooks) {
+                            person.setBooks(input.addBooks);
+                        }
+                        return person;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
-     * bulkAddPersonXlsx - Load xlsx file of records
+     * bulkAddPersonXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddPersonXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return person.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'people', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return person.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1283,15 +1461,23 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddPersonCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, person, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
+        return checkAuthorization(context, 'people', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, person, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
         })
     },
 
@@ -1305,17 +1491,21 @@ module.exports = {
     deletePerson: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'people', 'delete') == true) {
-            return person.findById(id)
-                .then(person => {
-                    return person.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'people', 'delete').then(authorization => {
+            if (authorization === true) {
+                return person.findById(id)
+                    .then(person => {
+                        return person.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1326,26 +1516,30 @@ module.exports = {
      * @return {object}         Updated record
      */
     updatePerson: function(input, context) {
-        if (checkAuthorization(context, 'people', 'update') == true) {
-            return person.findById(input.id)
-                .then(person => {
-                    if (input.addDogs) {
-                        person.addDogs(input.addDogs);
-                    }
-                    if (input.removeDogs) {
-                        person.removeDogs(input.removeDogs);
-                    }
-                    if (input.addBooks) {
-                        person.addBooks(input.addBooks);
-                    }
-                    if (input.removeBooks) {
-                        person.removeBooks(input.removeBooks);
-                    }
-                    return person.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'people', 'update').then(authorization => {
+            if (authorization === true) {
+                return person.findById(input.id)
+                    .then(person => {
+                        if (input.addDogs) {
+                            person.addDogs(input.addDogs);
+                        }
+                        if (input.removeDogs) {
+                            person.removeDogs(input.removeDogs);
+                        }
+                        if (input.addBooks) {
+                            person.addBooks(input.addBooks);
+                        }
+                        if (input.removeBooks) {
+                            person.removeBooks(input.removeBooks);
+                        }
+                        return person.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1358,14 +1552,22 @@ module.exports = {
     countPeople: function({
         search
     }, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
+        return checkAuthorization(context, 'people', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
 
-        return person.count(options);
+                return person.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1376,11 +1578,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTablePerson: function(_, context) {
-        if (checkAuthorization(context, 'people', 'read') == true) {
-            return helper.vueTable(context.request, person, ["id", "firstName", "lastName", "email"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'people', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, person, ["id", "firstName", "lastName", "email"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 `
@@ -1402,6 +1608,7 @@ const uuidv4 = require('uuidv4')
 const publisher = require('./publisher');
 
 
+
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
  * associated with the current instance, this records should also
@@ -1413,7 +1620,11 @@ const publisher = require('./publisher');
  * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
  */
-book.prototype.peopleFilter = function({search,order,pagination}, context) {
+book.prototype.peopleFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
 
     let options = {};
 
@@ -1448,7 +1659,6 @@ book.prototype.peopleFilter = function({search,order,pagination}, context) {
     });
 }
 
-
 /**
  * book.prototype.countFilteredPeople - Count number of associated records that holds the conditions specified in the search argument
  *
@@ -1456,7 +1666,9 @@ book.prototype.peopleFilter = function({search,order,pagination}, context) {
  * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {type}          Number of associated records that holds the conditions specified in the search argument
  */
-book.prototype.countFilteredPeople = function({search}, context) {
+book.prototype.countFilteredPeople = function({
+    search
+}, context) {
 
     let options = {};
 
@@ -1487,7 +1699,6 @@ book.prototype.publisher = function(_, context) {
 
 module.exports = {
 
-
     /**
      * books - Check user authorization and return certain number, specified in pagination argument, of records that
      * holds the condition of search argument, all of them sorted as specified by the order argument.
@@ -1498,41 +1709,49 @@ module.exports = {
      * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {array}             Array of records holding conditions specified by search, order and pagination argument
      */
-    books: function({search,order,pagination}, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+    books: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return book.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return book.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in books ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return book.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - optio ns['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return book.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in books ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1542,16 +1761,22 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Record with id requested
      */
-    readOneBook: function({id}, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            return book.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+    readOneBook: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                return book.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1562,33 +1787,43 @@ module.exports = {
      * @return {object}         New record created
      */
     addBook: function(input, context) {
-        if (checkAuthorization(context, 'books', 'create') == true) {
-            return book.create(input)
-                .then(book => {
-                    if (input.addPeople) {
-                        book.setPeople(input.addPeople);
-                    }
-                    return book;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                return book.create(input)
+                    .then(book => {
+                        if (input.addPeople) {
+                            book.setPeople(input.addPeople);
+                        }
+                        return book;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
-
     /**
-     * bulkAddBookXlsx - Load xlsx file of records
+     * bulkAddBookXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return book.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return book.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * bulkAddBookCsv - Load csv file of records
@@ -1597,18 +1832,25 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, book, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
         })
     },
-
 
     /**
      * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
@@ -1617,20 +1859,25 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {string}         Message indicating if deletion was successfull.
      */
-    deleteBook: function({id}, context) {
-        if (checkAuthorization(context, 'books', 'delete') == true) {
-            return book.findById(id)
-                .then(book => {
-                    return book.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+    deleteBook: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'books', 'delete').then(authorization => {
+            if (authorization === true) {
+                return book.findById(id)
+                    .then(book => {
+                        return book.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * updateBook - Check user authorization and update the record specified in the input argument
@@ -1640,22 +1887,25 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateBook: function(input, context) {
-        if (checkAuthorization(context, 'books', 'update') == true) {
-            return book.findById(input.id)
-                .then(book => {
-                    if (input.addPeople) {
-                        book.addPeople(input.addPeople);
-                    }
-                    if (input.removePeople) {
-                        book.removePeople(input.removePeople);
-                    }
-                    return book.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'update').then(authorization => {
+            if (authorization === true) {
+                return book.findById(input.id)
+                    .then(book => {
+                        if (input.addPeople) {
+                            book.addPeople(input.addPeople);
+                        }
+                        if (input.removePeople) {
+                            book.removePeople(input.removePeople);
+                        }
+                        return book.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * countBooks - Count number of records that holds the conditions specified in the search argument
@@ -1664,17 +1914,26 @@ module.exports = {
      * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {number}          Number of records that holds the conditions specified in the search argument
      */
-    countBooks: function({search}, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
+    countBooks: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
 
-        return book.count(options);
+                return book.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * vueTableBook - Return table of records as needed for displaying a vuejs table
@@ -1684,11 +1943,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            return helper.vueTable(context.request, book, ["id", "title", "genre"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, book, ["id", "title", "genre"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 
@@ -1872,40 +2135,44 @@ module.exports = {
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'researchers', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return researcher.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total researchers exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return researcher.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in researchers ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return researcher.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total researchers exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return researcher.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in researchers ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1918,15 +2185,19 @@ module.exports = {
     readOneResearcher: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'researchers', 'read') == true) {
-            return researcher.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+            if (authorization === true) {
+                return researcher.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1937,30 +2208,42 @@ module.exports = {
      * @return {object}         New record created
      */
     addResearcher: function(input, context) {
-        if (checkAuthorization(context, 'researchers', 'create') == true) {
-            return researcher.create(input)
-                .then(researcher => {
-                    if (input.addProjects) {
-                        researcher.setProjects(input.addProjects);
-                    }
-                    return researcher;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+            if (authorization === true) {
+                return researcher.create(input)
+                    .then(researcher => {
+                        if (input.addProjects) {
+                            researcher.setProjects(input.addProjects);
+                        }
+                        return researcher;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
-     * bulkAddResearcherXlsx - Load xlsx file of records
+     * bulkAddResearcherXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddResearcherXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return researcher.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return researcher.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -1970,15 +2253,23 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddResearcherCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, researcher, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
+        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, researcher, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
         })
     },
 
@@ -1992,17 +2283,21 @@ module.exports = {
     deleteResearcher: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'researchers', 'delete') == true) {
-            return researcher.findById(id)
-                .then(researcher => {
-                    return researcher.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'researchers', 'delete').then(authorization => {
+            if (authorization === true) {
+                return researcher.findById(id)
+                    .then(researcher => {
+                        return researcher.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -2013,20 +2308,24 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateResearcher: function(input, context) {
-        if (checkAuthorization(context, 'researchers', 'update') == true) {
-            return researcher.findById(input.id)
-                .then(researcher => {
-                    if (input.addProjects) {
-                        researcher.addProjects(input.addProjects);
-                    }
-                    if (input.removeProjects) {
-                        researcher.removeProjects(input.removeProjects);
-                    }
-                    return researcher.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'researchers', 'update').then(authorization => {
+            if (authorization === true) {
+                return researcher.findById(input.id)
+                    .then(researcher => {
+                        if (input.addProjects) {
+                            researcher.addProjects(input.addProjects);
+                        }
+                        if (input.removeProjects) {
+                            researcher.removeProjects(input.removeProjects);
+                        }
+                        return researcher.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -2039,14 +2338,22 @@ module.exports = {
     countResearchers: function({
         search
     }, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
+        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
 
-        return researcher.count(options);
+                return researcher.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -2057,11 +2364,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableResearcher: function(_, context) {
-        if (checkAuthorization(context, 'researchers', 'read') == true) {
-            return helper.vueTable(context.request, researcher, ["id", "firstName", "lastName", "email"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, researcher, ["id", "firstName", "lastName", "email"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 `
@@ -2291,6 +2602,7 @@ const uuidv4 = require('uuidv4')
 const publisher = require('./publisher');
 
 
+
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
  * associated with the current instance, this records should also
@@ -2302,7 +2614,11 @@ const publisher = require('./publisher');
  * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
  */
-book.prototype.peopleFilter = function({search,order,pagination}, context) {
+book.prototype.peopleFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
 
     let options = {};
 
@@ -2337,7 +2653,6 @@ book.prototype.peopleFilter = function({search,order,pagination}, context) {
     });
 }
 
-
 /**
  * book.prototype.countFilteredPeople - Count number of associated records that holds the conditions specified in the search argument
  *
@@ -2345,7 +2660,9 @@ book.prototype.peopleFilter = function({search,order,pagination}, context) {
  * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {type}          Number of associated records that holds the conditions specified in the search argument
  */
-book.prototype.countFilteredPeople = function({search}, context) {
+book.prototype.countFilteredPeople = function({
+    search
+}, context) {
 
     let options = {};
 
@@ -2376,7 +2693,6 @@ book.prototype.publisher = function(_, context) {
 
 module.exports = {
 
-
     /**
      * books - Check user authorization and return certain number, specified in pagination argument, of records that
      * holds the condition of search argument, all of them sorted as specified by the order argument.
@@ -2387,41 +2703,49 @@ module.exports = {
      * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {array}             Array of records holding conditions specified by search, order and pagination argument
      */
-    books: function({search,order,pagination}, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
+    books: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return book.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return book.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in books ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
             }
-
-            return book.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
-
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - optio ns['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
-
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return book.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in books ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -2431,16 +2755,22 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Record with id requested
      */
-    readOneBook: function({id}, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            return book.findOne({
-                where: {
-                    id: id
-                }
-            });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+    readOneBook: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                return book.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
     /**
@@ -2451,33 +2781,43 @@ module.exports = {
      * @return {object}         New record created
      */
     addBook: function(input, context) {
-        if (checkAuthorization(context, 'books', 'create') == true) {
-            return book.create(input)
-                .then(book => {
-                    if (input.addPeople) {
-                        book.setPeople(input.addPeople);
-                    }
-                    return book;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                return book.create(input)
+                    .then(book => {
+                        if (input.addPeople) {
+                            book.setPeople(input.addPeople);
+                        }
+                        return book;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
 
-
     /**
-     * bulkAddBookXlsx - Load xlsx file of records
+     * bulkAddBookXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return book.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return book.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * bulkAddBookCsv - Load csv file of records
@@ -2486,18 +2826,25 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
+        return checkAuthorization(context, 'books', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, book, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
         })
     },
-
 
     /**
      * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
@@ -2506,20 +2853,25 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {string}         Message indicating if deletion was successfull.
      */
-    deleteBook: function({id}, context) {
-        if (checkAuthorization(context, 'books', 'delete') == true) {
-            return book.findById(id)
-                .then(book => {
-                    return book.destroy()
-                        .then(() => {
-                            return 'Item succesfully deleted';
-                        });
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+    deleteBook: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'books', 'delete').then(authorization => {
+            if (authorization === true) {
+                return book.findById(id)
+                    .then(book => {
+                        return book.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * updateBook - Check user authorization and update the record specified in the input argument
@@ -2529,22 +2881,25 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateBook: function(input, context) {
-        if (checkAuthorization(context, 'books', 'update') == true) {
-            return book.findById(input.id)
-                .then(book => {
-                    if (input.addPeople) {
-                        book.addPeople(input.addPeople);
-                    }
-                    if (input.removePeople) {
-                        book.removePeople(input.removePeople);
-                    }
-                    return book.update(input);
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'update').then(authorization => {
+            if (authorization === true) {
+                return book.findById(input.id)
+                    .then(book => {
+                        if (input.addPeople) {
+                            book.addPeople(input.addPeople);
+                        }
+                        if (input.removePeople) {
+                            book.removePeople(input.removePeople);
+                        }
+                        return book.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * countBooks - Count number of records that holds the conditions specified in the search argument
@@ -2553,17 +2908,26 @@ module.exports = {
      * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {number}          Number of records that holds the conditions specified in the search argument
      */
-    countBooks: function({search}, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
+    countBooks: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
 
-        return book.count(options);
+                return book.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     },
-
 
     /**
      * vueTableBook - Return table of records as needed for displaying a vuejs table
@@ -2573,11 +2937,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
-        if (checkAuthorization(context, 'books', 'read') == true) {
-            return helper.vueTable(context.request, book, ["id", "title", "genre"]);
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+        return checkAuthorization(context, 'books', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, book, ["id", "title", "genre"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
     }
 }
 `
@@ -2678,9 +3046,6 @@ dog.prototype.researcher = function(_, context) {
     return this.getResearcher();
 }
 
-
-
-
 module.exports = {
 
     /**
@@ -2698,40 +3063,45 @@ module.exports = {
         order,
         pagination
     }, context) {
-        if (checkAuthorization(context, 'dogs', 'read') == true) {
-            let options = {};
-            if (search !== undefined) {
-                let arg = new searchArg(search);
-                let arg_sequelize = arg.toSequelize();
-                options['where'] = arg_sequelize;
-            }
+        return checkAuthorization(context, 'dogs', 'read').then( authorization =>{
+            if (authorization === true) {
 
-            return dog.count(options).then(items => {
-                if (order !== undefined) {
-                    options['order'] = order.map((orderItem) => {
-                        return [orderItem.field, orderItem.order];
-                    });
-                }
+              let options = {};
+              if (search !== undefined) {
+                  let arg = new searchArg(search);
+                  let arg_sequelize = arg.toSequelize();
+                  options['where'] = arg_sequelize;
+              }
 
-                if (pagination !== undefined) {
-                    options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-                    options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-                } else {
-                    options['offset'] = 0;
-                    options['limit'] = items;
-                }
+              return dog.count(options).then(items => {
+                  if (order !== undefined) {
+                      options['order'] = order.map((orderItem) => {
+                          return [orderItem.field, orderItem.order];
+                      });
+                  }
 
-                if (globals.LIMIT_RECORDS < options['limit']) {
-                    throw new Error(\`Request of total dogs exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-                }
-                return dog.findAll(options);
-            }).catch(error => {
-                console.log("Catched the error in dogs ", error);
-                return error;
-            });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+                  if (pagination !== undefined) {
+                      options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                      options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                  } else {
+                      options['offset'] = 0;
+                      options['limit'] = items;
+                  }
+
+                  if (globals.LIMIT_RECORDS < options['limit']) {
+                      throw new Error(\`Request of total dogs exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                  }
+                  return dog.findAll(options);
+              }).catch(error => {
+                  console.log("Catched the error in dogs ", error);
+                  return error;
+              });
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
 
     /**
@@ -2744,15 +3114,19 @@ module.exports = {
     readOneDog: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'dogs', 'read') == true) {
+      return checkAuthorization(context, 'dogs', 'read').then( authorization =>{
+        if (authorization === true) {
             return dog.findOne({
                 where: {
                     id: id
                 }
             });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -2763,27 +3137,39 @@ module.exports = {
      * @return {object}         New record created
      */
     addDog: function(input, context) {
-        if (checkAuthorization(context, 'dogs', 'create') == true) {
-            return dog.create(input)
-                .then(dog => {
-                    return dog;
-                });
-        } else {
-            return "You don't have authorization to perform this action";
-        }
+      return checkAuthorization(context, 'dogs', 'create').then( authorization =>{
+        if (authorization === true) {
+              return dog.create(input)
+                  .then(dog => {
+                      return dog;
+                  });
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
 
     /**
-     * bulkAddDogXlsx - Load xlsx file of records
+     * bulkAddDogXlsx - Load xlsx file of records NO STREAM
      *
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogXlsx: function(_, context) {
-        let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-        return dog.bulkCreate(xlsxObjs, {
-            validate: true
-        });
+      return checkAuthorization(context, 'dogs', 'create').then( authorization =>{
+        if (authorization === true) {
+            let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+            return dog.bulkCreate(xlsxObjs, {
+                validate: true
+            });
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -2793,16 +3179,24 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogCsv: function(_, context) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4() + '.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
-        }).catch((err) => {
-            return new Error(err);
-        }).then(() => {
-            fs.unlinkSync(tmpFile)
-        })
+      return checkAuthorization(context, 'dogs', 'create').then( authorization =>{
+        if (authorization === true) {
+          delim = context.request.body.delim;
+          cols = context.request.body.cols;
+          tmpFile = path.join(__dirname, uuidv4() + '.csv')
+          return context.request.files.csv_file.mv(tmpFile).then(() => {
+              return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
+          }).catch((err) => {
+              return new Error(err);
+          }).then(() => {
+              fs.unlinkSync(tmpFile)
+          })
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -2815,7 +3209,8 @@ module.exports = {
     deleteDog: function({
         id
     }, context) {
-        if (checkAuthorization(context, 'dogs', 'delete') == true) {
+      return checkAuthorization(context, 'dogs', 'delete').then( authorization =>{
+        if (authorization === true) {
             return dog.findById(id)
                 .then(dog => {
                     return dog.destroy()
@@ -2824,8 +3219,11 @@ module.exports = {
                         });
                 });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -2836,14 +3234,18 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateDog: function(input, context) {
-        if (checkAuthorization(context, 'dogs', 'update') == true) {
+      return checkAuthorization(context, 'dogs', 'update').then( authorization =>{
+        if (authorization === true) {
             return dog.findById(input.id)
                 .then(dog => {
                     return dog.update(input);
                 });
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
+      }).catch( error =>{
+          return error;
+      })
     },
 
     /**
@@ -2856,14 +3258,21 @@ module.exports = {
     countDogs: function({
         search
     }, context) {
-        let options = {};
-        if (search !== undefined) {
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-        }
-
-        return dog.count(options);
+      return checkAuthorization(context, 'dogs', 'read').then( authorization =>{
+          if (authorization === true) {
+            let options = {};
+            if (search !== undefined) {
+                let arg = new searchArg(search);
+                let arg_sequelize = arg.toSequelize();
+                options['where'] = arg_sequelize;
+            }
+            return dog.count(options);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+        }).catch( error =>{
+            return error;
+        })
     },
 
     /**
@@ -2874,11 +3283,15 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableDog: function(_, context) {
-        if (checkAuthorization(context, 'dogs', 'read') == true) {
+      return checkAuthorization(context, 'dogs', 'read').then( authorization =>{
+        if (authorization === true) {
             return helper.vueTable(context.request, dog, ["id", "name", "breed"]);
         } else {
-            return "You don't have authorization to perform this action";
+            return new Error("You don't have authorization to perform this action");
         }
+      }).catch( error =>{
+          return error;
+      })
     }
 }
 `
