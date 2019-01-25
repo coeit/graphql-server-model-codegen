@@ -1,0 +1,9 @@
+{
+  "model" : "aminoacidsequence",
+  "storageType" : "Webservice",
+  "attributes" : {
+    "accession" : "String",
+    "sequence" : "String"
+  },
+  "associations" : {}
+}
