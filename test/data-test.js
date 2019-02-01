@@ -3438,3 +3438,877 @@ module.exports = {
 
 };
 `
+module.exports.schema_webservice_aminoAcid = `
+module.exports = \`
+  type aminoAcidSequence  {
+    id: ID
+    accession: String
+    sequence: String
+  }
+
+  type VueTableAminoAcidSequence{
+    data : [aminoAcidSequence]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
+
+  enum aminoAcidSequenceField {
+    id
+    accession
+    sequence
+  }
+
+  input searchAminoAcidSequenceInput {
+    field: aminoAcidSequenceField
+    value: typeValue
+    operator: Operator
+    search: [searchAminoAcidSequenceInput]
+  }
+
+  input orderAminoAcidSequenceInput{
+    field: aminoAcidSequenceField
+    order: Order
+  }
+
+  type Query {
+    aminoAcidSequences(search: searchAminoAcidSequenceInput, order: [ orderAminoAcidSequenceInput ], pagination: paginationInput ): [aminoAcidSequence]
+    readOneAminoAcidSequence(id: ID!): aminoAcidSequence
+    countAminoAcidSequences(search: searchAminoAcidSequenceInput ): Int
+    vueTableAminoAcidSequence : VueTableAminoAcidSequence  }
+
+  \`;
+`
+
+module.exports.model_webservice_aminoAcid = `
+module.exports = class aminoAcidSequence {
+
+    /**
+     * constructor - Creates an instance of the model stored in webservice
+     *
+     * @param  {obejct} input    Data for the new instances. Input for each field of the model.
+     */
+    constructor({
+        id,
+        accession,
+        sequence
+    }) {
+        this.id = id;
+        this.accession = accession;
+        this.sequence = sequence;
+    }
+}
+
+`
+
+module.exports.resolvers_webservice_aminoAcid = `
+const aminoAcidSequence = require('../models-webservice/aminoAcidSequence');
+const searchArg = require('../utils/search-argument');
+const resolvers = require('./index');
+
+module.exports = {
+    aminoAcidSequences: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        /*
+        YOUR CODE GOES HERE
+        */
+    },
+
+    readOneAminoAcidSequence: function({
+        id
+    }, context) {
+        /*
+        YOUR CODE GOES HERE
+        */
+    },
+
+    countAminoAcidSequences: function({
+        search
+    }, context) {
+        /*
+        YOUR CODE GOES HERE
+        */
+    }
+}
+
+`
+
+module.exports.individual_schema_camelcase = `
+module.exports = \`
+  type inDiVIdual  {
+    id: ID
+    name: String
+      transcriptCountsFilter(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput): [transcriptCount]
+    countFilteredTranscriptCounts(search: searchTranscriptCountInput) : Int
+  }
+
+  type VueTableInDiVIdual{
+    data : [inDiVIdual]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
+
+  enum inDiVIdualField {
+    id
+    name
+  }
+
+  input searchInDiVIdualInput {
+    field: inDiVIdualField
+    value: typeValue
+    operator: Operator
+    search: [searchInDiVIdualInput]
+  }
+
+  input orderInDiVIdualInput{
+    field: inDiVIdualField
+    order: Order
+  }
+
+  type Query {
+    inDiVIduals(search: searchInDiVIdualInput, order: [ orderInDiVIdualInput ], pagination: paginationInput ): [inDiVIdual]
+    readOneInDiVIdual(id: ID!): inDiVIdual
+    countInDiVIduals(search: searchInDiVIdualInput ): Int
+    vueTableInDiVIdual : VueTableInDiVIdual  }
+
+    type Mutation {
+    addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual
+    deleteInDiVIdual(id: ID!): String!
+    updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscriptCounts:[ID] ): inDiVIdual!
+    bulkAddInDiVIdualXlsx: [inDiVIdual]
+    bulkAddInDiVIdualCsv: [inDiVIdual]
+}
+  \`;
+`
+
+module.exports.individual_model_camelcase = `
+'use strict';
+
+const Sequelize = require('sequelize');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var inDiVIdual = sequelize.define('inDiVIdual', {
+
+        name: {
+            type: Sequelize.STRING
+        }
+    });
+
+    inDiVIdual.associate = function(models) {
+        inDiVIdual.hasMany(models.transcriptCount, {
+            foreignKey: 'individual_id'
+        });
+    };
+
+    return inDiVIdual;
+};
+`
+module.exports.individual_resolvers_camelcase = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const inDiVIdual = require('../models/index').inDiVIdual;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
+const globals = require('../config/globals');
+const checkAuthorization = require('../utils/check-authorization');
+const path = require('path')
+const fs = require('fs')
+const uuidv4 = require('uuidv4')
+
+
+
+/**
+ * inDiVIdual.prototype.transcriptCountsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+inDiVIdual.prototype.transcriptCountsFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countTranscriptCounts(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        }
+
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total transcriptCountsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getTranscriptCounts(options);
+    }).catch(error => {
+        console.log("Catched the error in transcriptCountsFilter ", error);
+        return error;
+    });
+}
+
+/**
+ * inDiVIdual.prototype.countFilteredTranscriptCounts - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+inDiVIdual.prototype.countFilteredTranscriptCounts = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countTranscriptCounts(options);
+}
+
+
+
+
+module.exports = {
+
+    /**
+     * inDiVIduals - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    inDiVIduals: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return inDiVIdual.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total inDiVIduals exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return inDiVIdual.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in inDiVIduals ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * readOneInDiVIdual - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneInDiVIdual: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+            if (authorization === true) {
+                return inDiVIdual.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * addInDiVIdual - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+    addInDiVIdual: function(input, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+            if (authorization === true) {
+                return inDiVIdual.create(input)
+                    .then(inDiVIdual => {
+                        if (input.addTranscriptCounts) {
+                            inDiVIdual.setTranscriptCounts(input.addTranscriptCounts);
+                        }
+                        return inDiVIdual;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddInDiVIdualXlsx - Load xlsx file of records NO STREAM
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddInDiVIdualXlsx: function(_, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return inDiVIdual.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddInDiVIdualCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddInDiVIdualCsv: function(_, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, inDiVIdual, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * deleteInDiVIdual - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteInDiVIdual: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'delete').then(authorization => {
+            if (authorization === true) {
+                return inDiVIdual.findById(id)
+                    .then(inDiVIdual => {
+                        return inDiVIdual.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * updateInDiVIdual - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
+    updateInDiVIdual: function(input, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'update').then(authorization => {
+            if (authorization === true) {
+                return inDiVIdual.findById(input.id)
+                    .then(inDiVIdual => {
+                        if (input.addTranscriptCounts) {
+                            inDiVIdual.addTranscriptCounts(input.addTranscriptCounts);
+                        }
+                        if (input.removeTranscriptCounts) {
+                            inDiVIdual.removeTranscriptCounts(input.removeTranscriptCounts);
+                        }
+                        return inDiVIdual.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * countInDiVIduals - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countInDiVIduals: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return inDiVIdual.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * vueTableInDiVIdual - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableInDiVIdual: function(_, context) {
+        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, inDiVIdual, ["id", "name"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    }
+}
+`;
+
+module.exports.transcriptCount_schema_camelcase  =`
+module.exports = \`
+  type transcriptCount  {
+    id: ID
+    gene: String
+    variable: String
+    count: Float
+    tissue_or_condition: String
+    inDiVIdual: inDiVIdual
+    }
+
+  type VueTableTranscriptCount{
+    data : [transcriptCount]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
+
+  enum transcriptCountField {
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
+  }
+
+  input searchTranscriptCountInput {
+    field: transcriptCountField
+    value: typeValue
+    operator: Operator
+    search: [searchTranscriptCountInput]
+  }
+
+  input orderTranscriptCountInput{
+    field: transcriptCountField
+    order: Order
+  }
+
+  type Query {
+    transcriptCounts(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput ): [transcriptCount]
+    readOneTranscriptCount(id: ID!): transcriptCount
+    countTranscriptCounts(search: searchTranscriptCountInput ): Int
+    vueTableTranscriptCount : VueTableTranscriptCount  }
+
+    type Mutation {
+    addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount
+    deleteTranscriptCount(id: ID!): String!
+    updateTranscriptCount(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcriptCount!
+    bulkAddTranscriptCountXlsx: [transcriptCount]
+    bulkAddTranscriptCountCsv: [transcriptCount]
+}
+  \`;
+`
+
+module.exports.transcriptCount_resolvers_camelcase = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const transcriptCount = require('../models/index').transcriptCount;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
+const globals = require('../config/globals');
+const checkAuthorization = require('../utils/check-authorization');
+const path = require('path')
+const fs = require('fs')
+const uuidv4 = require('uuidv4')
+
+/**
+ * transcriptCount.prototype.individual - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
+transcriptCount.prototype.individual = function(_, context) {
+    return this.getIndividual();
+}
+
+
+
+
+module.exports = {
+
+    /**
+     * transcriptCounts - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    transcriptCounts: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return transcriptCount.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total transcriptCounts exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return transcriptCount.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in transcriptCounts ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * readOneTranscriptCount - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneTranscriptCount: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+            if (authorization === true) {
+                return transcriptCount.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * addTranscriptCount - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+    addTranscriptCount: function(input, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+            if (authorization === true) {
+                return transcriptCount.create(input)
+                    .then(transcriptCount => {
+                        return transcriptCount;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddTranscriptCountXlsx - Load xlsx file of records NO STREAM
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddTranscriptCountXlsx: function(_, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return transcriptCount.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddTranscriptCountCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddTranscriptCountCsv: function(_, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, transcriptCount, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * deleteTranscriptCount - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteTranscriptCount: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'delete').then(authorization => {
+            if (authorization === true) {
+                return transcriptCount.findById(id)
+                    .then(transcriptCount => {
+                        return transcriptCount.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * updateTranscriptCount - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
+    updateTranscriptCount: function(input, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'update').then(authorization => {
+            if (authorization === true) {
+                return transcriptCount.findById(input.id)
+                    .then(transcriptCount => {
+                        return transcriptCount.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * countTranscriptCounts - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countTranscriptCounts: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return transcriptCount.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * vueTableTranscriptCount - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableTranscriptCount: function(_, context) {
+        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, transcriptCount, ["id", "gene", "variable", "tissue_or_condition"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    }
+}
+`

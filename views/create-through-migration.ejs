@@ -36,7 +36,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references:{
-          model: '<%-target_pl.toLowerCase()-%>',
+          model: '<%-target_lc_pl-%>',
           key: 'id'
         }
       }

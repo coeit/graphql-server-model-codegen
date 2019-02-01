@@ -8,7 +8,7 @@ const Sequelize = require('sequelize');
  * @param  {object} sequelize Sequelize instance.
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
- */ 
+ */
 module.exports = function(sequelize, DataTypes){
   var <%- name -%> = sequelize.define('<%- nameLc -%>',{
 
@@ -35,7 +35,7 @@ module.exports = function(sequelize, DataTypes){
   <%- name -%>.associate = function(models){
       <% for(var key in associations.implicit_associations){ -%>
         <%for(let i=0; i< associations.implicit_associations[key].length; i++){-%>
-          <%- name -%>.<%= key %>(models.<%= associations.implicit_associations[key][i].target.toLowerCase() -%>
+          <%- name -%>.<%= key %>(models.<%= associations.implicit_associations[key][i].target_lc -%>
           <% if(key === 'belongsToMany'){ -%> ,{through : '<%= associations.implicit_associations[key][i].keysIn -%>',
           onDelete: 'CASCADE'}  <%}else{ -%>
             ,{foreignKey:'<%= associations.implicit_associations[key][i].targetKey -%>' }

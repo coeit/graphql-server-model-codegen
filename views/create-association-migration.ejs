@@ -16,7 +16,7 @@ module.exports = {
         return queryInterface.addColumn('<%= source %>', '<%= targetKey %>',{
                type: Sequelize.INTEGER,
                references: {
-                 model: '<%=target_pl.toLowerCase() %>',
+                 model: '<%=target_lc_pl %>',
                  key: 'id'
                }
         }).then(()=>{

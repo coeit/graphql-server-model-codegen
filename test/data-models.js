@@ -186,6 +186,8 @@ module.exports.assoc_through_project_researcher = {
   "keysIn" : "project_to_researcher",
   "targetStorageType" : "sql",
   "source": "researchers",
+  "target_lc": "project",
+  "target_lc_pl": "projects",
   "target_pl": "Projects",
   "target_cp": "Project",
   "target_cp_pl": "Projects"
@@ -196,9 +198,82 @@ module.exports.assoc_dogs_researcher = {
   "target": "Researcher",
   "targetKey": "researcherId",
   "targetStorageType": "SQL",
+  "target_lc": "researcher",
+  "target_lc_pl": "researchers",
   "target_pl": "Researchers",
   "target_cp": "Researcher",
   "target_cp_pl": "Researchers",
   "source": "dogs",
   "cross": false
+}
+
+module.exports.aminoAcidSequence = {
+  "model": "aminoAcidSequence",
+  "storageType": "webservice",
+  "attributes": {
+    "accession": "String",
+    "sequence": "String"
+  }
+}
+
+//upper an lower case models name
+module.exports.inDiVIdual_camelcase = {
+  "model" : "inDiVIdual",
+  "storageType" : "SQL",
+  "attributes" : {
+    "name" : "String"
+  },
+  "associations": {
+    "transcriptCounts": {
+      "type" : "sql_hasMany",
+      "target" : "transcriptCount",
+      "targetKey" : "individual_id",
+      "targetStorageType" : "sql",
+      "label" : "gene",
+      "sublabel" : "variable"
+    }
+  }
+}
+
+//upper an lower case models name
+module.exports.transcriptCount_camelcase = {
+  "model" : "transcriptCount",
+  "storageType" : "SQL",
+  "attributes" : {
+    "gene" : "String",
+    "variable" : "String",
+    "count" : "Float",
+    "tissue_or_condition": "String"
+  },
+  "associations":{
+    "inDiVIdual":{
+      "type" : "sql_belongsTo",
+      "target" : "inDiVIdual",
+      "targetKey" : "individual_id",
+      "targetStorageType" : "sql",
+      "label" : "name"
+    }
+  }
+}
+
+
+//upper an lower case models name
+module.exports.transcriptCount_indiv= {
+  "model" : "transcriptCount",
+  "storageType" : "SQL",
+  "attributes" : {
+    "gene" : "String",
+    "variable" : "String",
+    "count" : "Float",
+    "tissue_or_condition": "String"
+  },
+  "associations":{
+    "individual":{
+      "type" : "sql_belongsTo",
+      "target" : "Individual",
+      "targetKey" : "individual_id",
+      "targetStorageType" : "sql",
+      "label" : "name"
+    }
+  }
 }

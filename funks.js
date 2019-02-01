@@ -44,6 +44,38 @@ isEmptyObject = function(obj){
     return true;
 }
 
+
+/**
+ * uncapitalizeString - set initial character to lower case
+ *
+ * @param  {string} word String input to uncapitalize
+ * @return {string}      String with lower case in the initial character
+ */
+uncapitalizeString = function(word){
+  let length = word.length;
+  if(length==1){
+    return word.toLowerCase();
+  }else{
+    return word.slice(0,1).toLowerCase() + word.slice(1,length);
+  }
+}
+
+
+/**
+ * capitalizeString - set initial character to upper case
+ *
+ * @param  {type} word String input to capitalize
+ * @return {type}      String with upper case in the initial character
+ */
+capitalizeString = function(word){
+  let length = word.length;
+  if(length==1){
+    return word.toUpperCase();
+  }else{
+    return word.slice(0,1).toUpperCase() + word.slice(1,length);
+  }
+}
+
 /**
  * generateJs - Generate the Javascript code (GraphQL-schema/resolvers/Sequelize-model) using EJS templates
  *
@@ -215,12 +247,17 @@ module.exports.getOptions = function(dataModel){
   //console.log(dataModel.associations);
   let opts = {
     name : dataModel.model,
-    nameCp: inflection.capitalize(dataModel.model),
+    //nameCp: inflection.capitalize(dataModel.model),
+    nameCp: capitalizeString(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
-    table : inflection.pluralize(dataModel.model.toLowerCase()),
-    nameLc: dataModel.model.toLowerCase(),
-    namePl: inflection.pluralize(dataModel.model.toLowerCase()),
-    namePlCp: inflection.pluralize(inflection.capitalize(dataModel.model)),
+    //table : inflection.pluralize(dataModel.model.toLowerCase()),
+    //nameLc: dataModel.model.toLowerCase(),
+    //namePl: inflection.pluralize(dataModel.model.toLowerCase()),
+    table: inflection.pluralize(uncapitalizeString(dataModel.model)),
+    nameLc: uncapitalizeString(dataModel.model),
+    namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
+    //namePlCp: inflection.pluralize(inflection.capitalize(dataModel.model)),
+    namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
@@ -269,7 +306,7 @@ parseAssociations = function(associations, storageType){
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = [ association.target, inflection.capitalize(association.target), inflection.capitalize(inflection.pluralize(association.target))];
+          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
         }else if(associations_type["one"].includes(association.type))
         {
           associations_info.schema_attributes["one"][name] = association.target;
@@ -279,9 +316,11 @@ parseAssociations = function(associations, storageType){
         }
 
         let assoc = association;
+        assoc["target_lc"] = uncapitalizeString(association.target);
+        assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
         assoc["target_pl"] = inflection.pluralize(association.target);
-        assoc["target_cp"] = inflection.capitalize(association.target);
-        assoc["target_cp_pl"] = inflection.capitalize(inflection.pluralize(association.target));
+        assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
+        assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
         //in this case handle the resolver via sequelize
         if(storageType === 'sql' && association.targetStorageType === 'sql' )
         {

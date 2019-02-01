@@ -234,3 +234,73 @@ describe('Migrations extend table', function(){
 
 
 });
+
+
+
+describe('Model naming - camelCase or any upper-lowe caser ', function(){
+
+  it('Resolvers - aminoAcidSequence', async function(){
+    let opts = funks.getOptions(models.aminoAcidSequence);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.resolvers_webservice_aminoAcid.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('GraphQL Schema - aminoAcidSequence', async function(){
+    let opts = funks.getOptions(models.aminoAcidSequence);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.schema_webservice_aminoAcid.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Model - aminoAcidSequence', async function(){
+    let opts = funks.getOptions(models.aminoAcidSequence);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.model_webservice_aminoAcid.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+  it('Resolvers - inDiVIdual', async function(){
+    let opts = funks.getOptions(models.inDiVIdual_camelcase);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.individual_resolvers_camelcase.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('GraphQL Schema - inDiVIdual', async function(){
+    let opts = funks.getOptions(models.inDiVIdual_camelcase);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.individual_schema_camelcase.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Model - inDiVIdual', async function(){
+    let opts = funks.getOptions(models.inDiVIdual_camelcase);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.individual_model_camelcase.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+  it('GraphQL Schema - transcriptCount', async function(){
+    let opts = funks.getOptions(models.transcriptCount_camelcase);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.transcriptCount_schema_camelcase.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - transcriptCount', async function(){
+    let opts = funks.getOptions(models.transcriptCount_indiv);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.transcriptCount_resolvers_camelcase.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+});
