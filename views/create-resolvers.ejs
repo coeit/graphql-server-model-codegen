@@ -20,14 +20,14 @@ const uuidv4 = require('uuidv4')
 <%let associations_one = associations.implicit_associations["hasOne"].concat(associations.implicit_associations["belongsTo"])-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].target_lc%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_one[i].name_lc%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].target_lc%> = function(_, context){
-    return this.get<%- associations_one[i].target_cp%>();
+  <%- nameLc -%>.prototype.<%=associations_one[i].name_lc%> = function(_, context){
+    return this.get<%- associations_one[i].name_cp%>();
   }
 <%}-%>
 
@@ -35,7 +35,7 @@ const uuidv4 = require('uuidv4')
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc_pl%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -45,7 +45,7 @@ const uuidv4 = require('uuidv4')
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc_pl%>Filter = function({search,order,pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order,pagination}, context){
 
     let options = {};
 
@@ -69,23 +69,23 @@ const uuidv4 = require('uuidv4')
       }
 
       if(globals.LIMIT_RECORDS < options['limit']){
-        throw new Error(`Request of total <%=associations_temp[i].target_lc_pl%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+        throw new Error(`Request of total <%=associations_temp[i].name_lc%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
       }
-      return this.get<%- associations_temp[i].target_cp_pl%>(options);
+      return this.get<%- associations_temp[i].name_cp%>(options);
     }).catch(error =>{
-      console.log("Catched the error in <%=associations_temp[i].target_lc_pl%>Filter ", error);
+      console.log("Catched the error in <%=associations_temp[i].name_lc%>Filter ", error);
       return error;
     });
   }
 
   /**
-   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].target_cp_pl%> - Count number of associated records that holds the conditions specified in the search argument
+   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
    *
    * @param  {object} {search} description
    * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}          Number of associated records that holds the conditions specified in the search argument
    */
-  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].target_cp_pl%> = function({search}, context){
+  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
 
     let options = {};
 
@@ -95,7 +95,7 @@ const uuidv4 = require('uuidv4')
       options['where'] = arg_sequelize;
     }
 
-    return this.count<%- associations_temp[i].target_cp_pl%>(options);
+    return this.count<%- associations_temp[i].name_cp%>(options);
   }
 
 <%}-%>
@@ -103,13 +103,13 @@ const uuidv4 = require('uuidv4')
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc%> = function(_, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
     return <%=associations_temp[i].target_lc%>.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>}, context);
   }
 <%}-%>
@@ -117,13 +117,13 @@ const uuidv4 = require('uuidv4')
 <% associations_temp = associations.explicit_resolvers["hasOne"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc%> = function(_, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
     return <%=associations_temp[i].target_lc%>.<%=associations_temp[i].target_pl%>({"search": {"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"} }, context);
   }
 <%}-%>
@@ -131,7 +131,7 @@ const uuidv4 = require('uuidv4')
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc_pl%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -141,7 +141,7 @@ const uuidv4 = require('uuidv4')
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].target_lc_pl%>Filter = function({search,order, pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order, pagination}, context){
 
     if(search === undefined)
     {
@@ -153,13 +153,13 @@ const uuidv4 = require('uuidv4')
   }
 
   /**
-   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].target_cp_pl%> - Count number of associated records that holds the conditions specified in the search argument
+   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
    *
    * @param  {object} {search} description
    * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}          Number of associated records that holds the conditions specified in the search argument
    */
-  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].target_cp_pl%> = function({search}, context){
+  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
 
     if(search === undefined)
     {

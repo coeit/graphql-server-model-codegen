@@ -277,3 +277,31 @@ module.exports.transcriptCount_indiv= {
     }
   }
 }
+
+
+module.exports.dog_owner = {
+  "model" : "Dog",
+  "storageType" : "Sql",
+  "attributes" : {
+    "name" : "String",
+    "breed" : "String"
+  },
+
+  "associations" : {
+    "owner" : {
+      "type" : "sql_belongsTo",
+      "target" : "Person",
+      "targetKey" : "owner_id_test",
+      "targetStorageType" : "sql",
+      "label": "firstName",
+      "sublabel": "lastName"
+    },
+    "keeper":{
+      "type" : "sql_belongsTo",
+      "target": "Researcher",
+      "targetKey": "keeperId",
+      "targetStorageType": "SQL",
+      "label": "firstName"
+    }
+  }
+}

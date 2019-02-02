@@ -316,6 +316,9 @@ parseAssociations = function(associations, storageType){
         }
 
         let assoc = association;
+        assoc["name"] = name;
+        assoc["name_lc"] = uncapitalizeString(name);
+        assoc["name_cp"] = capitalizeString(name);
         assoc["target_lc"] = uncapitalizeString(association.target);
         assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
         assoc["target_pl"] = inflection.pluralize(association.target);

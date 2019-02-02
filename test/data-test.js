@@ -430,6 +430,7 @@ module.exports = function(sequelize, DataTypes) {
 
     individual.associate = function(models) {
         individual.hasMany(models.transcript_count, {
+            as: 'transcript_counts',
             foreignKey: 'individual_id'
         });
     };
@@ -3387,6 +3388,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Researcher.associate = function(models) {
         Researcher.hasOne(models.dog, {
+            as: 'dog',
             foreignKey: 'researcherId'
         });
         Researcher.belongsToMany(models.project, {
@@ -3617,6 +3619,7 @@ module.exports = function(sequelize, DataTypes) {
 
     inDiVIdual.associate = function(models) {
         inDiVIdual.hasMany(models.transcriptCount, {
+            as: 'transcriptCounts',
             foreignKey: 'individual_id'
         });
     };
@@ -4311,4 +4314,388 @@ module.exports = {
         })
     }
 }
+`
+
+module.exports.dog_owner_resolvers =`
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const dog = require('../models/index').dog;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
+const globals = require('../config/globals');
+const checkAuthorization = require('../utils/check-authorization');
+const path = require('path')
+const fs = require('fs')
+const uuidv4 = require('uuidv4')
+
+/**
+ * dog.prototype.owner - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
+dog.prototype.owner = function(_, context) {
+    return this.getOwner();
+}
+/**
+ * dog.prototype.keeper - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
+dog.prototype.keeper = function(_, context) {
+    return this.getKeeper();
+}
+
+
+
+
+module.exports = {
+
+    /**
+     * dogs - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    dogs: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return dog.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total dogs exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return dog.findAll(options);
+                }).catch(error => {
+                    console.log("Catched the error in dogs ", error);
+                    return error;
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * readOneDog - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneDog: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+            if (authorization === true) {
+                return dog.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * addDog - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+    addDog: function(input, context) {
+        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+            if (authorization === true) {
+                return dog.create(input)
+                    .then(dog => {
+                        return dog;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddDogXlsx - Load xlsx file of records NO STREAM
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddDogXlsx: function(_, context) {
+        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return dog.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * bulkAddDogCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddDogCsv: function(_, context) {
+        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+            if (authorization === true) {
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv')
+                return context.request.files.csv_file.mv(tmpFile).then(() => {
+                    return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
+                }).catch((err) => {
+                    return new Error(err);
+                }).then(() => {
+                    fs.unlinkSync(tmpFile)
+                })
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * deleteDog - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteDog: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'dogs', 'delete').then(authorization => {
+            if (authorization === true) {
+                return dog.findById(id)
+                    .then(dog => {
+                        return dog.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * updateDog - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
+    updateDog: function(input, context) {
+        return checkAuthorization(context, 'dogs', 'update').then(authorization => {
+            if (authorization === true) {
+                return dog.findById(input.id)
+                    .then(dog => {
+                        return dog.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * countDogs - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countDogs: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return dog.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * vueTableDog - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableDog: function(_, context) {
+        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, dog, ["id", "name", "breed"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    }
+}
+`
+
+module.exports.dog_owner_schema = `
+module.exports = \`
+type Dog  {
+  id: ID
+  name: String
+  breed: String
+  owner: Person
+  keeper: Researcher
+  }
+
+type VueTableDog{
+  data : [Dog]
+  total: Int
+  per_page: Int
+  current_page: Int
+  last_page: Int
+  prev_page_url: String
+  next_page_url: String
+  from: Int
+  to: Int
+}
+
+enum DogField {
+  id
+  name
+  breed
+}
+
+input searchDogInput {
+  field: DogField
+  value: typeValue
+  operator: Operator
+  search: [searchDogInput]
+}
+
+input orderDogInput{
+  field: DogField
+  order: Order
+}
+
+type Query {
+  dogs(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput ): [Dog]
+  readOneDog(id: ID!): Dog
+  countDogs(search: searchDogInput ): Int
+  vueTableDog : VueTableDog  }
+
+  type Mutation {
+  addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog
+  deleteDog(id: ID!): String!
+  updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
+  bulkAddDogXlsx: [Dog]
+  bulkAddDogCsv: [Dog]
+}
+  \`;
+`
+
+module.exports.dog_owner_model = `
+'use strict';
+
+const Sequelize = require('sequelize');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var Dog = sequelize.define('dog', {
+
+        name: {
+            type: Sequelize.STRING
+        },
+        breed: {
+            type: Sequelize.STRING
+        }
+    });
+
+    Dog.associate = function(models) {
+        Dog.belongsTo(models.person, {
+            as: 'owner',
+            foreignKey: 'owner_id_test'
+        });
+        Dog.belongsTo(models.researcher, {
+            as: 'keeper',
+            foreignKey: 'keeperId'
+        });
+    };
+
+    return Dog;
+};
+
 `
