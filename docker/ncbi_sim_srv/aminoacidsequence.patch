@@ -1,0 +1,36 @@
+--- aminoacidsequence.js	2019-02-05 06:34:10.000000000 -0600
++++ aminoacidsequence.js	2019-02-05 06:36:39.688392426 -0600
+@@ -2,10 +2,8 @@
+ const searchArg = require('../utils/search-argument');
+ const resolvers = require('./index');
+ 
+-
+-
+-
+-
++const request = require('sync-request');
++const baseUrl = 'http://ncbi_sim_srv:3344/aminoAcidSequence/';
+ 
+ module.exports = {
+     aminoacidsequences: function({
+@@ -22,10 +20,9 @@
+     readOneAminoacidsequence: function({
+         id
+     }, context) {
+-        /*
+-        YOUR CODE GOES HERE
+-        */
+-        throw new Error('readOneAminoacidsequence is not implemented');
++        let res = request('get', baseUrl + id);
++        if(res.statusCode !== 200) throw new Error(`Remote service response status code: ${res.statusCode}`);
++        return JSON.parse(res.body.toString('utf8'));
+     },
+ 
+     countAminoacidsequences: function({
+@@ -36,4 +33,4 @@
+         */
+         throw new Error('countAminoacidsequences is not implemented');
+     }
+-}
+\ No newline at end of file
++}
