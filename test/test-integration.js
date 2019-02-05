@@ -406,16 +406,24 @@ describe(
             });
         });
 
-        it('02. AminoAcidSequence:  read one', function() {
+        it('02. Read one', function() {
             let res = request('POST', baseUrl, {
                 json: {
-                    query: '{ readOneAminoacidsequence(id : "P69905") { id accession } }'
+                    query: '{ readOneAminoacidsequence(id : "P69905") { id accession sequence} }'
                 }
             });
 
             let resBody = JSON.parse(res.body.toString('utf8'));
             expect(res.statusCode).to.equal(200);
 
-            expect(resBody).to.deep.equal(null);
+            expect(resBody).to.deep.equal({
+                "data": {
+                    "readOneAminoacidsequence": {
+                        "accession": "P69905",
+                        "id": "P69905",
+                        "sequence": "MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR"
+                    }
+                }
+            });
         });
 });
