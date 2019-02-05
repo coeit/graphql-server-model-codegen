@@ -2,7 +2,7 @@
 const Express = require('express');
 const Routes = require("./static_route_db");
 
-var port = process.env.PORT || 3333;
+var port = process.env.PORT || 3344;
 var base_url = process.env.BASE_URL || "";
 
 var app = Express();

@@ -394,13 +394,14 @@ describe(
     function() {
 
         it('01. Data server simulator is up', function() {
-            let res = request('get', 'http://localhost:3333/aminoAcidSequence/P63165');
+            let res = request('get', 'http://localhost:3344/aminoAcidSequence/P63165');
 
             let resBody = JSON.parse(res.body.toString('utf8'));
             expect(res.statusCode).to.equal(200);
 
             expect(resBody).to.deep.equal({
                 "accession": "P63165",
+                "id": "P63165",
                 "sequence": "MSDQEAKPSTEDLGDKKEGEYIKLKVIGQDSSEIHFKVKMTTHLKKLKESYCQRQGVPMNSLRFLFEGQRIADNHTPKELGMEEEDVIEVYQEQTGGHSTV"
             });
         });
