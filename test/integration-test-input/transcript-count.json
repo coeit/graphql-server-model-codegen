@@ -13,6 +13,12 @@
       "target" : "individual",
       "targetKey" : "individual_id",
       "targetStorageType" : "sql"
+    },
+    "aminoacidsequence":{
+      "type" : "sql_belongsTo",
+      "target" : "aminoacidsequence",
+      "targetKey" : "aminoacidsequence_id",
+      "targetStorageType" : "Webservice"
     }
   }
 }

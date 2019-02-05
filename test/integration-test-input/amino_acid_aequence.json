@@ -5,5 +5,12 @@
     "accession" : "String",
     "sequence" : "String"
   },
-  "associations" : {}
+  "associations": {
+    "transcript_counts": {
+      "type" : "cross_belongsTo",
+      "target" : "transcript_count",
+      "targetKey" : "aminoacidsequence_id",
+      "targetStorageType" : "sql"
+    }
+  }
 }
