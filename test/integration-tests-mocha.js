@@ -388,3 +388,34 @@ describe(
     });
 
 });
+
+describe(
+    'Web service model',
+    function() {
+
+        it('01. Data server simulator is up', function() {
+            let res = request('get', 'http://localhost:3344/aminoAcidSequence/P63165');
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            expect(resBody).to.deep.equal({
+                "accession": "P63165",
+                "id": "P63165",
+                "sequence": "MSDQEAKPSTEDLGDKKEGEYIKLKVIGQDSSEIHFKVKMTTHLKKLKESYCQRQGVPMNSLRFLFEGQRIADNHTPKELGMEEEDVIEVYQEQTGGHSTV"
+            });
+        });
+
+        it('02. AminoAcidSequence:  read one', function() {
+            let res = request('POST', baseUrl, {
+                json: {
+                    query: '{ readOneAminoacidsequence(id : "P69905") { id accession } }'
+                }
+            });
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            expect(resBody).to.deep.equal(null);
+        });
+});

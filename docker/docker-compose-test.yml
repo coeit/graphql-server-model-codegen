@@ -18,6 +18,20 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-    # Await POSTGRES role and DB creation, migrate schema, then start web
-    # server:
-    command: bash -C './migrateDbAndStartServer.sh'
+    # Await POSTGRES role and DB creation, migrate schema, then start web server:
+    #command: bash -C './migrateDbAndStartServer.sh'
+    command: top
+
+  ncbi_sim_srv:
+    depends_on:
+    - postgres
+    - science_db_graphql_server
+    build:
+      context: .
+      dockerfile: Dockerfile.ncbi_sim_srv
+    ports:
+        - "3344:3344"
+    environment:
+        PORT: 3344
+        BASE_URL: /aminoAcidSequence
+    command: npm start
