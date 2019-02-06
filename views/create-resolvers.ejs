@@ -20,13 +20,13 @@ const uuidv4 = require('uuidv4')
 <%let associations_one = associations.implicit_associations["hasOne"].concat(associations.implicit_associations["belongsTo"])-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].name_lc%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name_lc%> = function(_, context){
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
     return this.get<%- associations_one[i].name_cp%>();
   }
 <%}-%>
