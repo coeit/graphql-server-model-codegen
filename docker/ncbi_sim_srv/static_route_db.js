@@ -4,24 +4,24 @@ module.exports.routes = function(){
 
     var router = Express.Router();
 
-    router.get('/P69905', function(req, res) {
+    router.get('/69905', function(req, res) {
         res.send({
             accession: "P69905",
-            id: "P69905",
+            id: 69905,
             sequence: "MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR"
         });
     });
 
-    router.get('/P10644', function(req, res) {
+    router.get('/10644', function(req, res) {
         res.send({ accession: "P10644",
-            id: "P10644",
+            id: 10644,
             sequence: "MESGSTAASEEARSLRECELYVQKHNIQALLKDSIVQLCTARPERPMAFLREYFERLEKEEAKQIQNLQKAGTRTDSREDEISPPPPNPVVKGRRRRGAISAEVYTEEDAASYVRKVIPKDYKTMAALAKAIEKNVLFSHLDDNERSDIFDAMFSVSFIAGETVIQQGDEGDNFYVIDQGETDVYVNNEWATSVGEGGSFGELALIYGTPRAATVKAKTNVKLWGIDRDSYRRILMGSTLRKRKMYEEFLSKVSILESLDKWERLTVADALEPVQFEDGQKIVVQGEPGDEFFIILEGSAAVLQRRSENEEFVEVGRLGPSDYFGEIALLMNRPRAATVVARGPLKCVKLDRPRFERVLGPCSDILKRNIQQYNSFVSLSV"
         });
     });
 
-    router.get('/P63165', function(req, res) {
+    router.get('/63165', function(req, res) {
         res.send({ accession: "P63165",
-            id: "P63165",
+            id: 63165,
             sequence: "MSDQEAKPSTEDLGDKKEGEYIKLKVIGQDSSEIHFKVKMTTHLKKLKESYCQRQGVPMNSLRFLFEGQRIADNHTPKELGMEEEDVIEVYQEQTGGHSTV"
         });
     });

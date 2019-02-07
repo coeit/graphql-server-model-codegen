@@ -13,7 +13,7 @@ function cleanup {
 
 # Generate the code for the integration test models
 node ./index.js generate ./test/integration-test-input ./docker/integration_test_run
-patch ./docker/integration_test_run/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/aminoacidsequence.patch
+patch -V never ./docker/integration_test_run/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
 
 # Setup and launch the generated GraphQL web-server
 docker-compose -f ./docker/docker-compose-test.yml up -d
@@ -32,6 +32,6 @@ done
 
 # Run the integration test suite
 
-# mocha ./test/test-integration.js
+mocha ./test/test-integration.js
 
-# cleanup
+cleanup

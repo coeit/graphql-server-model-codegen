@@ -320,37 +320,10 @@ describe(
         })
     });
 
-    it('20. TranscriptCount delete all', function() {
-        let res = request('POST', baseUrl, {
-            json: {
-                query: '{ transcript_counts {id} }'
-            }
-        });
 
-        let transcript_counts = JSON.parse(res.body.toString('utf8')).data.transcript_counts;
-        for(let i = 0; i < transcript_counts.length; i++){
-            res = request('POST', baseUrl, {
-                json: {
-                    query: `mutation { deleteTranscript_count (id: ${transcript_counts[i].id}) }`
-                }
-            });
-            expect(res.statusCode).to.equal(200);
-        }
-
-        res = request('POST', baseUrl, {
-            json: {
-                query: '{ countTranscript_counts }'
-            }
-        });
-
-        let cnt = JSON.parse(res.body.toString('utf8')).data.countTranscript_counts;
-        expect(cnt).to.equal(0);
-    });
-
-
-    // Test belongs-to relation between transcript_ount and individual data
+    // Test belongs-to relation between transcript_count and individual data
     // model:
-    it('21. Add Individual and assign it to TranscriptCount', function() {
+    it('20. TranscriptCount assign new Individual', function() {
         // Create Plant to subjected to RNA-Seq analysis from which the
       // transcript_counts result:
         let res = request('POST', baseUrl, {
@@ -363,7 +336,7 @@ describe(
         expect(res.statusCode).to.equal(200);
 
         expect(resBody.data.addIndividual.name).equal("Incredible Maize Plant One");
-        let plantId = resBody.data.addIndividual.id
+        let plantId = resBody.data.addIndividual.id;
 
         // Create TranscriptCount with above Plant assigned as Individual
         let tcRes = request('POST', baseUrl, {
@@ -387,29 +360,56 @@ describe(
         })
     });
 
+  it('21. TranscriptCount delete all', function() {
+      let res = request('POST', baseUrl, {
+          json: {
+              query: '{ transcript_counts {id} }'
+          }
+      });
+
+      let transcript_counts = JSON.parse(res.body.toString('utf8')).data.transcript_counts;
+      for(let i = 0; i < transcript_counts.length; i++){
+          res = request('POST', baseUrl, {
+              json: {
+                  query: `mutation { deleteTranscript_count (id: ${transcript_counts[i].id}) }`
+              }
+          });
+          expect(res.statusCode).to.equal(200);
+      }
+
+      res = request('POST', baseUrl, {
+          json: {
+              query: '{ countTranscript_counts }'
+          }
+      });
+
+      let cnt = JSON.parse(res.body.toString('utf8')).data.countTranscript_counts;
+      expect(cnt).to.equal(0);
+  });
+
 });
 
 describe(
     'Web service model',
     function() {
 
-        it('01. Data server simulator is up', function() {
-            let res = request('get', 'http://localhost:3344/aminoAcidSequence/P63165');
+        it('01. Webservice simulator is up', function() {
+            let res = request('get', 'http://localhost:3344/aminoAcidSequence/63165');
 
             let resBody = JSON.parse(res.body.toString('utf8'));
             expect(res.statusCode).to.equal(200);
 
             expect(resBody).to.deep.equal({
                 "accession": "P63165",
-                "id": "P63165",
+                "id": 63165,
                 "sequence": "MSDQEAKPSTEDLGDKKEGEYIKLKVIGQDSSEIHFKVKMTTHLKKLKESYCQRQGVPMNSLRFLFEGQRIADNHTPKELGMEEEDVIEVYQEQTGGHSTV"
             });
         });
 
-        it('02. Read one', function() {
+        it('02. Webservice read one', function() {
             let res = request('POST', baseUrl, {
                 json: {
-                    query: '{ readOneAminoacidsequence(id : "P69905") { id accession sequence} }'
+                    query: '{ readOneAminoacidsequence(id : 69905) { id accession sequence} }'
                 }
             });
 
@@ -420,8 +420,44 @@ describe(
                 "data": {
                     "readOneAminoacidsequence": {
                         "accession": "P69905",
-                        "id": "P69905",
+                        "id": "69905",
                         "sequence": "MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR"
+                    }
+                }
+            });
+        });
+
+        it('03. Webservice associate new TranscriptCount', function() {
+            let res = request('POST', baseUrl, {
+                json: {
+                    query: 'mutation { addTranscript_count(gene: "new_gene", \n' +
+                        '  aminoacidsequence_id: 63165) { id } }'
+                }
+            });
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            let tcId = resBody.data.addTranscript_count.id;
+
+            res = request('POST', baseUrl, {
+                json: {
+                    query: `{ readOneTranscript_count(id : ${tcId}) ` +
+                        '{ id aminoacidsequence{id accession} } }'
+                }
+            });
+
+            resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            expect(resBody).to.deep.equal({
+                "data": {
+                    "readOneTranscript_count": {
+                        "aminoacidsequence": {
+                            "accession": "P63165",
+                            "id": "63165"
+                        },
+                        "id": `${tcId}`
                     }
                 }
             });
