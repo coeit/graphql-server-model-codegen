@@ -5,7 +5,7 @@
  const searchArg = require('../utils/search-argument');
  const resolvers = require('./index');
 +const request = require('sync-request');
-+const baseUrl = 'http://ncbi_sim_srv:3344/aminoAcidSequence/';
++const baseUrl = 'http://gql_ncbi_sim_srv:3344/aminoAcidSequence/';
  
  
  

@@ -1,16 +1,16 @@
 version: "3.2"
 
 services:
-  postgres:
+  gql_postgres:
     build:
       context: .
       dockerfile: Dockerfile.postgres
     ports:
      - 1234:5432
 
-  science_db_graphql_server:
+  gql_science_db_graphql_server:
     depends_on:
-      - postgres
+      - gql_postgres
     build:
       context: .
       dockerfile: Dockerfile.graphql_server
@@ -21,10 +21,10 @@ services:
     # Await POSTGRES role and DB creation, migrate schema, then start web server:
     command: bash -C './migrateDbAndStartServer.sh'
 
-  ncbi_sim_srv:
+  gql_ncbi_sim_srv:
     depends_on:
-    - postgres
-    - science_db_graphql_server
+    - gql_postgres
+    - gql_science_db_graphql_server
     build:
       context: .
       dockerfile: Dockerfile.ncbi_sim_srv
