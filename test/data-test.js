@@ -71,7 +71,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
-
+const resolvers = require('./index');
 
 
 /**
@@ -91,37 +91,13 @@ individual.prototype.transcript_countsFilter = function({
     pagination
 }, context) {
 
-    let options = {};
+  if(search === undefined)
+  {
+    return resolvers.transcript_counts({"search":{"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
+  }else{
+    return resolvers.transcript_counts({"search":{"operator":"and", "search":[ {"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+  }
 
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countTranscript_counts(options).then(items => {
-        if (order !== undefined) {
-            options['order'] = order.map((orderItem) => {
-                return [orderItem.field, orderItem.order];
-            });
-        }
-
-        if (pagination !== undefined) {
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-        } else {
-            options['offset'] = 0;
-            options['limit'] = items;
-        }
-
-        if (globals.LIMIT_RECORDS < options['limit']) {
-            throw new Error(\`Request of total transcript_countsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-        }
-        return this.getTranscript_counts(options);
-    }).catch(error => {
-        console.log("Catched the error in transcript_countsFilter ", error);
-        return error;
-    });
 }
 
 /**
@@ -135,19 +111,13 @@ individual.prototype.countFilteredTranscript_counts = function({
     search
 }, context) {
 
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countTranscript_counts(options);
+  if(search === undefined)
+  {
+    return resolvers.countTranscript_counts({"search":{"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} }, context);
+  }else{
+    return resolvers.countTranscript_counts({"search":{"operator":"and", "search":[ {"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
+  }
 }
-
-
-
 
 module.exports = {
 
@@ -512,6 +482,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 module.exports = {
 
@@ -894,6 +865,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 /**
  * transcript_count.prototype.individual - Return associated record
@@ -903,11 +875,8 @@ const uuidv4 = require('uuidv4')
  * @return {type}         Associated record
  */
 transcript_count.prototype.individual = function(_, context) {
-    return this.getIndividual();
+    return resolvers.readOneIndividual({"id": this.individual_id}, context);
 }
-
-
-
 
 module.exports = {
 
@@ -1173,7 +1142,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
-
+const resolvers = require('./index');
 
 
 /**
@@ -1192,38 +1161,13 @@ person.prototype.dogsFilter = function({
     order,
     pagination
 }, context) {
+  if(search === undefined)
+  {
+    return resolvers.dogs({"search":{"field" : "personId", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
+  }else{
+    return resolvers.dogs({"search":{"operator":"and", "search":[ {"field" : "personId", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+  }
 
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countDogs(options).then(items => {
-        if (order !== undefined) {
-            options['order'] = order.map((orderItem) => {
-                return [orderItem.field, orderItem.order];
-            });
-        }
-
-        if (pagination !== undefined) {
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-        } else {
-            options['offset'] = 0;
-            options['limit'] = items;
-        }
-
-        if (globals.LIMIT_RECORDS < options['limit']) {
-            throw new Error(\`Request of total dogsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-        }
-        return this.getDogs(options);
-    }).catch(error => {
-        console.log("Catched the error in dogsFilter ", error);
-        return error;
-    });
 }
 
 /**
@@ -1237,15 +1181,12 @@ person.prototype.countFilteredDogs = function({
     search
 }, context) {
 
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countDogs(options);
+  if(search === undefined)
+  {
+    return resolvers.countDogs({"search":{"field" : "personId", "value":{"value":this.id }, "operator": "eq"} }, context);
+  }else{
+    return resolvers.countDogs({"search":{"operator":"and", "search":[ {"field" : "personId", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
+  }
 }
 
 
@@ -1606,9 +1547,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
-const publisher = require('./publisher');
-
-
+const resolvers = require('./index');
 
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -1691,7 +1630,7 @@ book.prototype.countFilteredPeople = function({
  * @return {type}         Associated record
  */
 book.prototype.publisher = function(_, context) {
-    return publisher.readOnePublisher({
+    return resolvers.readOnePublisher({
         "id": this.publisherId
     }, context);
 }
@@ -2031,6 +1970,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 /**
  * researcher.prototype.dog - Return associated record
@@ -2040,7 +1980,12 @@ const uuidv4 = require('uuidv4')
  * @return {type}         Associated record
  */
 researcher.prototype.dog = function(_, context) {
-    return this.getDog();
+    return resolvers.dogs({"search":{"field" : "researcherId", "value":{"value":this.id }, "operator": "eq" } },context)
+    .then((res)=>{
+      return res[0];
+    }).catch( error => {
+      throw new Error(error);
+    });
 }
 
 
@@ -2600,7 +2545,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
-const publisher = require('./publisher');
+const resolvers = require('./index');
 
 
 
@@ -2685,7 +2630,7 @@ book.prototype.countFilteredPeople = function({
  * @return {type}         Associated record
  */
 book.prototype.publisher = function(_, context) {
-    return publisher.readOnePublisher({
+    return resolvers.readOnePublisher({
         "id": this.publisherId
     }, context);
 }
@@ -3025,6 +2970,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 /**
  * dog.prototype.person - Return associated record
@@ -3034,7 +2980,7 @@ const uuidv4 = require('uuidv4')
  * @return {type}         Associated record
  */
 dog.prototype.person = function(_, context) {
-    return this.getPerson();
+    return resolvers.readOnePerson({"id": this.personId }, context);
 }
 /**
  * dog.prototype.researcher - Return associated record
@@ -3044,7 +2990,7 @@ dog.prototype.person = function(_, context) {
  * @return {type}         Associated record
  */
 dog.prototype.researcher = function(_, context) {
-    return this.getResearcher();
+    return resolvers.readOneResearcher({"id": this.researcherId},context);
 }
 
 module.exports = {
@@ -3641,7 +3587,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
-
+const resolvers = require('./index');
 
 
 /**
@@ -3660,38 +3606,13 @@ inDiVIdual.prototype.transcriptCountsFilter = function({
     order,
     pagination
 }, context) {
+  if(search === undefined)
+  {
+    return resolvers.transcriptCounts({"search":{"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
+  }else{
+    return resolvers.transcriptCounts({"search":{"operator":"and", "search":[ {"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+  }
 
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countTranscriptCounts(options).then(items => {
-        if (order !== undefined) {
-            options['order'] = order.map((orderItem) => {
-                return [orderItem.field, orderItem.order];
-            });
-        }
-
-        if (pagination !== undefined) {
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-        } else {
-            options['offset'] = 0;
-            options['limit'] = items;
-        }
-
-        if (globals.LIMIT_RECORDS < options['limit']) {
-            throw new Error(\`Request of total transcriptCountsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-        }
-        return this.getTranscriptCounts(options);
-    }).catch(error => {
-        console.log("Catched the error in transcriptCountsFilter ", error);
-        return error;
-    });
 }
 
 /**
@@ -3705,15 +3626,13 @@ inDiVIdual.prototype.countFilteredTranscriptCounts = function({
     search
 }, context) {
 
-    let options = {};
+  if(search === undefined)
+  {
+    return resolvers.countTranscriptCounts({"search":{"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} }, context);
+  }else{
+    return resolvers.countTranscriptCounts({"search":{"operator":"and", "search":[ {"field" : "individual_id", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
+  }
 
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countTranscriptCounts(options);
 }
 
 
@@ -4051,6 +3970,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 /**
  * transcriptCount.prototype.individual - Return associated record
@@ -4060,7 +3980,7 @@ const uuidv4 = require('uuidv4')
  * @return {type}         Associated record
  */
 transcriptCount.prototype.individual = function(_, context) {
-    return this.getIndividual();
+    return resolvers.readOneIndividual({"id": this.individual_id}, context);
 }
 
 
@@ -4330,6 +4250,7 @@ const checkAuthorization = require('../utils/check-authorization');
 const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
+const resolvers = require('./index');
 
 /**
  * dog.prototype.owner - Return associated record
@@ -4339,7 +4260,7 @@ const uuidv4 = require('uuidv4')
  * @return {type}         Associated record
  */
 dog.prototype.owner = function(_, context) {
-    return this.getOwner();
+    return resolvers.readOnePerson({"id": this.owner_id_test }, context);
 }
 /**
  * dog.prototype.keeper - Return associated record
@@ -4349,7 +4270,7 @@ dog.prototype.owner = function(_, context) {
  * @return {type}         Associated record
  */
 dog.prototype.keeper = function(_, context) {
-    return this.getKeeper();
+    return resolvers.readOneResearcher({"id": this.keeperId},context);
 }
 
 

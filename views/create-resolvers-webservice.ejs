@@ -12,7 +12,12 @@ const resolvers = require('./index');
 <% associations_temp = associations.explicit_resolvers["hasOne"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}},context);
+    return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
+    .then((res)=>{
+      return res[0];
+    }).catch( error => {
+      throw new Error(error);
+    });
   }
 <%}-%>
 
