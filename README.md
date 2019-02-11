@@ -12,10 +12,24 @@ If you only want to install it locally run `npm install` instead
 
 ## Usage:
 
-To run the test case:
+To run the unit-test case:
 ```
-$ npm test
+$ npm run test-unit
 ```
+
+To run the integration-test case
+```
+$ npm run test-integration <-- params>
+```
+Note: intergation-test case creates a docker-compose ambient with three servers `gql_postgres`,
+`gql_science_db_graphql_server` and `gql_ncbi_sim_srv`. By default, after the test run, all
+corresponding images will be completely removed from the docker. However, to speed-up the
+development process it is possible to not remove the selected images. Each of the images that
+wou prefer to keep alive shell be preceeded with the `-k` or `--keep-image` key. For example:
+```
+$ npm run test-integration -- -k gql_ncbi_sim_srv -k gql_science_db_graphql_server
+```
+
 
 And to generate the structure files:
 ```
