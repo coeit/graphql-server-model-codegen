@@ -2509,6 +2509,7 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
+        throw new Error('species is not implemented');
     },
 
     readOneSpecie: function({
@@ -2517,12 +2518,14 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
+        throw new Error('readOneSpecie is not implemented');
     },
 
     countSpecies: function({search}, context){
       /*
       YOUR CODE GOES HERE
       */
+      throw new Error('countSpecies is not implemented');
     }
 }
 `
@@ -3520,6 +3523,7 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
+        throw new Error('aminoAcidSequences is not implemented');
     },
 
     readOneAminoAcidSequence: function({
@@ -3528,6 +3532,7 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
+        throw new Error('readOneAminoAcidSequence is not implemented');
     },
 
     countAminoAcidSequences: function({
@@ -3536,6 +3541,7 @@ module.exports = {
         /*
         YOUR CODE GOES HERE
         */
+        throw new Error('countAminoAcidSequences is not implemented');
     }
 }
 
