@@ -472,5 +472,21 @@ module.exports = {
   }).catch( error =>{
       return error;
   })
+  },
+
+
+  /**
+   * stubGet<%-namePlCp-%> - Stub for testing purposes of cursor based pagination
+   *
+   * @param  {type} search     Search argument for filtering records
+   * @param  {type} indexCursor Base64 encoded element where cursor is pointing currently
+   * @param  {type} limit     Number of maximum records to be fetched
+   * @param  {type} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {type}             Set of records holding the conditions from search and pagination
+   */
+  stubGet<%-namePlCp-%>({search, indexCursor, limit}, context){
+    /*
+      CODE GOES HERE ...
+    */
   }
 }
