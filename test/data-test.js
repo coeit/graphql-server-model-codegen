@@ -4620,3 +4620,116 @@ module.exports = function(sequelize, DataTypes) {
 };
 
 `
+
+module.exports.person_indices_model = `
+'use strict';
+
+const Sequelize = require('sequelize');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var Person = sequelize.define('person', {
+
+        firstName: {
+            type: Sequelize.STRING
+        },
+        lastName: {
+            type: Sequelize.STRING
+        },
+        email: {
+            type: Sequelize.STRING
+        },
+        phone: {
+          type: Sequelize.STRING
+        }
+    },{
+      indexes: ['email', 'phone']
+    });
+
+    Person.associate = function(models) {
+        Person.hasMany(models.dog, {
+            as: 'dogs',
+            foreignKey: 'personId'
+        });
+        Person.belongsToMany(models.book, {
+            through: 'books_to_people',
+            onDelete: 'CASCADE'
+        });
+    };
+
+    return Person;
+};
+
+`
+
+module.exports.person_indices_migration = `
+'use strict';
+
+/**
+ * @module - Migrations to create and to undo a table correpondant to a sequelize model.
+ */
+module.exports = {
+
+    /**
+     * up - Creates a table with the fields specified in the the createTable function.
+     *
+     * @param  {object} queryInterface Used to modify the table in the database.
+     * @param  {object} Sequelize      Sequelize instance with data types included
+     * @return {promise}                Resolved if the table was created successfully, rejected otherwise.
+     */
+    up: function(queryInterface, Sequelize) {
+        return queryInterface.createTable('people', {
+
+            id: {
+                type: Sequelize.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+
+            createdAt: {
+                type: Sequelize.DATE
+            },
+
+            updatedAt: {
+                type: Sequelize.DATE
+            },
+
+            firstName: {
+                type: Sequelize.STRING
+            },
+            lastName: {
+                type: Sequelize.STRING
+            },
+            email: {
+                type: Sequelize.STRING
+            },
+            phone: {
+                type: Sequelize.STRING
+            }
+
+        }).then(()=>{
+          queryInterface.addIndex('people', ['email'])
+        }).then(()=>{
+          queryInterface.addIndex('people', ['phone'])
+        });
+    },
+
+    /**
+     * down - Deletes a table.
+     *
+     * @param  {object} queryInterface Used to modify the table in the database.
+     * @param  {object} Sequelize      Sequelize instance with data types included
+     * @return {promise}                Resolved if the table was deleted successfully, rejected otherwise.
+     */
+    down: function(queryInterface, Sequelize) {
+        return queryInterface.dropTable('people');
+    }
+
+};
+`

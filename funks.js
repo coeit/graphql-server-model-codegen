@@ -261,7 +261,8 @@ module.exports.getOptions = function(dataModel){
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
-    arrayAttributeString: attributesArrayString(dataModel.attributes)
+    arrayAttributeString: attributesArrayString(dataModel.attributes),
+    indices: dataModel.indices
   }
   return opts;
 }

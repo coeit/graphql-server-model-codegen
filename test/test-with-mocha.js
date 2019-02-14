@@ -330,3 +330,22 @@ describe('Association name in resolver and queries', function(){
     expect(g_model).to.be.equal(test_model);
   });
 });
+
+describe('Indices', function(){
+
+  it('Migration - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_resolvers =await funks.generateJs('create-migrations', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.person_indices_migration.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Model - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.person_indices_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+});

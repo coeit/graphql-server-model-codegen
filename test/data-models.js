@@ -305,3 +305,35 @@ module.exports.dog_owner = {
     }
   }
 }
+
+module.exports.person_indices = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String",
+    "phone" : "String"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "sql_hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql",
+      "label": "name"
+    },
+
+    "books":{
+      "type" : "sql_belongsToMany",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql",
+      "label" : "title"
+    }
+  },
+
+  "indices": ["email", "phone"]
+}
