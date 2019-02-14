@@ -48,7 +48,9 @@ module.exports = {
         <%}-%>
       <%}-%>
 
-    });
+    })<%if(indices!==undefined){ for(let i=0; i< indices.length; i++){-%>
+    .then(()=> {queryInterface.addIndex('<%-namePl-%>', ['<%= indices[i] %>'] )})
+      <%}-%>   <%}-%>;
   },
 
   /**

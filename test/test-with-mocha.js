@@ -304,3 +304,48 @@ describe('Model naming - camelCase or any upper-lowe caser ', function(){
   });
 
 });
+
+describe('Association name in resolver and queries', function(){
+  it('Resolvers - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.dog_owner_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('GraphQL Schema - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.dog_owner_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Model - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.dog_owner_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+});
+
+describe('Indices', function(){
+
+  it('Migration - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_resolvers =await funks.generateJs('create-migrations', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.person_indices_migration.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Model - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.person_indices_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+});

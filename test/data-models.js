@@ -277,3 +277,63 @@ module.exports.transcriptCount_indiv= {
     }
   }
 }
+
+
+module.exports.dog_owner = {
+  "model" : "Dog",
+  "storageType" : "Sql",
+  "attributes" : {
+    "name" : "String",
+    "breed" : "String"
+  },
+
+  "associations" : {
+    "owner" : {
+      "type" : "sql_belongsTo",
+      "target" : "Person",
+      "targetKey" : "owner_id_test",
+      "targetStorageType" : "sql",
+      "label": "firstName",
+      "sublabel": "lastName"
+    },
+    "keeper":{
+      "type" : "sql_belongsTo",
+      "target": "Researcher",
+      "targetKey": "keeperId",
+      "targetStorageType": "SQL",
+      "label": "firstName"
+    }
+  }
+}
+
+module.exports.person_indices = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String",
+    "phone" : "String"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "sql_hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql",
+      "label": "name"
+    },
+
+    "books":{
+      "type" : "sql_belongsToMany",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql",
+      "label" : "title"
+    }
+  },
+
+  "indices": ["email", "phone"]
+}
