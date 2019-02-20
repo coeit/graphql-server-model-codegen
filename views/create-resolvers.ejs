@@ -12,6 +12,7 @@ const path = require('path')
 const fs = require('fs')
 const uuidv4 = require('uuidv4')
 const resolvers = require('./index');
+const {handleError} = require('../utils/errors');
 
 <%let associations_one = associations.implicit_associations["belongsTo"]-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
@@ -41,7 +42,7 @@ const resolvers = require('./index');
     .then((res)=>{
       return res[0];
     }).catch( error => {
-      throw new Error(error);
+        handleError( error);
     });
   }
 <%}-%>
@@ -131,8 +132,7 @@ const resolvers = require('./index');
       }
       return this.get<%- associations_temp[i].name_cp%>(options);
     }).catch(error =>{
-      console.log("Catched the error in <%=associations_temp[i].name_lc%>Filter ", error);
-      return error;
+        handleError( error);
     });
   }
 
@@ -186,7 +186,7 @@ const resolvers = require('./index');
     .then((res)=>{
       return res[0];
     }).catch( error => {
-      throw new Error(error);
+        handleError( error);
     });
   }
 <%}-%>
@@ -273,15 +273,12 @@ module.exports = {
             throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
           }
           return <%- nameLc -%>.findAll(options);
-        }).catch(error =>{
-          console.log("Catched the error in <%- namePl -%> ", error);
-          return error;
         });
       } else {
           return new Error("You don't have authorization to perform this action");
       }
     }).catch( error =>{
-        return error;
+          handleError( error);
     })
   },
 
@@ -300,7 +297,7 @@ module.exports = {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+        handleError( error);
   })
   },
 
@@ -326,7 +323,7 @@ module.exports = {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+      handleError( error);
   })
   },
 
@@ -345,7 +342,7 @@ module.exports = {
           return new Error("You don't have authorization to perform this action");
       }
     }).catch( error =>{
-        return error;
+          handleError( error);
     })
   },
 
@@ -372,7 +369,7 @@ module.exports = {
           return new Error("You don't have authorization to perform this action");
       }
     }).catch( error =>{
-        return error;
+          handleError( error);
     })
   },
 
@@ -397,7 +394,7 @@ module.exports = {
             return new Error("You don't have authorization to perform this action");
         }
       }).catch( error =>{
-          return error;
+          handleError( error);
       })
   },
 
@@ -425,7 +422,7 @@ module.exports = {
             return new Error("You don't have authorization to perform this action");
         }
       }).catch( error =>{
-          return error;
+            handleError( error);
       })
   },
 
@@ -451,7 +448,7 @@ module.exports = {
             return new Error("You don't have authorization to perform this action");
         }
       }).catch( error =>{
-          return error;
+            handleError( error);
       })
   },
 
@@ -470,7 +467,7 @@ module.exports = {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+        handleError( error);
   })
   }
 }
