@@ -48,7 +48,7 @@ module.exports.transcript_countSchema = `
     vueTableTranscript_count : VueTableTranscript_count  }
 
   type Mutation {
-    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count
+    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
     deleteTranscript_count(id: ID!): String!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
     bulkAddTranscript_countXlsx: [transcript_count]
@@ -456,7 +456,7 @@ module.exports = \`
   }
 
     type Mutation {
-    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count
+    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count!
     deleteTranscript_count(id: ID!): String!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String): transcript_count!
     bulkAddTranscript_countXlsx: [transcript_count]
@@ -1934,7 +1934,7 @@ module.exports = \`
   }
 
     type Mutation {
-    addResearcher( firstName: String, lastName: String, email: String, addProjects:[ID] ): Researcher
+    addResearcher( firstName: String, lastName: String, email: String, addProjects:[ID] ): Researcher!
     deleteResearcher(id: ID!): String!
     updateResearcher(id: ID!, firstName: String, lastName: String, email: String, addProjects:[ID], removeProjects:[ID]): Researcher!
     bulkAddResearcherXlsx: [Researcher]
@@ -2351,7 +2351,7 @@ module.exports = \`
   }
 
     type Mutation {
-    addIndividual( name: String, addTranscript_counts:[ID] ): individual
+    addIndividual( name: String, addTranscript_counts:[ID] ): individual!
     deleteIndividual(id: ID!): String!
     updateIndividual(id: ID!, name: String, addTranscript_counts:[ID], removeTranscript_counts:[ID]): individual!
     bulkAddIndividualXlsx: [individual]
@@ -2509,7 +2509,7 @@ type VueTableBook{
   }
 
     type Mutation {
-    addBook( title: String, genre: String, publisherId: Int, addPeople:[ID]   ): Book
+    addBook( title: String, genre: String, publisherId: Int, addPeople:[ID]   ): Book!
     deleteBook(id: ID!): String!
     updateBook(id: ID!, title: String, genre: String, publisherId: Int, addPeople:[ID], removePeople:[ID]  ): Book!
     bulkAddBookXlsx: [Book]
@@ -2930,7 +2930,7 @@ module.exports = \`
     vueTablePerson : VueTablePerson  }
 
     type Mutation {
-    addPerson( firstName: String, lastName: String, email: String, addDogs:[ID], addBooks:[ID]): Person
+    addPerson( firstName: String, lastName: String, email: String, addDogs:[ID], addBooks:[ID]): Person!
     deletePerson(id: ID!): String!
     updatePerson(id: ID!, firstName: String, lastName: String, email: String, addDogs:[ID], removeDogs:[ID], addBooks:[ID], removeBooks:[ID]): Person!
     bulkAddPersonXlsx: [Person]
@@ -3518,7 +3518,7 @@ module.exports = \`
     vueTableInDiVIdual : VueTableInDiVIdual  }
 
     type Mutation {
-    addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual
+    addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
     deleteInDiVIdual(id: ID!): String!
     updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscriptCounts:[ID] ): inDiVIdual!
     bulkAddInDiVIdualXlsx: [inDiVIdual]
@@ -3928,7 +3928,7 @@ module.exports = \`
     vueTableTranscriptCount : VueTableTranscriptCount  }
 
     type Mutation {
-    addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount
+    addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
     deleteTranscriptCount(id: ID!): String!
     updateTranscriptCount(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcriptCount!
     bulkAddTranscriptCountXlsx: [transcriptCount]
@@ -4550,7 +4550,7 @@ type Query {
   vueTableDog : VueTableDog  }
 
   type Mutation {
-  addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog
+  addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
   deleteDog(id: ID!): String!
   updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
   bulkAddDogXlsx: [Dog]
