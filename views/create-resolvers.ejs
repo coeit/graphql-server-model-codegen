@@ -117,6 +117,8 @@ const {handleError} = require('../utils/errors');
     return this.count<%- associations_temp[i].target_cp_pl%>(options).then( items => {
       if(order !== undefined){
         options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+      }else if(pagination !== undefined){
+        options['order'] = [ ["id", "ASC"] ];
       }
 
       if(pagination !== undefined){
@@ -259,6 +261,8 @@ module.exports = {
         return <%- nameLc -%>.count(options).then( items => {
           if(order !== undefined){
             options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+          }else if(pagination !== undefined){
+            options['order'] = [ ["id", "ASC"] ];
           }
 
           if(pagination !== undefined){

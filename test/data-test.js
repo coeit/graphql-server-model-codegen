@@ -150,6 +150,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -513,6 +515,8 @@ module.exports = {
                     options['order'] = order.map((orderItem) => {
                         return [orderItem.field, orderItem.order];
                     });
+                }else if(pagination !== undefined){
+                  options['order'] = [ ["id", "ASC"] ];
                 }
 
                 if (pagination !== undefined) {
@@ -905,6 +909,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -1214,6 +1220,8 @@ person.prototype.booksFilter = function({
             options['order'] = order.map((orderItem) => {
                 return [orderItem.field, orderItem.order];
             });
+        }else if(pagination !== undefined){
+          options['order'] = [ ["id", "ASC"] ];
         }
 
         if (pagination !== undefined) {
@@ -1289,6 +1297,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -1571,6 +1581,8 @@ book.prototype.peopleFilter = function({
             options['order'] = order.map((orderItem) => {
                 return [orderItem.field, orderItem.order];
             });
+        }else if(pagination !== undefined){
+          options['order'] = [ ["id", "ASC"] ];
         }
 
         if (pagination !== undefined) {
@@ -1659,6 +1671,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -2007,6 +2021,8 @@ researcher.prototype.projectsFilter = function({
             options['order'] = order.map((orderItem) => {
                 return [orderItem.field, orderItem.order];
             });
+        }else if(pagination !== undefined){
+          options['order'] = [ ["id", "ASC"] ];
         }
 
         if (pagination !== undefined) {
@@ -2082,6 +2098,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -2566,6 +2584,8 @@ book.prototype.peopleFilter = function({
             options['order'] = order.map((orderItem) => {
                 return [orderItem.field, orderItem.order];
             });
+        }else if(pagination !== undefined){
+          options['order'] = [ ["id", "ASC"] ];
         }
 
         if (pagination !== undefined) {
@@ -2654,6 +2674,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -3009,6 +3031,8 @@ module.exports = {
                       options['order'] = order.map((orderItem) => {
                           return [orderItem.field, orderItem.order];
                       });
+                  }else if(pagination !== undefined){
+                    options['order'] = [ ["id", "ASC"] ];
                   }
 
                   if (pagination !== undefined) {
@@ -3653,6 +3677,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -3999,6 +4025,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
@@ -4287,6 +4315,8 @@ module.exports = {
                         options['order'] = order.map((orderItem) => {
                             return [orderItem.field, orderItem.order];
                         });
+                    }else if(pagination !== undefined){
+                      options['order'] = [ ["id", "ASC"] ];
                     }
 
                     if (pagination !== undefined) {
