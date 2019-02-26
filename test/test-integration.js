@@ -1,6 +1,11 @@
-const { expect } = require('chai')
-const request = require('sync-request')
-const baseUrl = 'http://0.0.0.0:3000/graphql'
+const { expect } = require('chai');
+const request = require('sync-request');
+const baseUrl = 'http://0.0.0.0:3000/graphql';
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const jsonwebtoken = require('jsonwebtoken');
+const FormData = require('form-data');
 
 //dev_hint: ALTER SEQUENCE individuals_id_seq RESTART WITH 1;
 
@@ -24,14 +29,13 @@ describe(
     it('02. Individual add', function() {
         let res = request('POST', baseUrl, {
             json: {
-                query: 'mutation { addIndividual(name: \"1 First\") { id } }'
+                query: 'mutation { addIndividual(name: \"First\") { id } }'
             }
         });
 
         let resBody = JSON.parse(res.body.toString('utf8'));
         expect(res.statusCode).to.equal(200);
 
-        //TODO: Why individual.id is string, is it correct?
         expect(resBody.data.addIndividual.id).equal("1");
     });
 
@@ -39,7 +43,7 @@ describe(
     it('03. Individual update', function() {
         let res = request('POST', baseUrl, {
             json: {
-                query: 'mutation { updateIndividual(id: 1, name: "1 Update: First has Second in name") {id name} }'
+                query: 'mutation { updateIndividual(id: 1, name: "FirstToSecondUpdated") {id name} }'
             }
         });
 
@@ -49,7 +53,7 @@ describe(
             data: {
                 updateIndividual: {
                     id: "1",
-                    name: "1 Update: First has Second in name"
+                    name: "FirstToSecondUpdated"
                 }
             }
         })
@@ -58,7 +62,7 @@ describe(
     it('04. Individual add one more and find both', function() {
         request('POST', baseUrl, {
             json: {
-                query: 'mutation { addIndividual(name: "2 Second") {id} }'
+                query: 'mutation { addIndividual(name: "Second") {id} }'
             }
         });
 
@@ -87,7 +91,7 @@ describe(
             data: {
                 readOneIndividual: {
                     id: "2",
-                    name: "2 Second"
+                    name: "Second"
                 }
             }
         })
@@ -142,8 +146,8 @@ describe(
         expect(resBody).to.deep.equal({
             data: {
                 individuals: [
-                    {name: "2 Second"},
-                    {name: "1 Update: First has Second in name"}
+                    {name: "Second"},
+                    {name: "FirstToSecondUpdated"}
                 ]
             }
         })
@@ -328,14 +332,14 @@ describe(
       // transcript_counts result:
         let res = request('POST', baseUrl, {
             json: {
-                query: 'mutation { addIndividual(name: \"Incredible Maize Plant One\") { id name } }'
+                query: 'mutation { addIndividual(name: \"IncredibleMaizePlantOne\") { id name } }'
             }
         });
 
         let resBody = JSON.parse(res.body.toString('utf8'));
         expect(res.statusCode).to.equal(200);
 
-        expect(resBody.data.addIndividual.name).equal("Incredible Maize Plant One");
+        expect(resBody.data.addIndividual.name).equal("IncredibleMaizePlantOne");
         let plantId = resBody.data.addIndividual.id;
 
         // Create TranscriptCount with above Plant assigned as Individual
@@ -353,7 +357,7 @@ describe(
                 gene: "Gene D",
                 individual: {
                   id: "3",
-                  name: "Incredible Maize Plant One"
+                  name: "IncredibleMaizePlantOne"
                 }
               }
             }
@@ -462,4 +466,88 @@ describe(
                 }
             });
         });
+});
+
+
+
+
+describe(
+'CSV Batch Upload',
+function() {
+
+    it('01. Check individual validation', function() {
+        let res = request('POST', baseUrl, {
+            json: {
+                query: 'mutation { addIndividual(name: \"Not an alpha name\") { id } }'
+            }
+        });
+
+        let resBody = JSON.parse(res.body.toString('utf8'));
+        //The server shell return an error
+        expect(res.statusCode).to.equal(500);
+    });
+
+    // The user e-mail here is the same that is used for sending data, it is sci.db.service@gmail.com (pwd: SciDbServiceQAZ)
+    // but you can place any other recipient address. This test wont add anything into the database, because individual.csv
+    // contains two lines that are rejected by the isAlpha validator for the individual name. If you remove these lines,
+    // the test will make a batch add.
+
+    it('02. Batch upload', function () {
+
+        // Count the initial number of individuals
+        let res = request('POST', baseUrl, {
+            json: {
+                query: '{ countIndividuals }'
+            }
+        });
+        let cnt1 = JSON.parse(res.body.toString('utf8')).data.countIndividuals;
+
+        // some dummy token for no_acl server mode (the const secret-key can be invalid with time)
+        let token = jsonwebtoken.sign({
+            id: 1,
+            email: "sci.db.service@gmail.com",
+            roles: "admin"
+        }, 'something-secret', { expiresIn: '1h' });
+
+        let formData = new FormData();
+        let success = true;
+        let csvPath = path.join(__dirname, 'individual.csv');
+
+
+        formData.append('csv_file', fs.createReadStream(csvPath));
+        formData.append('query', 'mutation {bulkAddIndividualCsv{ id}}');
+
+        axios.post(baseUrl, formData,  {
+            headers: {
+                'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                'Accept': 'application/graphql',
+                'authorization' : token
+            }
+        }).then(function(response) {
+            console.log("normal execution");
+        }).catch(function(res) {
+            if (res.response && res.response.data && Array
+                .isArray(res.response.data)) {
+                console.log("error 1");
+            } else {
+                let err = (res && res.response && res.response.data && res.response
+                    .data.message ?
+                    res.response.data.message : res);
+                console.log(err);
+            }
+            success = false;
+        });
+
+        expect(success).equal(true);
+
+        // Count the final number of individuals
+        res = request('POST', baseUrl, {
+            json: {
+                query: '{ countIndividuals }'
+            }
+        });
+        let cnt2 = JSON.parse(res.body.toString('utf8')).data.countIndividuals;
+
+        expect(cnt1).equal(cnt2);
+    });
 });
