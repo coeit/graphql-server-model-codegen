@@ -68,11 +68,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * individual.prototype.transcript_countsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -252,26 +254,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddIndividualCsv: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-              handleError( error);
-        })
-    },
+     bulkAddIndividualCsv: function(_, context) {
+         return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteIndividual - Check user authorization and delete a record with the specified id in the id argument.
@@ -478,11 +502,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 module.exports = {
 
@@ -614,26 +640,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddIndividualCsv: function(_, context) {
-      return checkAuthorization(context, 'individuals', 'create').then( authorization =>{
-        if (authorization === true) {
-          delim = context.request.body.delim;
-          cols = context.request.body.cols;
-          tmpFile = path.join(__dirname, uuidv4()+'.csv')
-          return context.request.files.csv_file.mv(tmpFile).then(() => {
-            return fileTools.parseCsvStream(tmpFile, individual, delim, cols)
-          }).catch((err) => {
-            return new Error(err);
-          }).then(() => {
-            fs.unlinkSync(tmpFile)
-          })
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
-      }).catch( error =>{
-          handleError( error);
-      })
-    },
+     bulkAddIndividualCsv: function(_, context) {
+         return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteIndividual - Check user authorization and delete a record with the specified id in the id argument.
@@ -861,11 +909,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * transcript_count.prototype.individual - Return associated record
@@ -1008,26 +1058,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddTranscript_countCsv: function(_, context) {
-        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+     bulkAddTranscript_countCsv: function(_, context) {
+         return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteTranscript_count - Check user authorization and delete a record with the specified id in the id argument.
@@ -1138,11 +1210,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 
 /**
@@ -1402,26 +1476,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddPersonCsv: function(_, context) {
-        return checkAuthorization(context, 'people', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, person, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+     bulkAddPersonCsv: function(_, context) {
+         return checkAuthorization(context, 'people', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deletePerson - Check user authorization and delete a record with the specified id in the id argument.
@@ -1544,12 +1640,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
-
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -1773,26 +1870,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddBookCsv: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError(error);
-        })
-    },
+     bulkAddBookCsv: function(_, context) {
+         return checkAuthorization(context, 'books', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
@@ -1968,11 +2087,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * researcher.prototype.dog - Return associated record
@@ -2200,26 +2321,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddResearcherCsv: function(_, context) {
-        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, researcher, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+     bulkAddResearcherCsv: function(_, context) {
+         return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteResearcher - Check user authorization and delete a record with the specified id in the id argument.
@@ -2547,12 +2690,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
-
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -2776,26 +2920,48 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddBookCsv: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, book, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+     bulkAddBookCsv: function(_, context) {
+         return checkAuthorization(context, 'books', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
 
     /**
      * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
@@ -2972,11 +3138,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * dog.prototype.person - Return associated record
@@ -3130,26 +3298,49 @@ module.exports = {
      * @param  {string} _       First parameter is not used
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
-    bulkAddDogCsv: function(_, context) {
-      return checkAuthorization(context, 'dogs', 'create').then( authorization =>{
-        if (authorization === true) {
-          delim = context.request.body.delim;
-          cols = context.request.body.cols;
-          tmpFile = path.join(__dirname, uuidv4() + '.csv')
-          return context.request.files.csv_file.mv(tmpFile).then(() => {
-              return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
-          }).catch((err) => {
-              return new Error(err);
-          }).then(() => {
-              fs.unlinkSync(tmpFile)
-          })
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
-      }).catch( error =>{
-          handleError( error);
-      })
-    },
+     bulkAddDogCsv: function(_, context) {
+         return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+             if (authorization === true) {
+
+                 delim = context.request.body.delim;
+                 cols = context.request.body.cols;
+                 tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                 context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                     fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add',
+                                 'Your data has been successfully added to the database.');
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     }).catch((error) => {
+                         try {
+                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                 'ScienceDB batch add', \`\${error.message}\`);
+                         } catch (error) {
+                             console.log(error.message);
+                         }
+
+                         fs.unlinkSync(tmpFile);
+                     });
+
+                 }).catch((error) => {
+                     return new Error(error);
+                 });
+
+             } else {
+                 return new Error("You don't have authorization to perform this action");
+             }
+         }).catch(error => {
+             return error;
+         })
+     },
+
 
     /**
      * deleteDog - Check user authorization and delete a record with the specified id in the id argument.
@@ -3592,11 +3783,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * inDiVIdual.prototype.transcriptCountsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -3781,24 +3974,46 @@ module.exports = {
      */
     bulkAddInDiVIdualCsv: function(_, context) {
         return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, inDiVIdual, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+          if (authorization === true) {
+
+              delim = context.request.body.delim;
+              cols = context.request.body.cols;
+              tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+              context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                  fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add',
+                              'Your data has been successfully added to the database.');
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  }).catch((error) => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add', \`\${error.message}\`);
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  });
+
+              }).catch((error) => {
+                  return new Error(error);
+              });
+
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          return error;
+      })
+  },
 
     /**
      * deleteInDiVIdual - Check user authorization and delete a record with the specified id in the id argument.
@@ -3974,11 +4189,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * transcriptCount.prototype.individual - Return associated record
@@ -4126,24 +4343,46 @@ module.exports = {
      */
     bulkAddTranscriptCountCsv: function(_, context) {
         return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, transcriptCount, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-            handleError( error);
-        })
-    },
+          if (authorization === true) {
+
+              delim = context.request.body.delim;
+              cols = context.request.body.cols;
+              tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+              context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                  fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add',
+                              'Your data has been successfully added to the database.');
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  }).catch((error) => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add', \`\${error.message}\`);
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  });
+
+              }).catch((error) => {
+                  return new Error(error);
+              });
+
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          return error;
+      })
+  },
 
     /**
      * deleteTranscriptCount - Check user authorization and delete a record with the specified id in the id argument.
@@ -4254,11 +4493,13 @@ const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
 
 /**
  * dog.prototype.owner - Return associated record
@@ -4416,24 +4657,46 @@ module.exports = {
      */
     bulkAddDogCsv: function(_, context) {
         return checkAuthorization(context, 'dogs', 'create').then(authorization => {
-            if (authorization === true) {
-                delim = context.request.body.delim;
-                cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv')
-                return context.request.files.csv_file.mv(tmpFile).then(() => {
-                    return fileTools.parseCsvStream(tmpFile, dog, delim, cols)
-                }).catch((err) => {
-                    return new Error(err);
-                }).then(() => {
-                    fs.unlinkSync(tmpFile)
-                })
-            } else {
-                return new Error("You don't have authorization to perform this action");
-            }
-        }).catch(error => {
-           handleError( error);
-        })
-    },
+          if (authorization === true) {
+
+              delim = context.request.body.delim;
+              cols = context.request.body.cols;
+              tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+              context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                  fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add',
+                              'Your data has been successfully added to the database.');
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  }).catch((error) => {
+                      try {
+                          email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                              'ScienceDB batch add', \`\${error.message}\`);
+                      } catch (error) {
+                          console.log(error.message);
+                      }
+
+                      fs.unlinkSync(tmpFile);
+                  });
+
+              }).catch((error) => {
+                  return new Error(error);
+              });
+
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          return error;
+      })
+  },
 
     /**
      * deleteDog - Check user authorization and delete a record with the specified id in the id argument.
