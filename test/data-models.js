@@ -337,3 +337,24 @@ module.exports.person_indices = {
 
   "indices": ["email", "phone"]
 }
+
+module.exports.academicTeam = {
+  "model" : "academicTeam",
+  "storageType" : "SQL",
+  "attributes" : {
+    "name" : "String",
+    "department" : "String",
+    "subject": "String"
+  },
+  "associations":{
+    "members":{
+      "type" : "sql_hasMany",
+      "target" : "Researcher",
+      "targetKey" : "academicTeamId",
+      "targetStorageType" : "sql",
+      "label": "firstName",
+      "sublabel": "lastName"
+    }
+  }
+
+}

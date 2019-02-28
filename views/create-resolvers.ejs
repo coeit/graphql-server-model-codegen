@@ -321,7 +321,7 @@ module.exports = {
       .then( <%- nameLc -%> =>{
         <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
         <%for(let i=0; i < associations_temp.length; i++){-%>
-            if(input.add<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.set<%=associations_temp[i].target_cp_pl-%>(input.add<%=associations_temp[i].target_cp_pl-%>);}
+            if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
           <%}-%>
         return <%- nameLc -%>;
       });
@@ -442,8 +442,8 @@ module.exports = {
         .then( <%- nameLc -%> => {
           <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
           <%for(let i=0; i < associations_temp.length; i++){-%>
-              if(input.add<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.add<%=associations_temp[i].target_cp_pl-%>(input.add<%=associations_temp[i].target_cp_pl-%>);}
-              if(input.remove<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.remove<%=associations_temp[i].target_cp_pl-%>(input.remove<%=associations_temp[i].target_cp_pl-%>);}
+              if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+              if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
             <%}-%>
             return <%- nameLc -%>.update(input);
           });

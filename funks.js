@@ -307,7 +307,8 @@ parseAssociations = function(associations, storageType){
 
         if(associations_type["many"].includes(association.type) )
         {
-          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
+          //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
+          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];          
         }else if(associations_type["one"].includes(association.type))
         {
           associations_info.schema_attributes["one"][name] = association.target;

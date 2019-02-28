@@ -5003,3 +5003,493 @@ module.exports = {
 
 };
 `
+
+module.exports.academicTeam_resolvers = `
+/*
+    Resolvers for basic CRUD operations
+*/
+
+const academicTeam = require('../models/index').academicTeam;
+const searchArg = require('../utils/search-argument');
+const fileTools = require('../utils/file-tools');
+const helper = require('../utils/helper');
+const globals = require('../config/globals');
+const checkAuthorization = require('../utils/check-authorization');
+const path = require('path');
+const fs = require('fs');
+const uuidv4 = require('uuidv4');
+const resolvers = require('./index');
+const {
+    handleError
+} = require('../utils/errors');
+const email = require('../utils/email');
+const helpersAcl = require('../utils/helpers-acl');
+
+
+
+
+
+/**
+ * academicTeam.prototype.membersFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+academicTeam.prototype.membersFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+    if (search === undefined) {
+        return resolvers.researchers({
+            "search": {
+                "field": "academicTeamId",
+                "value": {
+                    "value": this.id
+                },
+                "operator": "eq"
+            },
+            order,
+            pagination
+        }, context);
+    } else {
+        return resolvers.researchers({
+            "search": {
+                "operator": "and",
+                "search": [{
+                    "field": "academicTeamId",
+                    "value": {
+                        "value": this.id
+                    },
+                    "operator": "eq"
+                }, search]
+            },
+            order,
+            pagination
+        }, context)
+    }
+}
+
+/**
+ * academicTeam.prototype.countFilteredMembers - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+academicTeam.prototype.countFilteredMembers = function({
+    search
+}, context) {
+
+    if (search === undefined) {
+        return resolvers.countResearchers({
+            "search": {
+                "field": "academicTeamId",
+                "value": {
+                    "value": this.id
+                },
+                "operator": "eq"
+            }
+        }, context);
+    } else {
+        return resolvers.countResearchers({
+            "search": {
+                "operator": "and",
+                "search": [{
+                    "field": "academicTeamId",
+                    "value": {
+                        "value": this.id
+                    },
+                    "operator": "eq"
+                }, search]
+            }
+        }, context)
+    }
+}
+
+
+
+
+
+module.exports = {
+
+    /**
+     * academicTeams - Check user authorization and return certain number, specified in pagination argument, of records that
+     * holds the condition of search argument, all of them sorted as specified by the order argument.
+     *
+     * @param  {object} search     Search argument for filtering records
+     * @param  {array} order       Type of sorting (ASC, DESC) for each field
+     * @param  {object} pagination Offset and limit to get the records from and to respectively
+     * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+     */
+    academicTeams: function({
+        search,
+        order,
+        pagination
+    }, context) {
+        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return academicTeam.count(options).then(items => {
+                    if (order !== undefined) {
+                        options['order'] = order.map((orderItem) => {
+                            return [orderItem.field, orderItem.order];
+                        });
+                    } else if (pagination !== undefined) {
+                        options['order'] = [
+                            ["id", "ASC"]
+                        ];
+                    }
+
+                    if (pagination !== undefined) {
+                        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+                        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+                    } else {
+                        options['offset'] = 0;
+                        options['limit'] = items;
+                    }
+
+                    if (globals.LIMIT_RECORDS < options['limit']) {
+                        throw new Error(\`Request of total academicTeams exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+                    }
+                    return academicTeam.findAll(options);
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * readOneAcademicTeam - Check user authorization and return one book with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
+    readOneAcademicTeam: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+            if (authorization === true) {
+                return academicTeam.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * addAcademicTeam - Check user authorization and creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+    addAcademicTeam: function(input, context) {
+        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+            if (authorization === true) {
+                return academicTeam.create(input)
+                    .then(academicTeam => {
+                        if (input.addMembers) {
+                            academicTeam.setMembers(input.addMembers);
+                        }
+                        return academicTeam;
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * bulkAddAcademicTeamXlsx - Load xlsx file of records NO STREAM
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddAcademicTeamXlsx: function(_, context) {
+        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+            if (authorization === true) {
+                let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
+                return academicTeam.bulkCreate(xlsxObjs, {
+                    validate: true
+                });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+
+    /**
+     * bulkAddAcademicTeamCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddAcademicTeamCsv: function(_, context) {
+        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+            if (authorization === true) {
+
+                delim = context.request.body.delim;
+                cols = context.request.body.cols;
+                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+
+                context.request.files.csv_file.mv(tmpFile).then(() => {
+
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                        try {
+                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                'ScienceDB batch add',
+                                'Your data has been successfully added to the database.');
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+
+                        fs.unlinkSync(tmpFile);
+                    }).catch((error) => {
+                        try {
+                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                                'ScienceDB batch add', \`\${error.message}\`);
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+
+                        fs.unlinkSync(tmpFile);
+                    });
+
+                }).catch((error) => {
+                    return new Error(error);
+                });
+
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    },
+
+    /**
+     * deleteAcademicTeam - Check user authorization and delete a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteAcademicTeam: function({
+        id
+    }, context) {
+        return checkAuthorization(context, 'academicTeams', 'delete').then(authorization => {
+            if (authorization === true) {
+                return academicTeam.findById(id)
+                    .then(academicTeam => {
+                        return academicTeam.destroy()
+                            .then(() => {
+                                return 'Item succesfully deleted';
+                            });
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * updateAcademicTeam - Check user authorization and update the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
+    updateAcademicTeam: function(input, context) {
+        return checkAuthorization(context, 'academicTeams', 'update').then(authorization => {
+            if (authorization === true) {
+                return academicTeam.findById(input.id)
+                    .then(academicTeam => {
+                        if (input.addMembers) {
+                            academicTeam.addMembers(input.addMembers);
+                        }
+                        if (input.removeMembers) {
+                            academicTeam.removeMembers(input.removeMembers);
+                        }
+                        return academicTeam.update(input);
+                    });
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * countAcademicTeams - Count number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
+    countAcademicTeams: function({
+        search
+    }, context) {
+        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+            if (authorization === true) {
+                let options = {};
+                if (search !== undefined) {
+                    let arg = new searchArg(search);
+                    let arg_sequelize = arg.toSequelize();
+                    options['where'] = arg_sequelize;
+                }
+
+                return academicTeam.count(options);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    },
+
+    /**
+     * vueTableAcademicTeam - Return table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableAcademicTeam: function(_, context) {
+        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.vueTable(context.request, academicTeam, ["id", "name","department","subject"]);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
+    }
+}
+`
+
+module.exports.academicTeam_schema =`
+module.exports = \`
+type academicTeam  {
+  id: ID
+  name: String
+  department: String
+  subject: String
+    membersFilter(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput): [Researcher]
+  countFilteredMembers(search: searchResearcherInput) : Int
+}
+
+type VueTableAcademicTeam{
+  data : [academicTeam]
+  total: Int
+  per_page: Int
+  current_page: Int
+  last_page: Int
+  prev_page_url: String
+  next_page_url: String
+  from: Int
+  to: Int
+}
+
+enum academicTeamField {
+  id
+  name
+  department
+  subject
+}
+
+input searchAcademicTeamInput {
+  field: academicTeamField
+  value: typeValue
+  operator: Operator
+  search: [searchAcademicTeamInput]
+}
+
+input orderAcademicTeamInput{
+  field: academicTeamField
+  order: Order
+}
+
+type Query {
+  academicTeams(search: searchAcademicTeamInput, order: [ orderAcademicTeamInput ], pagination: paginationInput ): [academicTeam]
+  readOneAcademicTeam(id: ID!): academicTeam
+  countAcademicTeams(search: searchAcademicTeamInput ): Int
+  vueTableAcademicTeam : VueTableAcademicTeam  }
+
+  type Mutation {
+  addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
+  deleteAcademicTeam(id: ID!): String!
+  updateAcademicTeam(id: ID!, name: String, department: String, subject: String , addMembers:[ID], removeMembers:[ID] ): academicTeam!
+  bulkAddAcademicTeamXlsx: [academicTeam]
+  bulkAddAcademicTeamCsv: [academicTeam]
+}
+  \`;
+`
+
+module.exports.academicTeam_model = `
+'use strict';
+
+const Sequelize = require('sequelize');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var academicTeam = sequelize.define('academicTeam', {
+
+        name: {
+            type: Sequelize.STRING
+        },
+        owner: {
+            type: Sequelize.STRING
+        },
+        stadium: {
+            type: Sequelize.STRING
+        }
+    });
+
+    academicTeam.associate = function(models) {
+        academicTeam.hasMany(models.researcher, {
+            as: 'members',
+            foreignKey: 'academicTeamId'
+        });
+    };
+
+    return academicTeam;
+};
+`

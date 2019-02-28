@@ -329,6 +329,32 @@ describe('Association name in resolver and queries', function(){
     let test_model = test.dog_owner_model.replace(/\s/g, '');
     expect(g_model).to.be.equal(test_model);
   });
+
+  it('Resolvers - academicTeam', async function(){
+    let opts = funks.getOptions(models.academicTeam);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test.academicTeam_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('GraphQL Schema - academicTeam', async function(){
+    let opts = funks.getOptions(models.academicTeam);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test.academicTeam_schema.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+  //
+  // it('Model - academicTeam', async function(){
+  //   let opts = funks.getOptions(models.academicTeam);
+  //   let generated_model =await funks.generateJs('create-models', opts);
+  //   let g_model = generated_model.replace(/\s/g, '');
+  //   let test_model = test.academicTeam_model.replace(/\s/g, '');
+  //   expect(g_model).to.be.equal(test_model);
+  // });
+
+
 });
 
 describe('Indices', function(){
