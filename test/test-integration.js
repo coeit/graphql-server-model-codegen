@@ -7,9 +7,11 @@ const axios = require('axios');
 const jsonwebtoken = require('jsonwebtoken');
 const FormData = require('form-data');
 
-//dev_hint:
-// ALTER SEQUENCE individuals_id_seq RESTART WITH 1;
-// ALTER SEQUENCE transcript_counts_id_seq RESTART WITH 1;
+//HINT:
+//DELETE FROM transcript_counts;
+//DELETE FROM individuals;
+//ALTER SEQUENCE individuals_id_seq RESTART WITH 1;
+//ALTER SEQUENCE transcript_counts_id_seq RESTART WITH 1;
 
 describe(
   'Clean GraphQL Server: one new basic function per test ("Individual" model)',

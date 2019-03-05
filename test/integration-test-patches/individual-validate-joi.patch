@@ -1,23 +1,30 @@
---- individual_old.js	2019-03-05 02:26:38.000000000 -0600
-+++ individual_new.js	2019-03-05 02:25:48.000000000 -0600
+--- individual_orig.js	2019-03-05 16:54:26.574921039 -0600
++++ individual_patched.js	2019-03-05 16:36:42.470829198 -0600
 @@ -5,7 +5,7 @@
  module.exports.validator_patch = function(individual) {
  
      individual.prototype.validatorSchema = Joi.object().keys({
 -        name: Joi.string()
 +        name: Joi.string().alphanum()
+     }).options({
+         allowUnknown: true
      });
- 
-     individual.prototype.validatorForCreate = function(record) {
-@@ -22,8 +22,9 @@
+@@ -24,12 +24,12 @@
  
      individual.prototype.validatorForDelete = function(model) {
  
 -        //TODO: on the input you have the model to be deleted, no generic Joi checks are available
 -
-+        if(model.name == 'Undeletable'){
-+            return new Error('Model with the name "Undeletable" can not de deleted');
+-        return {
+-            error: null
+-        };
+-
++        if(model.dataValues.name === 'Undeletable'){
++            return {error: new Error('Record with name "Undeletable" can\'t be deleted')};
++        }else{
++            return {error: null};
 +        }
++        
      };
  
      return individual;

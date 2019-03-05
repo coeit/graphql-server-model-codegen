@@ -6,7 +6,7 @@ module.exports.validator_patch = function(<%- nameLc -%>){
 
     <%- nameLc -%>.prototype.validatorSchema = Joi.object().keys({
         <%- attributesJoiStr -%>
-    });
+    }).options({ allowUnknown: true });
 
     <%- nameLc -%>.prototype.validatorForCreate = function(record) {
 
@@ -23,6 +23,8 @@ module.exports.validator_patch = function(<%- nameLc -%>){
     <%- nameLc -%>.prototype.validatorForDelete = function(model) {
 
         //TODO: on the input you have the model to be deleted, no generic Joi checks are available
+
+        return {error: null};
 
     };
 

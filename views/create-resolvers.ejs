@@ -420,15 +420,18 @@ module.exports = {
     return checkAuthorization(context, '<%- namePl -%>', 'delete').then( authorization =>{
       if (authorization === true) {
       return <%- nameLc -%>
-        .findById(id)
-        .then( <%- nameLc -%> =>{
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', individual, null);
+        .findByPk(id)
+        .then( <%- nameLc -%>_sqlz =>{
+
+            if(<%- nameLc -%>_sqlz === null) return new Error(`Record with ID = ${id} not exist`);
+
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz);
             if (!!err) {
                 return err;
             } else {
-                return <%- nameLc -%>
+                return <%- nameLc -%>_sqlz
                 .destroy()
-                .then(()=>{return 'Item succesfully deleted';});
+                .then(()=>{return 'Item successfully deleted';});
             }
           });
         } else {
@@ -450,7 +453,7 @@ module.exports = {
     return checkAuthorization(context, '<%- namePl -%>', 'update').then( authorization =>{
       if (authorization === true) {
 
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', <%-  nameLc  -%>, input);
             if (!!err) {
                 return err;
             } else {
