@@ -15,6 +15,7 @@ const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
+const validatorUtil = require('../utils/validatorUtil');
 
 <%let associations_one = associations.implicit_associations["belongsTo"]-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
@@ -317,14 +318,20 @@ module.exports = {
   add<%- nameCp -%>: function(input, context){
     return checkAuthorization(context, '<%- namePl -%>', 'create').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>.create(input)
-      .then( <%- nameLc -%> =>{
-        <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
-        <%for(let i=0; i < associations_temp.length; i++){-%>
-            if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-          <%}-%>
-        return <%- nameLc -%>;
-      });
+
+        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', <%- nameLc -%>, input);
+        if (!!err) {
+            return err;
+        } else {
+            return <%- nameLc -%>.create(input)
+                .then( <%- nameLc -%> =>{
+                <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
+                <%for(let i=0; i < associations_temp.length; i++){-%>
+                if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+            <%}-%>
+            return <%- nameLc -%>;
+            });
+        }
     } else {
         return new Error("You don't have authorization to perform this action");
     }
@@ -415,9 +422,14 @@ module.exports = {
       return <%- nameLc -%>
         .findById(id)
         .then( <%- nameLc -%> =>{
-          return <%- nameLc -%>
-            .destroy()
-            .then(()=>{return 'Item succesfully deleted';});
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', individual, null);
+            if (!!err) {
+                return err;
+            } else {
+                return <%- nameLc -%>
+                .destroy()
+                .then(()=>{return 'Item succesfully deleted';});
+            }
           });
         } else {
             return new Error("You don't have authorization to perform this action");
@@ -437,16 +449,23 @@ module.exports = {
   update<%- nameCp-%>: function(input, context){
     return checkAuthorization(context, '<%- namePl -%>', 'update').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>
-        .findById(input.id)
-        .then( <%- nameLc -%> => {
-          <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
-          <%for(let i=0; i < associations_temp.length; i++){-%>
-              if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-              if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
-            <%}-%>
-            return <%- nameLc -%>.update(input);
-          });
+
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
+            if (!!err) {
+                return err;
+            } else {
+                return <%- nameLc -%>
+                    .findById(input.id)
+                    .then( <%- nameLc -%> => {
+                    <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
+                    <%for(let i=0; i < associations_temp.length; i++){-%>
+                        if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                        if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
+                    <%}-%>
+                    return <%- nameLc -%>.update(input);
+                    });
+            }
+
         } else {
             return new Error("You don't have authorization to perform this action");
         }

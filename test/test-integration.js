@@ -7,7 +7,9 @@ const axios = require('axios');
 const jsonwebtoken = require('jsonwebtoken');
 const FormData = require('form-data');
 
-//dev_hint: ALTER SEQUENCE individuals_id_seq RESTART WITH 1;
+//dev_hint:
+// ALTER SEQUENCE individuals_id_seq RESTART WITH 1;
+// ALTER SEQUENCE transcript_counts_id_seq RESTART WITH 1;
 
 describe(
   'Clean GraphQL Server: one new basic function per test ("Individual" model)',
@@ -551,3 +553,70 @@ function() {
         expect(cnt1).equal(cnt2);
     });
 });
+
+
+describe(
+    'Joi Validation tests',
+    function() {
+
+        it('01. Validate on add', function () {
+            let res = request('POST', baseUrl, {
+                json: {
+                    query: 'mutation { addIndividual(name: "@#$%^&") { name } }'
+                }
+            });
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(500);
+            expect(resBody).to.have.property('errors');
+        });
+
+        it('02. Validate on update', function () {
+
+            // Add correct record
+            let res = request('POST', baseUrl, {
+                json: {
+                    query: 'mutation { addIndividual(name: \"ToBeUpdated\") { id } }'
+                }
+            });
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            // Try to update to incorrect
+            res = request('POST', baseUrl, {
+                json: {
+                    query: `mutation { updateIndividual(id: ${resBody.data.addIndividual.id}, name: "#$%^&*") {id name} }`
+                }
+            });
+
+            resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(500);
+            expect(resBody).to.have.property('errors');
+        });
+
+        it('03. Validate on delete', function () {
+
+            // Add a record with a special name that can't be deleted
+            let res = request('POST', baseUrl, {
+                json: {
+                    query: 'mutation { addIndividual(name: "Undeletable") { id } }'
+                }
+            });
+
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+
+            // Try to delete an item with a special name that can't be deleted (see individual-validate-joi.patch for details)
+            res = request('POST', baseUrl, {
+                json: {
+                    query: `mutation { deleteIndividual (id: ${resBody.data.addIndividual.id}) }`
+                }
+            });
+
+            resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(500);
+            expect(resBody).to.have.property('errors');
+        });
+
+    });

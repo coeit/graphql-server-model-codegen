@@ -53,6 +53,8 @@ function cleanup {
     rm -rf ./docker/integration_test_run/migrations
     rm -rf ./docker/integration_test_run/schemas
     rm -rf ./docker/integration_test_run/resolvers
+    rm -rf ./docker/integration_test_run/validations
+    rm -rf ./docker/integration_test_run/patches
 }
 
 cleanup
@@ -63,8 +65,11 @@ node ./index.js generate ./test/integration-test-input ./docker/integration_test
 # Patch the resolver for web-server
 patch -V never ./docker/integration_test_run/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
 
-# Add simple validation to the Individual model
-patch -V never ./docker/integration_test_run/models/individual.js ./test/test-integration-individual.patch
+# Add simple sequalize validation to the Individual model
+# patch -V never ./docker/integration_test_run/models/individual.js ./test/integration-test-patches/individual-validate-sequelize.patch
+
+# Add monkey-patching validation with Joi
+patch -V never ./docker/integration_test_run/validations/individual.js ./test/integration-test-patches/individual-validate-joi.patch
 
 # Setup and launch the generated GraphQL web-server
 docker-compose -f ./docker/docker-compose-test.yml up -d
@@ -84,6 +89,6 @@ done
 
 # Run the integration test suite
 
-mocha ./test/test-integration.js
+# mocha ./test/test-integration.js
 
-cleanup
+# cleanup
