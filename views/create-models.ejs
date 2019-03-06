@@ -39,7 +39,8 @@ module.exports = function(sequelize, DataTypes){
       <% for(var key in associations.implicit_associations){ -%>
         <%for(let i=0; i< associations.implicit_associations[key].length; i++){-%>
           <%- name -%>.<%= key %>(models.<%= associations.implicit_associations[key][i].target_lc -%>
-          <% if(key === 'belongsToMany'){ -%> ,{through : '<%= associations.implicit_associations[key][i].keysIn -%>',
+          <% if(key === 'belongsToMany'){ -%> ,{as: '<%= associations.implicit_associations[key][i].name -%>',
+          through : '<%= associations.implicit_associations[key][i].keysIn -%>',
           onDelete: 'CASCADE'}  <%}else{ -%>
             ,{as: '<%= associations.implicit_associations[key][i].name -%>', foreignKey:'<%= associations.implicit_associations[key][i].targetKey -%>' }
             <%}-%>);

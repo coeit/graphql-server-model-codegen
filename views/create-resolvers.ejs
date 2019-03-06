@@ -116,7 +116,7 @@ const helpersAcl = require('../utils/helpers-acl');
       options['where'] = arg_sequelize;
     }
 
-    return this.count<%- associations_temp[i].target_cp_pl%>(options).then( items => {
+    return this.count<%- associations_temp[i].name_cp%>(options).then( items => {
       if(order !== undefined){
         options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
       }else if(pagination !== undefined){

@@ -3534,6 +3534,7 @@ module.exports = function(sequelize, DataTypes) {
             foreignKey: 'researcherId'
         });
         Researcher.belongsToMany(models.project, {
+            as: 'projects',
             through: 'project_to_researcher',
             onDelete: 'CASCADE'
         });
@@ -4928,6 +4929,7 @@ module.exports = function(sequelize, DataTypes) {
             foreignKey: 'personId'
         });
         Person.belongsToMany(models.book, {
+            as: 'books',
             through: 'books_to_people',
             onDelete: 'CASCADE'
         });
@@ -5475,10 +5477,10 @@ module.exports = function(sequelize, DataTypes) {
         name: {
             type: Sequelize.STRING
         },
-        owner: {
+        department: {
             type: Sequelize.STRING
         },
-        stadium: {
+        subject: {
             type: Sequelize.STRING
         }
     });
