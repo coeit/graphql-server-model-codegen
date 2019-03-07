@@ -55,7 +55,7 @@ const validatorUtil = require('../utils/validatorUtil');
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -65,7 +65,7 @@ const validatorUtil = require('../utils/validatorUtil');
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order,pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
     if(search === undefined)
     {
       return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
@@ -97,7 +97,7 @@ const validatorUtil = require('../utils/validatorUtil');
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -107,7 +107,7 @@ const validatorUtil = require('../utils/validatorUtil');
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order,pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
 
     let options = {};
 
@@ -199,7 +199,7 @@ const validatorUtil = require('../utils/validatorUtil');
 <% associations_temp = associations.explicit_resolvers["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -209,7 +209,7 @@ const validatorUtil = require('../utils/validatorUtil');
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order, pagination}, context){
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order, pagination}, context){
 
     if(search === undefined)
     {
