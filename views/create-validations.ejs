@@ -1,0 +1,32 @@
+// Delete this file, if you do not want or need any validations.
+const Joi = require('joi');
+
+// Dear user, edit the schema to adjust it to your model
+module.exports.validator_patch = function(<%- nameLc -%>){
+
+    <%- nameLc -%>.prototype.validatorSchema = Joi.object().keys({
+        <%- attributesJoiStr -%>
+    }).options({ allowUnknown: true });
+
+    <%- nameLc -%>.prototype.validatorForCreate = function(record) {
+
+        return Joi.validate(record, <%- nameLc -%>.prototype.validatorSchema);
+
+    };
+
+    <%- nameLc -%>.prototype.validatorForUpdate = function(record) {
+
+        return Joi.validate(record, <%- nameLc -%>.prototype.validatorSchema);
+
+    };
+
+    <%- nameLc -%>.prototype.validatorForDelete = function(model) {
+
+        //TODO: on the input you have the model to be deleted, no generic Joi checks are available
+
+        return {error: null};
+
+    };
+
+    return <%- nameLc -%>;
+};

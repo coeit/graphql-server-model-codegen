@@ -215,7 +215,7 @@ Integration tests are carried out using Docker to setup a GraphQL web server and
 
 All related Docker files are stored in `./docker`; especially `docker-compose-test.yml`.
 
-The test pipeline is defined and executed in `./test/integration-test.bash` for reasons of simplicity. The actual integration tests are written using `mocha` and can be found in `./test/test-integration.js`, which is invoked by the above bash script.
+The test pipeline is defined and executed in `./test/integration-test.bash` for reasons of simplicity. The actual integration tests are written using `mocha` and can be found in `./test/mocha_integration_test.js`, which is invoked by the above bash script.
 
 To ecexute the integration tests run
 ```

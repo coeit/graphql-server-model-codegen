@@ -1,7 +1,6 @@
 const expect = require('chai').expect;
-var fs = require('fs');
-const test = require('./data-test');
-const models = require('./data-models');
+const test = require('./unit_test_misc/data_test');
+const models = require('./unit_test_misc/data_models');
 const funks = require('../funks');
 
 describe('Lower-case models', function(){
@@ -374,4 +373,23 @@ describe('Indices', function(){
     let test_model = test.person_indices_model.replace(/\s/g, '');
     expect(g_model).to.be.equal(test_model);
   });
+});
+
+describe('Monkey patching templates', function(){
+
+    it('Validation - transcriptCount_indiv', async function(){
+        let opts = funks.getOptions(models.transcriptCount_indiv);
+        let generated_validation =await funks.generateJs('create-validations', opts);
+        let g_resolvers = generated_validation.replace(/\s/g, '');
+        let test_resolvers = test.transcriptCount_indiv_validation.replace(/\s/g, '');
+        expect(g_resolvers).to.be.equal(test_resolvers);
+    });
+
+    it('Patch - dog_owner', async function(){
+        let opts = funks.getOptions(models.dog_owner);
+        let generated_patch =await funks.generateJs('create-patches', opts);
+        let g_model = generated_patch.replace(/\s/g, '');
+        let test_model = test.dog_owner_patch.replace(/\s/g, '');
+        expect(g_model).to.be.equal(test_model);
+    });
 });

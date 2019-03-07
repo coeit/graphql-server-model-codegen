@@ -104,11 +104,41 @@ attributesToString = function(attributes){
 
   for(key in attributes)
   {
-    str_attributes+= key + ': ' + attributes[key] + ', '
+    str_attributes += key + ': ' + attributes[key] + ', '
   }
 
   return str_attributes.slice(0,-2);
-}
+};
+
+
+/**
+ * attributesToJoiString - Convert object attributes to a Joi validation string separating by dots the key and value and by comma each attribute.
+ *
+ * @param  {object} attributes Object attributes to convert
+ * @return {string}            Converted object into a single Joi string
+ */
+attributesToJoiString = function(attributes){
+    let str_attributes="";
+    if(attributes==='undefined' || isEmptyObject(attributes)) return str_attributes;
+
+    for(key in attributes)
+    {
+        let joi_type = "Joi.";
+        if(attributes[key] === 'String'){
+            joi_type += 'string()';
+        }else if(attributes[key] === 'Int' || attributes[key] === 'Float'){
+            joi_type += 'number()';
+        }else if(attributes[key] === 'Boolean'){
+            joi_type += 'boolean()';
+        }else{
+            throw new Error(`Unsupported attribute type: ${attributes[key]}`);
+        }
+
+        str_attributes += key + ': ' + joi_type + ', '
+    }
+
+    return str_attributes.slice(0,-2);
+};
 
 
 /**
@@ -197,6 +227,17 @@ writeIndexModelsCommons = function(dir_write){
   })
   .forEach(function(file) {
     var model = sequelize['import'](path.join(__dirname, file));
+    
+    let validator_patch = path.join(__dirname,'../','validations', file);
+    if(fs.existsSync(validator_patch)){
+        model = require(validator_patch).validator_patch(model);
+    }
+
+    let patches_patch = path.join(__dirname,'../','patches', file);
+    if(fs.existsSync(patches_patch)){
+        model = require(patches_patch).logic_patch(model);
+    }
+    
     models[model.name] = model;
   });
   //Important: creates associations based on associations defined in associate function in the model files
@@ -260,6 +301,7 @@ module.exports.getOptions = function(dataModel){
     namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
+    attributesJoiStr: attributesToJoiString(dataModel.attributes),
     associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
     arrayAttributeString: attributesArrayString(dataModel.attributes),
     indices: dataModel.indices
@@ -389,7 +431,7 @@ generateAssociationsMigrations =  function( opts, dir_write){
   *
   * @param  {string} section   Name of section that will be generated (i.e. schemas, models, migrations, resolvers)
   * @param  {object} opts      Object with options needed for the template that will generate the section
-  * @param  {string} dir_write Path (includin name of the file) where the generated section will be written as a file.
+  * @param  {string} dir_write Path (including name of the file) where the generated section will be written as a file.
   */
 generateSection = async function(section, opts, dir_write ){
   let generatedSection = await module.exports.generateJs('create-'+section ,opts);
@@ -443,7 +485,7 @@ writeCommons = function(dir_write){
 module.exports.generateCode = function(json_dir, dir_write){
   console.log("Generating files...");
   dir_write = (dir_write===undefined) ? __dirname : dir_write;
-  let sections = ['schemas', 'resolvers', 'models', 'migrations'];
+  let sections = ['schemas', 'resolvers', 'models', 'migrations', 'validations', 'patches'];
   let models = [];
   let attributes_schema = {};
   let summary_associations = {'one-many': [], 'many-many': {}};
@@ -460,6 +502,7 @@ module.exports.generateCode = function(json_dir, dir_write){
   {
     fs.mkdirSync(dir_write+'/models-webservice');
   }
+
 
   //test
   fs.readdirSync(json_dir).forEach((json_file) => {
@@ -480,29 +523,34 @@ module.exports.generateCode = function(json_dir, dir_write){
               file_name = dir_write + '/'+ section +'/' + opts.nameLc + '.js';
             }
 
-            generateSection(section, opts, file_name)
-            .then( () => {
-                console.log(file_name + ' written succesfully!');
-            });
+            if( (section == 'validations' || section == 'patches') && fs.existsSync(file_name)){
+                console.error(`Warning: ${file_name} already exist and shell be redacted manually`);
+            }else{
+                generateSection(section, opts, file_name)
+                    .then( () => {
+                        console.log(file_name + ' written successfully!');
+                    });
+            }
+
         });
         generateAssociationsMigrations(opts, dir_write);
       }else if(opts.storageType === 'webservice'){
           let file_name = "";
           file_name = dir_write + '/schemas/' + opts.nameLc + '.js';
           generateSection("schemas",opts,file_name).then( ()=>{
-            console.log(file_name + ' written succesfully!(from webservice)');
+            console.log(file_name + ' written successfully!(from webservice)');
           });
 
 
           file_name = dir_write + '/models-webservice/' + opts.nameLc + '.js';
           generateSection("models-webservice",opts,file_name).then( ()=>{
-            console.log(file_name + ' written succesfully!(from webservice)');
+            console.log(file_name + ' written successfully!(from webservice)');
           });
 
 
           file_name = dir_write + '/resolvers/' + opts.nameLc + '.js';
           generateSection("resolvers-webservice",opts,file_name).then( ()=>{
-            console.log(file_name + ' written succesfully!(from webservice)');
+            console.log(file_name + ' written successfully!(from webservice)');
           });
 
       }
@@ -512,7 +560,7 @@ module.exports.generateCode = function(json_dir, dir_write){
   let index_resolvers_file = dir_write + '/resolvers/index.js';
   generateSection('resolvers-index',{models: models} ,index_resolvers_file)
   .then( () => {
-    console.log('resolvers-index written succesfully!');
+    console.log('resolvers-index written successfully!');
   });
 
   writeCommons(dir_write);
