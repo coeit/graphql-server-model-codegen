@@ -187,7 +187,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -238,7 +238,7 @@ module.exports = {
     readOneIndividual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 return individual.findOne({
                     where: {
@@ -261,7 +261,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addIndividual: function(input, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', individual, input);
@@ -291,7 +291,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualXlsx: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return individual.bulkCreate(xlsxObjs, {
@@ -313,7 +313,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualCsv: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -365,7 +365,7 @@ module.exports = {
     deleteIndividual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'individuals', 'delete').then(authorization => {
+        return checkAuthorization(context, 'individual', 'delete').then(authorization => {
             if (authorization === true) {
                 return individual.findByPk(id)
                     .then(individual_sqlz => {
@@ -399,7 +399,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateIndividual: function(input, context) {
-        return checkAuthorization(context, 'individuals', 'update').then(authorization => {
+        return checkAuthorization(context, 'individual', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
@@ -436,7 +436,7 @@ module.exports = {
     countIndividuals: function({
         search
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -462,7 +462,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, individual, ["id", "name"]);
             } else {
@@ -611,7 +611,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -662,7 +662,7 @@ module.exports = {
     readOneIndividual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 return individual.findOne({
                     where: {
@@ -685,7 +685,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addIndividual: function(input, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', individual, input);
@@ -712,7 +712,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualXlsx: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return individual.bulkCreate(xlsxObjs, {
@@ -734,7 +734,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddIndividualCsv: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'create').then(authorization => {
+        return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -786,7 +786,7 @@ module.exports = {
     deleteIndividual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'individuals', 'delete').then(authorization => {
+        return checkAuthorization(context, 'individual', 'delete').then(authorization => {
             if (authorization === true) {
                 return individual.findByPk(id)
                     .then(individual_sqlz => {
@@ -820,7 +820,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateIndividual: function(input, context) {
-        return checkAuthorization(context, 'individuals', 'update').then(authorization => {
+        return checkAuthorization(context, 'individual', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
@@ -851,7 +851,7 @@ module.exports = {
     countIndividuals: function({
         search
     }, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -877,7 +877,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
-        return checkAuthorization(context, 'individuals', 'read').then(authorization => {
+        return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, individual, ["id", "name"]);
             } else {
@@ -1070,7 +1070,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -1121,7 +1121,7 @@ module.exports = {
     readOneTranscript_count: function({
         id
     }, context) {
-        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
             if (authorization === true) {
                 return transcript_count.findOne({
                     where: {
@@ -1144,7 +1144,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addTranscript_count: function(input, context) {
-        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', transcript_count, input);
@@ -1171,7 +1171,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscript_countXlsx: function(_, context) {
-        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return transcript_count.bulkCreate(xlsxObjs, {
@@ -1193,7 +1193,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscript_countCsv: function(_, context) {
-        return checkAuthorization(context, 'transcript_counts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -1245,7 +1245,7 @@ module.exports = {
     deleteTranscript_count: function({
         id
     }, context) {
-        return checkAuthorization(context, 'transcript_counts', 'delete').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'delete').then(authorization => {
             if (authorization === true) {
                 return transcript_count.findByPk(id)
                     .then(transcript_count_sqlz => {
@@ -1279,7 +1279,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateTranscript_count: function(input, context) {
-        return checkAuthorization(context, 'transcript_counts', 'update').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', transcript_count, input);
@@ -1310,7 +1310,7 @@ module.exports = {
     countTranscript_counts: function({
         search
     }, context) {
-        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -1336,7 +1336,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableTranscript_count: function(_, context) {
-        return checkAuthorization(context, 'transcript_counts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, transcript_count, ["id", "gene", "variable", "tissue_or_condition"]);
             } else {
@@ -1555,7 +1555,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'people', 'read').then(authorization => {
+        return checkAuthorization(context, 'Person', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -1606,7 +1606,7 @@ module.exports = {
     readOnePerson: function({
         id
     }, context) {
-        return checkAuthorization(context, 'people', 'read').then(authorization => {
+        return checkAuthorization(context, 'Person', 'read').then(authorization => {
             if (authorization === true) {
                 return person.findOne({
                     where: {
@@ -1629,7 +1629,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addPerson: function(input, context) {
-        return checkAuthorization(context, 'people', 'create').then(authorization => {
+        return checkAuthorization(context, 'Person', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', person, input);
@@ -1662,7 +1662,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddPersonXlsx: function(_, context) {
-        return checkAuthorization(context, 'people', 'create').then(authorization => {
+        return checkAuthorization(context, 'Person', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return person.bulkCreate(xlsxObjs, {
@@ -1684,7 +1684,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddPersonCsv: function(_, context) {
-        return checkAuthorization(context, 'people', 'create').then(authorization => {
+        return checkAuthorization(context, 'Person', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -1736,7 +1736,7 @@ module.exports = {
     deletePerson: function({
         id
     }, context) {
-        return checkAuthorization(context, 'people', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Person', 'delete').then(authorization => {
             if (authorization === true) {
                 return person.findByPk(id)
                     .then(person_sqlz => {
@@ -1770,7 +1770,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updatePerson: function(input, context) {
-        return checkAuthorization(context, 'people', 'update').then(authorization => {
+        return checkAuthorization(context, 'Person', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', person, input);
@@ -1813,7 +1813,7 @@ module.exports = {
     countPeople: function({
         search
     }, context) {
-        return checkAuthorization(context, 'people', 'read').then(authorization => {
+        return checkAuthorization(context, 'Person', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -1839,7 +1839,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTablePerson: function(_, context) {
-        return checkAuthorization(context, 'people', 'read').then(authorization => {
+        return checkAuthorization(context, 'Person', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, person, ["id", "firstName", "lastName", "email"]);
             } else {
@@ -1987,7 +1987,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -2038,7 +2038,7 @@ module.exports = {
     readOneBook: function({
         id
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 return book.findOne({
                     where: {
@@ -2061,7 +2061,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addBook: function(input, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', book, input);
@@ -2091,7 +2091,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookXlsx: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return book.bulkCreate(xlsxObjs, {
@@ -2113,7 +2113,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookCsv: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -2165,7 +2165,7 @@ module.exports = {
     deleteBook: function({
         id
     }, context) {
-        return checkAuthorization(context, 'books', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Book', 'delete').then(authorization => {
             if (authorization === true) {
                 return book.findByPk(id)
                     .then(book_sqlz => {
@@ -2199,7 +2199,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateBook: function(input, context) {
-        return checkAuthorization(context, 'books', 'update').then(authorization => {
+        return checkAuthorization(context, 'Book', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', book, input);
@@ -2236,7 +2236,7 @@ module.exports = {
     countBooks: function({
         search
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -2262,7 +2262,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, book, ["id", "title", "genre"]);
             } else {
@@ -2480,7 +2480,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -2531,7 +2531,7 @@ module.exports = {
     readOneResearcher: function({
         id
     }, context) {
-        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
             if (authorization === true) {
                 return researcher.findOne({
                     where: {
@@ -2554,7 +2554,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addResearcher: function(input, context) {
-        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', researcher, input);
@@ -2584,7 +2584,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddResearcherXlsx: function(_, context) {
-        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return researcher.bulkCreate(xlsxObjs, {
@@ -2606,7 +2606,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddResearcherCsv: function(_, context) {
-        return checkAuthorization(context, 'researchers', 'create').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -2658,7 +2658,7 @@ module.exports = {
     deleteResearcher: function({
         id
     }, context) {
-        return checkAuthorization(context, 'researchers', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'delete').then(authorization => {
             if (authorization === true) {
                 return researcher.findByPk(id)
                     .then(researcher_sqlz => {
@@ -2692,7 +2692,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateResearcher: function(input, context) {
-        return checkAuthorization(context, 'researchers', 'update').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', researcher, input);
@@ -2729,7 +2729,7 @@ module.exports = {
     countResearchers: function({
         search
     }, context) {
-        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -2755,7 +2755,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableResearcher: function(_, context) {
-        return checkAuthorization(context, 'researchers', 'read').then(authorization => {
+        return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, researcher, ["id", "firstName", "lastName", "email"]);
             } else {
@@ -3114,7 +3114,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -3165,7 +3165,7 @@ module.exports = {
     readOneBook: function({
         id
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 return book.findOne({
                     where: {
@@ -3188,7 +3188,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addBook: function(input, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', book, input);
@@ -3218,7 +3218,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookXlsx: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return book.bulkCreate(xlsxObjs, {
@@ -3240,7 +3240,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddBookCsv: function(_, context) {
-        return checkAuthorization(context, 'books', 'create').then(authorization => {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -3292,7 +3292,7 @@ module.exports = {
     deleteBook: function({
         id
     }, context) {
-        return checkAuthorization(context, 'books', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Book', 'delete').then(authorization => {
             if (authorization === true) {
                 return book.findByPk(id)
                     .then(book_sqlz => {
@@ -3326,7 +3326,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateBook: function(input, context) {
-        return checkAuthorization(context, 'books', 'update').then(authorization => {
+        return checkAuthorization(context, 'Book', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', book, input);
@@ -3363,7 +3363,7 @@ module.exports = {
     countBooks: function({
         search
     }, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -3389,7 +3389,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
-        return checkAuthorization(context, 'books', 'read').then(authorization => {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, book, ["id", "title", "genre"]);
             } else {
@@ -3532,7 +3532,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -3583,7 +3583,7 @@ module.exports = {
     readOneDog: function({
         id
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 return dog.findOne({
                     where: {
@@ -3606,7 +3606,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addDog: function(input, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', dog, input);
@@ -3633,7 +3633,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogXlsx: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return dog.bulkCreate(xlsxObjs, {
@@ -3655,7 +3655,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogCsv: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -3707,7 +3707,7 @@ module.exports = {
     deleteDog: function({
         id
     }, context) {
-        return checkAuthorization(context, 'dogs', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'delete').then(authorization => {
             if (authorization === true) {
                 return dog.findByPk(id)
                     .then(dog_sqlz => {
@@ -3741,7 +3741,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateDog: function(input, context) {
-        return checkAuthorization(context, 'dogs', 'update').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', dog, input);
@@ -3772,7 +3772,7 @@ module.exports = {
     countDogs: function({
         search
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -3798,7 +3798,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableDog: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, dog, ["id", "name", "breed"]);
             } else {
@@ -4276,7 +4276,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -4327,7 +4327,7 @@ module.exports = {
     readOneInDiVIdual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
             if (authorization === true) {
                 return inDiVIdual.findOne({
                     where: {
@@ -4350,7 +4350,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addInDiVIdual: function(input, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', inDiVIdual, input);
@@ -4380,7 +4380,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddInDiVIdualXlsx: function(_, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return inDiVIdual.bulkCreate(xlsxObjs, {
@@ -4402,7 +4402,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddInDiVIdualCsv: function(_, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'create').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -4454,7 +4454,7 @@ module.exports = {
     deleteInDiVIdual: function({
         id
     }, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'delete').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'delete').then(authorization => {
             if (authorization === true) {
                 return inDiVIdual.findByPk(id)
                     .then(inDiVIdual_sqlz => {
@@ -4488,7 +4488,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateInDiVIdual: function(input, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'update').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', inDiVIdual, input);
@@ -4525,7 +4525,7 @@ module.exports = {
     countInDiVIduals: function({
         search
     }, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -4551,7 +4551,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableInDiVIdual: function(_, context) {
-        return checkAuthorization(context, 'inDiVIduals', 'read').then(authorization => {
+        return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, inDiVIdual, ["id", "name"]);
             } else {
@@ -4681,7 +4681,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -4732,7 +4732,7 @@ module.exports = {
     readOneTranscriptCount: function({
         id
     }, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
             if (authorization === true) {
                 return transcriptCount.findOne({
                     where: {
@@ -4755,7 +4755,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addTranscriptCount: function(input, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', transcriptCount, input);
@@ -4782,7 +4782,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscriptCountXlsx: function(_, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return transcriptCount.bulkCreate(xlsxObjs, {
@@ -4804,7 +4804,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddTranscriptCountCsv: function(_, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'create').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -4856,7 +4856,7 @@ module.exports = {
     deleteTranscriptCount: function({
         id
     }, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'delete').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'delete').then(authorization => {
             if (authorization === true) {
                 return transcriptCount.findByPk(id)
                     .then(transcriptCount_sqlz => {
@@ -4890,7 +4890,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateTranscriptCount: function(input, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'update').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', transcriptCount, input);
@@ -4921,7 +4921,7 @@ module.exports = {
     countTranscriptCounts: function({
         search
     }, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -4947,7 +4947,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableTranscriptCount: function(_, context) {
-        return checkAuthorization(context, 'transcriptCounts', 'read').then(authorization => {
+        return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, transcriptCount, ["id", "gene", "variable", "tissue_or_condition"]);
             } else {
@@ -5030,7 +5030,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -5081,7 +5081,7 @@ module.exports = {
     readOneDog: function({
         id
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 return dog.findOne({
                     where: {
@@ -5104,7 +5104,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addDog: function(input, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', dog, input);
@@ -5131,7 +5131,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogXlsx: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return dog.bulkCreate(xlsxObjs, {
@@ -5153,7 +5153,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddDogCsv: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'create').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -5205,7 +5205,7 @@ module.exports = {
     deleteDog: function({
         id
     }, context) {
-        return checkAuthorization(context, 'dogs', 'delete').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'delete').then(authorization => {
             if (authorization === true) {
                 return dog.findByPk(id)
                     .then(dog_sqlz => {
@@ -5239,7 +5239,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateDog: function(input, context) {
-        return checkAuthorization(context, 'dogs', 'update').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', dog, input);
@@ -5270,7 +5270,7 @@ module.exports = {
     countDogs: function({
         search
     }, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -5296,7 +5296,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableDog: function(_, context) {
-        return checkAuthorization(context, 'dogs', 'read').then(authorization => {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, dog, ["id", "name", "breed"]);
             } else {
@@ -5649,7 +5649,7 @@ module.exports = {
         order,
         pagination
     }, context) {
-        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -5700,7 +5700,7 @@ module.exports = {
     readOneAcademicTeam: function({
         id
     }, context) {
-        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
             if (authorization === true) {
                 return academicTeam.findOne({
                     where: {
@@ -5723,7 +5723,7 @@ module.exports = {
      * @return {object}         New record created
      */
     addAcademicTeam: function(input, context) {
-        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'create').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', academicTeam, input);
@@ -5753,7 +5753,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddAcademicTeamXlsx: function(_, context) {
-        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'create').then(authorization => {
             if (authorization === true) {
                 let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
                 return academicTeam.bulkCreate(xlsxObjs, {
@@ -5775,7 +5775,7 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      */
     bulkAddAcademicTeamCsv: function(_, context) {
-        return checkAuthorization(context, 'academicTeams', 'create').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'create').then(authorization => {
             if (authorization === true) {
 
                 delim = context.request.body.delim;
@@ -5827,7 +5827,7 @@ module.exports = {
     deleteAcademicTeam: function({
         id
     }, context) {
-        return checkAuthorization(context, 'academicTeams', 'delete').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'delete').then(authorization => {
             if (authorization === true) {
                 return academicTeam.findByPk(id)
                     .then(academicTeam_sqlz => {
@@ -5861,7 +5861,7 @@ module.exports = {
      * @return {object}         Updated record
      */
     updateAcademicTeam: function(input, context) {
-        return checkAuthorization(context, 'academicTeams', 'update').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'update').then(authorization => {
             if (authorization === true) {
 
                 let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', academicTeam, input);
@@ -5898,7 +5898,7 @@ module.exports = {
     countAcademicTeams: function({
         search
     }, context) {
-        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
             if (authorization === true) {
                 let options = {};
                 if (search !== undefined) {
@@ -5924,7 +5924,7 @@ module.exports = {
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableAcademicTeam: function(_, context) {
-        return checkAuthorization(context, 'academicTeams', 'read').then(authorization => {
+        return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
             if (authorization === true) {
                 return helper.vueTable(context.request, academicTeam, ["id", "name", "department", "subject"]);
             } else {
