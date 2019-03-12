@@ -49,8 +49,8 @@ module.exports.transcript_countSchema = `
 
   type Mutation {
     addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
-    deleteTranscript_count(id: ID!): String!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
+    deleteTranscript_count(id: ID!): String!
     bulkAddTranscript_countXlsx: [transcript_count]
     bulkAddTranscript_countCsv: [transcript_count]
 }
@@ -229,7 +229,7 @@ module.exports = {
     },
 
     /**
-     * readOneIndividual - Check user authorization and return one book with the specified id in the id argument.
+     * readOneIndividual - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -557,8 +557,8 @@ module.exports = \`
 
     type Mutation {
     addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count!
-    deleteTranscript_count(id: ID!): String!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String): transcript_count!
+    deleteTranscript_count(id: ID!): String!
     bulkAddTranscript_countXlsx: [transcript_count]
     bulkAddTranscript_countCsv: [transcript_count]
 }
@@ -653,7 +653,7 @@ module.exports = {
     },
 
     /**
-     * readOneIndividual - Check user authorization and return one book with the specified id in the id argument.
+     * readOneIndividual - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -1112,7 +1112,7 @@ module.exports = {
     },
 
     /**
-     * readOneTranscript_count - Check user authorization and return one book with the specified id in the id argument.
+     * readOneTranscript_count - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -1597,7 +1597,7 @@ module.exports = {
     },
 
     /**
-     * readOnePerson - Check user authorization and return one book with the specified id in the id argument.
+     * readOnePerson - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -2029,7 +2029,7 @@ module.exports = {
     },
 
     /**
-     * readOneBook - Check user authorization and return one book with the specified id in the id argument.
+     * readOneBook - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -2327,8 +2327,8 @@ module.exports = \`
 
     type Mutation {
     addResearcher( firstName: String, lastName: String, email: String, addProjects:[ID] ): Researcher!
-    deleteResearcher(id: ID!): String!
     updateResearcher(id: ID!, firstName: String, lastName: String, email: String, addProjects:[ID], removeProjects:[ID]): Researcher!
+    deleteResearcher(id: ID!): String!
     bulkAddResearcherXlsx: [Researcher]
     bulkAddResearcherCsv: [Researcher]
 }
@@ -2522,7 +2522,7 @@ module.exports = {
     },
 
     /**
-     * readOneResearcher - Check user authorization and return one book with the specified id in the id argument.
+     * readOneResearcher - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -2813,8 +2813,8 @@ module.exports = \`
 
     type Mutation {
     addIndividual( name: String, addTranscript_counts:[ID] ): individual!
-    deleteIndividual(id: ID!): String!
     updateIndividual(id: ID!, name: String, addTranscript_counts:[ID], removeTranscript_counts:[ID]): individual!
+    deleteIndividual(id: ID!): String!
     bulkAddIndividualXlsx: [individual]
     bulkAddIndividualCsv: [individual]
 }
@@ -2892,6 +2892,17 @@ specie.prototype.countFilteredProjects = function({search},context){
 }
 
 module.exports = {
+
+  /**
+   * species - Returns certain number, specified in pagination argument, of records that
+   * holds the condition of search argument, all of them sorted as specified by the order argument.
+   *
+   * @param  {object} search     Search argument for filtering records
+   * @param  {array} order       Type of sorting (ASC, DESC) for each field
+   * @param  {object} pagination Offset and limit to get the records from and to respectively
+   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+   */
     species: function({
         search,
         order,
@@ -2903,6 +2914,13 @@ module.exports = {
         throw new Error('species is not implemented');
     },
 
+    /**
+     * readOneSpecie - Returns one record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneSpecie: function({
         id
     }, context) {
@@ -2912,11 +2930,100 @@ module.exports = {
         throw new Error('readOneSpecie is not implemented');
     },
 
+    /**
+     * addSpecie - Creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+     addSpecie: function(input, context){
+       /*
+       YOUR CODE GOES HERE
+       */
+       throw new Error('addSpecie is not implemented');
+     },
+
+     /**
+      * bulkAddSpecieXlsx - Load xlsx file of records NO STREAM
+      *
+      * @param  {string} _       First parameter is not used
+      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+      */
+     bulkAddSpecieXlsx: function(_, context){
+       /*
+       YOUR CODE GOES HERE
+       */
+       throw new Error('bulkAddSpecieXlsx is not implemented');
+     },
+
+     /**
+      * bulkAddSpecieCsv - Load csv file of records
+      *
+      * @param  {string} _       First parameter is not used
+      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+      */
+     bulkAddSpecieCsv: function(_, context) {
+       /*
+       YOUR CODE GOES HERE
+       */
+       throw new Error('bulkAddSpecieCsv is not implemented');
+     },
+
+     /**
+      * deleteSpecie - Deletes a record with the specified id in the id argument.
+      *
+      * @param  {number} {id}    Id of the record to delete
+      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+      * @return {string}         Message indicating if deletion was successfull.
+      */
+     deleteSpecie: function({id}, context){
+       /*
+       YOUR CODE GOES HERE
+       */
+       throw new Error('deleteSpecie is not implemented');
+     },
+
+     /**
+      * updateSpecie - Updates the record specified in the input argument
+      *
+      * @param  {object} input   record to update and new info to update
+      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+      * @return {object}         Updated record
+      */
+     updateSpecie: function(input, context){
+       /*
+       YOUR CODE GOES HERE
+       */
+       throw new Error('updateSpecie is not implemented');
+     },
+
+     /**
+      * countSpecies - Counts the number of records that holds the conditions specified in the search argument
+      *
+      * @param  {object} {search} Search argument for filtering records
+      * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+      * @return {number}          Number of records that holds the conditions specified in the search argument
+      */
     countSpecies: function({search}, context){
       /*
       YOUR CODE GOES HERE
       */
       throw new Error('countSpecies is not implemented');
+    },
+
+    /**
+     * vueTableSpecie - Returns table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableSpecie: function(_,context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('vueTableSpecie is not implemented');
     }
 }
 `
@@ -2971,8 +3078,8 @@ type VueTableBook{
 
     type Mutation {
     addBook( title: String, genre: String, publisherId: Int, addPeople:[ID]   ): Book!
-    deleteBook(id: ID!): String!
     updateBook(id: ID!, title: String, genre: String, publisherId: Int, addPeople:[ID], removePeople:[ID]  ): Book!
+    deleteBook(id: ID!): String!
     bulkAddBookXlsx: [Book]
     bulkAddBookCsv: [Book]
 }
@@ -3156,7 +3263,7 @@ module.exports = {
     },
 
     /**
-     * readOneBook - Check user authorization and return one book with the specified id in the id argument.
+     * readOneBook - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -3454,8 +3561,8 @@ module.exports = \`
 
     type Mutation {
     addPerson( firstName: String, lastName: String, email: String, addDogs:[ID], addBooks:[ID]): Person!
-    deletePerson(id: ID!): String!
     updatePerson(id: ID!, firstName: String, lastName: String, email: String, addDogs:[ID], removeDogs:[ID], addBooks:[ID], removeBooks:[ID]): Person!
+    deletePerson(id: ID!): String!
     bulkAddPersonXlsx: [Person]
     bulkAddPersonCsv: [Person]
 }
@@ -3574,7 +3681,7 @@ module.exports = {
     },
 
     /**
-     * readOneDog - Check user authorization and return one book with the specified id in the id argument.
+     * readOneDog - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -4000,6 +4107,14 @@ module.exports = \`
     countAminoAcidSequences(search: searchAminoAcidSequenceInput ): Int
     vueTableAminoAcidSequence : VueTableAminoAcidSequence  }
 
+  type Mutation {
+    addAminoAcidSequence(  accession: String, sequence: String): aminoAcidSequence!
+    updateAminoAcidSequence(id: ID!, accession: String, sequence: String): aminoAcidSequence!
+    deleteAminoAcidSequence(id: ID!): String!
+    bulkAddAminoAcidSequenceXlsx: [aminoAcidSequence]
+    bulkAddAminoAcidSequenceCsv: [aminoAcidSequence]
+  }
+
   \`;
 `
 
@@ -4030,6 +4145,17 @@ const searchArg = require('../utils/search-argument');
 const resolvers = require('./index');
 
 module.exports = {
+
+  /**
+   * aminoAcidSequences - Returns certain number, specified in pagination argument, of records that
+   * holds the condition of search argument, all of them sorted as specified by the order argument.
+   *
+   * @param  {object} search     Search argument for filtering records
+   * @param  {array} order       Type of sorting (ASC, DESC) for each field
+   * @param  {object} pagination Offset and limit to get the records from and to respectively
+   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {array}             Array of records holding conditions specified by search, order and pagination argument
+   */
     aminoAcidSequences: function({
         search,
         order,
@@ -4041,6 +4167,13 @@ module.exports = {
         throw new Error('aminoAcidSequences is not implemented');
     },
 
+    /**
+     * readOneAminoAcidSequence - Returns one record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to retrieve
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Record with id requested
+     */
     readOneAminoAcidSequence: function({
         id
     }, context) {
@@ -4050,6 +4183,81 @@ module.exports = {
         throw new Error('readOneAminoAcidSequence is not implemented');
     },
 
+    /**
+     * addAminoAcidSequence - Creates a new record with data specified in the input argument
+     *
+     * @param  {object} input   Info of each field to create the new record
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         New record created
+     */
+    addAminoAcidSequence: function(input, context){
+        /*
+        YOUR CODE GOES HERE
+        */
+        throw new Error('addAminoAcidSequence is not implemented');
+    },
+
+    /**
+     * bulkAddAminoAcidSequenceXlsx - Load xlsx file of records NO STREAM
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddAminoAcidSequenceXlsx: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('bulkAddAminoAcidSequenceXlsx is not implemented');
+    },
+
+    /**
+     * bulkAddAminoAcidSequenceCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddAminoAcidSequenceCsv: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('bulkAddAminoAcidSequenceCsv is not implemented');
+    },
+
+    /**
+     * deleteAminoAcidSequence - Deletes a record with the specified id in the id argument.
+     *
+     * @param  {number} {id}    Id of the record to delete
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {string}         Message indicating if deletion was successfull.
+     */
+    deleteAminoAcidSequence: function({id}, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('deleteAminoAcidSequence is not implemented');
+    },
+
+    /**
+     * updateAminoAcidSequence - Updates the record specified in the input argument
+     *
+     * @param  {object} input   record to update and new info to update
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Updated record
+     */
+    updateAminoAcidSequence: function(input, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('updateAminoAcidSequence is not implemented');
+    },
+
+    /**
+     * countAminoAcidSequences - Counts the number of records that holds the conditions specified in the search argument
+     *
+     * @param  {object} {search} Search argument for filtering records
+     * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {number}          Number of records that holds the conditions specified in the search argument
+     */
     countAminoAcidSequences: function({
         search
     }, context) {
@@ -4057,6 +4265,20 @@ module.exports = {
         YOUR CODE GOES HERE
         */
         throw new Error('countAminoAcidSequences is not implemented');
+    },
+
+    /**
+     * vueTableAminoAcidSequence - Returns table of records as needed for displaying a vuejs table
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {object}         Records with format as needed for displaying a vuejs table
+     */
+    vueTableAminoAcidSequence: function(_,context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('vueTableAminoAcidSequence is not implemented');
     }
 }
 
@@ -4108,8 +4330,8 @@ module.exports = \`
 
     type Mutation {
     addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
-    deleteInDiVIdual(id: ID!): String!
     updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscriptCounts:[ID] ): inDiVIdual!
+    deleteInDiVIdual(id: ID!): String!
     bulkAddInDiVIdualXlsx: [inDiVIdual]
     bulkAddInDiVIdualCsv: [inDiVIdual]
 }
@@ -4318,7 +4540,7 @@ module.exports = {
     },
 
     /**
-     * readOneInDiVIdual - Check user authorization and return one book with the specified id in the id argument.
+     * readOneInDiVIdual - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -4615,8 +4837,8 @@ module.exports = \`
 
     type Mutation {
     addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
-    deleteTranscriptCount(id: ID!): String!
     updateTranscriptCount(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcriptCount!
+    deleteTranscriptCount(id: ID!): String!
     bulkAddTranscriptCountXlsx: [transcriptCount]
     bulkAddTranscriptCountCsv: [transcriptCount]
 }
@@ -4723,7 +4945,7 @@ module.exports = {
     },
 
     /**
-     * readOneTranscriptCount - Check user authorization and return one book with the specified id in the id argument.
+     * readOneTranscriptCount - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -5072,7 +5294,7 @@ module.exports = {
     },
 
     /**
-     * readOneDog - Check user authorization and return one book with the specified id in the id argument.
+     * readOneDog - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -5357,8 +5579,8 @@ type Query {
 
   type Mutation {
   addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
-  deleteDog(id: ID!): String!
   updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
+  deleteDog(id: ID!): String!
   bulkAddDogXlsx: [Dog]
   bulkAddDogCsv: [Dog]
 }
@@ -5691,7 +5913,7 @@ module.exports = {
     },
 
     /**
-     * readOneAcademicTeam - Check user authorization and return one book with the specified id in the id argument.
+     * readOneAcademicTeam - Check user authorization and return one record with the specified id in the id argument.
      *
      * @param  {number} {id}    Id of the record to retrieve
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -5987,8 +6209,8 @@ type Query {
 
   type Mutation {
   addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
-  deleteAcademicTeam(id: ID!): String!
   updateAcademicTeam(id: ID!, name: String, department: String, subject: String , addMembers:[ID], removeMembers:[ID] ): academicTeam!
+  deleteAcademicTeam(id: ID!): String!
   bulkAddAcademicTeamXlsx: [academicTeam]
   bulkAddAcademicTeamCsv: [academicTeam]
 }
