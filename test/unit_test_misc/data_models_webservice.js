@@ -30,7 +30,7 @@ module.exports.book =
 module.exports.person =
 {
   "model": "Person",
-  "sotrageType": "webservice",
+  "storageType": "webservice",
   "attributes" :{
     "firstName": "String",
     "lastName": "String",
@@ -70,7 +70,7 @@ module.exports.publisher =
   "associations": {
     "publications" : {
       "type": "hasMany",
-      "target": "Book",
+      "target": "book",
       "targetKey": "publisher_id",
       "targetStorageType": "webservice"
     },

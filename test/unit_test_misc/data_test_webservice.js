@@ -28,7 +28,7 @@ module.exports = \`
     id: ID
     title: String
     subject: String
-    Price : Int
+    Price : Float
     publisher_id: Int
     publisher: publi_sher
     authorsFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
@@ -52,6 +52,7 @@ module.exports = \`
     title
     subject
     Price
+    publisher_id
   }
 
   input searchBookInput {
@@ -73,8 +74,8 @@ module.exports = \`
     vueTableBook : VueTableBook  }
 
     type Mutation {
-    addBook( title: String, genre: String, publisher_id: Int   ): book!
-    updateBook(id: ID!, title: String, genre: String, publisher_id: Int ): book!
+    addBook( title: String,  subject: String, Price : Float, publisher_id: Int  ): book!
+    updateBook(id: ID!, title: String, subject: String, Price : Float, publisher_id: Int ): book!
     deleteBook(id: ID!): String!
     bulkAddBookXlsx: [book]
     bulkAddBookCsv: [book]
@@ -302,8 +303,8 @@ module.exports = \`
     name: String
     phone: String
     director: Person
-    booksFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [book]
-    countFilteredBooks(search: searchBookInput) : Int
+    publicationsFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [book]
+    countFilteredPublications(search: searchBookInput) : Int
   }
 
   type VueTablePubli_sher{
@@ -339,9 +340,16 @@ module.exports = \`
   type Query {
     publi_shers(search: searchPubli_sherInput, order: [ orderPubli_sherInput ], pagination: paginationInput ): [publi_sher]
     readOnePubli_sher(id: ID!): publi_sher
-    countPubli_sher(search: searchPubli_sherInput ): Int
+    countPubli_shers(search: searchPubli_sherInput ): Int
     vueTablePubli_sher : VueTablePubli_sher  }
 
+    type Mutation {
+    addPubli_sher( name: String,  phone: String  ): publi_sher!
+    updatePubli_sher(id: ID!, name: String,  phone: String ): publi_sher!
+    deletePubli_sher(id: ID!): String!
+    bulkAddPubli_sherXlsx: [publi_sher]
+    bulkAddPubli_sherCsv: [publi_sher]
+  }
   \`;
 `
 
@@ -603,6 +611,7 @@ module.exports = \`
     firstName
     lastName
     Age
+    companyId
   }
 
   input searchPersonInput {
@@ -799,17 +808,17 @@ module.exports = {
      },
 
      /**
-      * countPersons - Counts the number of records that holds the conditions specified in the search argument
+      * countPeople - Counts the number of records that holds the conditions specified in the search argument
       *
       * @param  {object} {search} Search argument for filtering records
       * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
       * @return {number}          Number of records that holds the conditions specified in the search argument
       */
-    countPersons: function({search}, context){
+    countPeople: function({search}, context){
       /*
       YOUR CODE GOES HERE
       */
-      throw new Error('countPersons is not implemented');
+      throw new Error('countPeople is not implemented');
     },
 
     /**

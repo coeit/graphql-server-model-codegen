@@ -422,5 +422,52 @@ describe('All webservice models', function(){
     expect(g_model).to.be.equal(test_model);
   });
 
+  it('GraphQL Schema - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test_webservice.schema_person.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test_webservice.resolvers_person.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Model - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test_webservice.model_person.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+  it('GraphQL Schema - publisher', async function(){
+    let opts = funks.getOptions(models_webservice.publisher);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = test_webservice.schema_publisher.replace(/\s/g, '');
+    expect(g_schema).to.be.equal(test_schema);
+  });
+
+  it('Resolvers - publisher', async function(){
+    let opts = funks.getOptions(models_webservice.publisher);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = test_webservice.resolvers_publisher.replace(/\s/g, '');
+    expect(g_resolvers).to.be.equal(test_resolvers);
+  });
+
+  it('Model - publisher', async function(){
+    let opts = funks.getOptions(models_webservice.publisher);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test_webservice.model_publisher.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  })
 
 });
