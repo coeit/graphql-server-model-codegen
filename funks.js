@@ -8,14 +8,15 @@ const ejsRenderFile = promisify( ejs.renderFile );
 
 
 /**
- *  Allowed type of associations classified accordingly the number of model involved
+ *  Allowed type of associations classified accordingly the number of possible records involved
  *  @constant
  *  @type {object}
  */
 associations_type = {
-  "many" : ['sql_hasMany', 'sql_belongsToMany','cross_hasMany'],
-  "one" : ['sql_hasOne', 'sql_belongsTo', 'cross_hasOne','cross_belongsTo']
+  "many" : ['hasMany', 'belongsToMany'],
+  "one" : ['hasOne', 'belongsTo']
 }
+
 
 /**
  * parseFile - Parse a json file
@@ -227,7 +228,7 @@ writeIndexModelsCommons = function(dir_write){
   })
   .forEach(function(file) {
     var model = sequelize['import'](path.join(__dirname, file));
-    
+
     let validator_patch = path.join(__dirname,'../','validations', file);
     if(fs.existsSync(validator_patch)){
         model = require(validator_patch).validator_patch(model);
@@ -237,7 +238,7 @@ writeIndexModelsCommons = function(dir_write){
     if(fs.existsSync(patches_patch)){
         model = require(patches_patch).logic_patch(model);
     }
-    
+
     models[model.name] = model;
   });
   //Important: creates associations based on associations defined in associate function in the model files
@@ -286,6 +287,7 @@ convertToType = function(many, model_name){
 module.exports.getOptions = function(dataModel){
   //let dataModel = parseFile(json_file);
   //console.log(dataModel.associations);
+
   let opts = {
     name : dataModel.model,
     //nameCp: inflection.capitalize(dataModel.model),
@@ -302,7 +304,7 @@ module.exports.getOptions = function(dataModel){
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     attributesJoiStr: attributesToJoiString(dataModel.attributes),
-    associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
+    associations: _test_parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
     arrayAttributeString: attributesArrayString(dataModel.attributes),
     indices: dataModel.indices
   }
@@ -350,12 +352,12 @@ parseAssociations = function(associations, storageType){
         if(associations_type["many"].includes(association.type) )
         {
           //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
-          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];          
+          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
         }else if(associations_type["one"].includes(association.type))
         {
           associations_info.schema_attributes["one"][name] = association.target;
         }else{
-          console.log("Association type"+ association.type + "not supported.");
+          console.log("Association type "+ association.type + " not supported.");
           return;
         }
 
@@ -383,6 +385,71 @@ parseAssociations = function(associations, storageType){
     associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
     return associations_info;
   }
+
+
+  /**
+   * _test_parseAssociations - Parse associations of a given data model.
+   * Classification of associations will be accordingly to the type of association and storage type of target model.
+   *
+   * @param  {object} associations Description of each association
+   * @param  {string} storageType  Storage type(i.e. sql, webservice) where source model is stored.
+   * @return {object}              Object containing explicit information needed for generating files with templates.
+   */
+  _test_parseAssociations = function(associations, storageType){
+
+
+    associations_info = {
+      "schema_attributes" : {
+        "many" : {},
+        "one" : {}
+      },
+      "mutations_attributes" : {},
+      "belongsTo" : [],
+      "hasOne" : [],
+      "hasMany" : [],
+      "belongsToMany" : []
+    }
+
+    if(associations!==undefined){
+      Object.entries(associations).forEach(([name, association]) => {
+          association.targetStorageType = association.targetStorageType.toLowerCase();
+          //let target_schema = association.target;
+          let type = association.type;
+          if(type === "belongsTo"){ //adds column and attribute to source model
+            associations_info.mutations_attributes[association.targetKey] = "Int";
+          }
+
+          if(associations_type["many"].includes(association.type) )
+          {
+            //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
+            associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
+          }else if(associations_type["one"].includes(association.type))
+          {
+            associations_info.schema_attributes["one"][name] = association.target;
+          }else{
+            console.log("Association type "+ association.type + " not supported.");
+            return;
+          }
+
+          let assoc = association;
+          assoc["name"] = name;
+          assoc["name_lc"] = uncapitalizeString(name);
+          assoc["name_cp"] = capitalizeString(name);
+          assoc["target_lc"] = uncapitalizeString(association.target);
+          assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
+          assoc["target_pl"] = inflection.pluralize(association.target);
+          assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
+          assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
+
+          associations_info[type].push(assoc);
+        });
+
+      }
+      associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
+      return associations_info;
+    }
+
+
 
 
 
