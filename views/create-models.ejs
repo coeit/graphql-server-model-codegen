@@ -21,32 +21,31 @@ module.exports = function(sequelize, DataTypes){
       }
       <%if(i !== (keys.length -1) ){ -%>,<%}-%>
     <%}-%>
-    <%if(associations.explicit_resolvers.belongsTo.length > 0) {-%>
-      <%if( keys.length > 0){%>,<%}-%>
-      <% for(let i=0; i < associations.explicit_resolvers.belongsTo.length; i++){-%>
-        <%=associations.explicit_resolvers.belongsTo[i].targetKey%>: {
-          type: Sequelize.INTEGER
-        }
-        <%if(i !== (associations.explicit_resolvers.belongsTo.length -1) ){ -%>,<%}-%>
-      <%}-%>
-    <%}-%>
+
+
   } <%if(indices !== undefined){let string_indices = indices.map(x => { return "'" + x + "'" }) -%>,{
     indexes: [<%- string_indices.join() -%> ]
   } <%}-%>
   );
 
+
+
+
   <%- name -%>.associate = function(models){
-      <% for(var key in associations.implicit_associations){ -%>
-        <%for(let i=0; i< associations.implicit_associations[key].length; i++){-%>
-          <%- name -%>.<%= key %>(models.<%= associations.implicit_associations[key][i].target_lc -%>
-          <% if(key === 'belongsToMany'){ -%> ,{as: '<%= associations.implicit_associations[key][i].name -%>',
-          foreignKey:'<%= associations.implicit_associations[key][i].sourceKey -%>',
-          through : '<%= associations.implicit_associations[key][i].keysIn -%>',
-          onDelete: 'CASCADE'}  <%}else{ -%>
-            ,{as: '<%= associations.implicit_associations[key][i].name -%>', foreignKey:'<%= associations.implicit_associations[key][i].targetKey -%>' }
-            <%}-%>);
+
+    <% for(var key in associations){ -%>
+      <%for(let i=0; i< associations[key].length; i++){-%>
+        <%if(associations[key][i].targetStorageType === 'sql'){-%>
+        <%- name -%>.<%= key %>(models.<%= associations[key][i].target_lc -%>
+        <% if(key === 'belongsToMany'){ -%> ,{as: '<%= associations[key][i].name -%>',
+        foreignKey:'<%= associations[key][i].sourceKey -%>',
+        through : '<%= associations[key][i].keysIn -%>',
+        onDelete: 'CASCADE'}  <%}else{ -%>
+          ,{as: '<%= associations[key][i].name -%>', foreignKey:'<%= associations[key][i].targetKey -%>' }
+          <%}-%>);
         <%}-%>
-      <% } -%>
+      <%}-%>
+    <% } -%>
   };
 
   return <%- name -%>;

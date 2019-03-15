@@ -1371,9 +1371,80 @@ const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
 
+/**
+ * person.prototype.booksFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+person.prototype.booksFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
 
+    let options = {};
 
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
 
+    return this.countBooks(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        } else if (pagination !== undefined) {
+            options['order'] = [
+                ["id", "ASC"]
+            ];
+        }
+
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total booksFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getBooks(options);
+    }).catch(error => {
+        handleError(error);
+    });
+}
+
+/**
+ * person.prototype.countFilteredBooks - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+person.prototype.countFilteredBooks = function({
+    search
+}, context) {
+
+    let options = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countBooks(options);
+}
 
 /**
  * person.prototype.dogsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -1457,86 +1528,6 @@ person.prototype.countFilteredDogs = function({
         }, context)
     }
 }
-
-
-
-/**
- * person.prototype.booksFilter - Check user authorization and return certain number, specified in pagination argument, of records
- * associated with the current instance, this records should also
- * holds the condition of search argument, all of them sorted as specified by the order argument.
- *
- * @param  {object} search     Search argument for filtering associated records
- * @param  {array} order       Type of sorting (ASC, DESC) for each field
- * @param  {object} pagination Offset and limit to get the records from and to respectively
- * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
- * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
- */
-person.prototype.booksFilter = function({
-    search,
-    order,
-    pagination
-}, context) {
-
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countBooks(options).then(items => {
-        if (order !== undefined) {
-            options['order'] = order.map((orderItem) => {
-                return [orderItem.field, orderItem.order];
-            });
-        } else if (pagination !== undefined) {
-            options['order'] = [
-                ["id", "ASC"]
-            ];
-        }
-
-        if (pagination !== undefined) {
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-        } else {
-            options['offset'] = 0;
-            options['limit'] = items;
-        }
-
-        if (globals.LIMIT_RECORDS < options['limit']) {
-            throw new Error(\`Request of total booksFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
-        }
-        return this.getBooks(options);
-    }).catch(error => {
-        handleError(error);
-    });
-}
-
-/**
- * person.prototype.countFilteredBooks - Count number of associated records that holds the conditions specified in the search argument
- *
- * @param  {object} {search} description
- * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
- * @return {type}          Number of associated records that holds the conditions specified in the search argument
- */
-person.prototype.countFilteredBooks = function({
-    search
-}, context) {
-
-    let options = {};
-
-    if (search !== undefined) {
-        let arg = new searchArg(search);
-        let arg_sequelize = arg.toSequelize();
-        options['where'] = arg_sequelize;
-    }
-
-    return this.countBooks(options);
-}
-
-
-
 
 module.exports = {
 
@@ -2357,34 +2348,6 @@ const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
 
-
-/**
- * researcher.prototype.dog - Return associated record
- *
- * @param  {string} _       First parameter is not used
- * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
- * @return {type}         Associated record
- */
-researcher.prototype.dog = function(_, context) {
-    return resolvers.dogs({
-            "search": {
-                "field": "researcherId",
-                "value": {
-                    "value": this.id
-                },
-                "operator": "eq"
-            }
-        }, context)
-        .then((res) => {
-            return res[0];
-        }).catch(error => {
-            handleError(error);
-        });
-}
-
-
-
-
 /**
  * researcher.prototype.projectsFilter - Check user authorization and return certain number, specified in pagination argument, of records
  * associated with the current instance, this records should also
@@ -2461,7 +2424,29 @@ researcher.prototype.countFilteredProjects = function({
 }
 
 
-
+/**
+ * researcher.prototype.dog - Return associated record
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}         Associated record
+ */
+researcher.prototype.dog = function(_, context) {
+    return resolvers.dogs({
+            "search": {
+                "field": "researcherId",
+                "value": {
+                    "value": this.id
+                },
+                "operator": "eq"
+            }
+        }, context)
+        .then((res) => {
+            return res[0];
+        }).catch(error => {
+            handleError(error);
+        });
+}
 
 module.exports = {
 
@@ -2827,7 +2812,17 @@ const searchArg = require('../utils/search-argument');
 const resolvers = require('./index');
 
 
-
+/**
+ * specie.prototype.projectsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
 specie.prototype.projectsFilter = function({
     search,
     order,
@@ -2864,6 +2859,13 @@ specie.prototype.projectsFilter = function({
 
 }
 
+/**
+ * specie.prototype.countFilteredProjects - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
 specie.prototype.countFilteredProjects = function({search},context){
   if (search === undefined) {
       return resolvers.countProjects({

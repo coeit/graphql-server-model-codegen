@@ -38,15 +38,6 @@ module.exports = {
         }
         <%if(i !== (keys.length -1) ){ -%>,<%}-%>
       <%}-%>
-      <%if(associations.explicit_resolvers.belongsTo.length > 0) {-%>
-        <%if( keys.length > 0){%>,<%}-%>
-        <% for(let i=0; i < associations.explicit_resolvers.belongsTo.length; i++){-%>
-          <%=associations.explicit_resolvers.belongsTo[i].targetKey%>: {
-            type: Sequelize.INTEGER
-          }
-          <%if(i !== (associations.explicit_resolvers.belongsTo.length -1) ){ -%>,<%}-%>
-        <%}-%>
-      <%}-%>
 
     })<%if(indices!==undefined){ for(let i=0; i< indices.length; i++){-%>
     .then(()=> {queryInterface.addIndex('<%-namePl-%>', ['<%= indices[i] %>'] )})
