@@ -462,33 +462,37 @@ parseAssociations = function(associations, storageType){
  */
 generateAssociationsMigrations =  function( opts, dir_write){
 
-    opts.associations.implicit_associations.belongsTo.forEach( async (assoc) =>{
-      assoc["source"] = opts.table;
-      assoc["cross"] = false;
-      let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
-      let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
-      fs.writeFile( name_migration, generatedMigration, function(err){
-        if (err)
-        {
-          return console.log(err);
-        }else{
-          console.log(name_migration+" writen succesfully!");
+    opts.associations.belongsTo.forEach( async (assoc) =>{
+        if(assoc.targetStorageType === 'sql'){
+          assoc["source"] = opts.table;
+          assoc["cross"] = false;
+          let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
+          let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
+          fs.writeFile( name_migration, generatedMigration, function(err){
+            if (err)
+            {
+              return console.log(err);
+            }else{
+              console.log(name_migration+" writen succesfully!");
+            }
+          });
         }
-      });
     });
 
-    opts.associations.implicit_associations.belongsToMany.forEach( async (assoc) =>{
-      assoc["source"] = opts.table;
-      let generatedMigration = await module.exports.generateJs('create-through-migration',assoc);
-      let name_migration = createNameMigration(dir_write, 'z-through-'+assoc.keysIn);
-      fs.writeFile( name_migration, generatedMigration, function(err){
-        if (err)
-        {
-          return console.log(err);
-        }else{
-          console.log(name_migration+" writen succesfully!");
-        }
-      });
+    opts.associations.belongsToMany.forEach( async (assoc) =>{
+      if(assoc.targetStorageType === 'sql'){
+          assoc["source"] = opts.table;
+          let generatedMigration = await module.exports.generateJs('create-through-migration',assoc);
+          let name_migration = createNameMigration(dir_write, 'z-through-'+assoc.keysIn);
+          fs.writeFile( name_migration, generatedMigration, function(err){
+            if (err)
+            {
+              return console.log(err);
+            }else{
+              console.log(name_migration+" writen succesfully!");
+            }
+          });
+      }
     });
 }
 

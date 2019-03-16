@@ -5,17 +5,18 @@
     "gene" : "String",
     "variable" : "String",
     "count" : "Float",
-    "tissue_or_condition": "String"
+    "tissue_or_condition": "String",
+    "aminoacidsequence_id": "Int"
   },
   "associations":{
     "individual":{
-      "type" : "sql_belongsTo",
+      "type" : "belongsTo",
       "target" : "individual",
       "targetKey" : "individual_id",
       "targetStorageType" : "sql"
     },
     "aminoacidsequence":{
-      "type" : "sql_belongsTo",
+      "type" : "belongsTo",
       "target" : "aminoacidsequence",
       "targetKey" : "aminoacidsequence_id",
       "targetStorageType" : "Webservice"
