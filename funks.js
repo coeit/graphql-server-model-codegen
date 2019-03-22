@@ -290,21 +290,16 @@ module.exports.getOptions = function(dataModel){
 
   let opts = {
     name : dataModel.model,
-    //nameCp: inflection.capitalize(dataModel.model),
     nameCp: capitalizeString(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
-    //table : inflection.pluralize(dataModel.model.toLowerCase()),
-    //nameLc: dataModel.model.toLowerCase(),
-    //namePl: inflection.pluralize(dataModel.model.toLowerCase()),
     table: inflection.pluralize(uncapitalizeString(dataModel.model)),
     nameLc: uncapitalizeString(dataModel.model),
     namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
-    //namePlCp: inflection.pluralize(inflection.capitalize(dataModel.model)),
     namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
     attributesJoiStr: attributesToJoiString(dataModel.attributes),
-    associations: _test_parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
+    associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
     arrayAttributeString: attributesArrayString(dataModel.attributes),
     indices: dataModel.indices
   }
@@ -312,90 +307,15 @@ module.exports.getOptions = function(dataModel){
 }
 
 
-/**
- * parseAssociations - Parse associations of a given data model.
- * Classification of associations will be accordingly to the type of association and storage type of target model.
- *
- * @param  {object} associations Description of each association
- * @param  {string} storageType  Storage type(i.e. sql, webservice) where source model is stored.
- * @return {object}              Object containing explicit information needed for generating files with templates.
- */
-parseAssociations = function(associations, storageType){
-  associations_info = {
-    "schema_attributes" : {
-      "many" : {},
-      "one" : {}
-    },
-    "mutations_attributes" : {},
-    "explicit_resolvers" : {
-      "belongsTo" : [],
-      "hasOne" : [],
-      "hasMany" : []
-    },
-    "implicit_associations" : {
-      "belongsTo" : [],
-      "hasOne" : [],
-      "hasMany" : [],
-      "belongsToMany" : []
-    }
-  }
-
-  if(associations!==undefined){
-    Object.entries(associations).forEach(([name, association]) => {
-        association.targetStorageType = association.targetStorageType.toLowerCase();
-        //let target_schema = association.target;
-        let type = association.type.split("_")[1];
-        if(type === "belongsTo"){ //adds column and attribute to source model
-          associations_info.mutations_attributes[association.targetKey] = "Int";
-        }
-
-        if(associations_type["many"].includes(association.type) )
-        {
-          //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
-          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
-        }else if(associations_type["one"].includes(association.type))
-        {
-          associations_info.schema_attributes["one"][name] = association.target;
-        }else{
-          console.log("Association type "+ association.type + " not supported.");
-          return;
-        }
-
-        let assoc = association;
-        assoc["name"] = name;
-        assoc["name_lc"] = uncapitalizeString(name);
-        assoc["name_cp"] = capitalizeString(name);
-        assoc["target_lc"] = uncapitalizeString(association.target);
-        assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
-        assoc["target_pl"] = inflection.pluralize(association.target);
-        assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
-        assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
-        //in this case handle the resolver via sequelize
-        if(storageType === 'sql' && association.targetStorageType === 'sql' )
-        {
-          associations_info.implicit_associations[type].push( assoc );
-        }else{ //handle the association via resolvers
-          associations_info.explicit_resolvers[type].push( assoc );
-        }
-      });
-
-      //console.log(associations_info);
-      //console.log(associations_info.implicit_associations);
-    }
-    associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
-    return associations_info;
-  }
-
-
   /**
-   * _test_parseAssociations - Parse associations of a given data model.
+   * parseAssociations - Parse associations of a given data model.
    * Classification of associations will be accordingly to the type of association and storage type of target model.
    *
    * @param  {object} associations Description of each association
    * @param  {string} storageType  Storage type(i.e. sql, webservice) where source model is stored.
    * @return {object}              Object containing explicit information needed for generating files with templates.
    */
-  _test_parseAssociations = function(associations, storageType){
+  parseAssociations = function(associations, storageType){
 
 
     associations_info = {
