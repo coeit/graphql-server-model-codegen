@@ -17,83 +17,7 @@ const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
 
-<%let associations_one = associations.implicit_associations["belongsTo"]-%>
-<% for(let i=0; i < associations_one.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_one[i].target_cp%>({"id" : this.<%=associations_one[i].targetKey%>}, context);
-  }
-<%}-%>
-
-<%associations_one = associations.implicit_associations["hasOne"]-%>
-<% for(let i=0; i < associations_one.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.<%=associations_one[i].target_lc_pl%>({"search":{"field" : "<%=associations_one[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
-    .then((res)=>{
-      return res[0];
-    }).catch( error => {
-        handleError( error);
-    });
-  }
-<%}-%>
-
-
-<% let associations_temp = associations.implicit_associations["hasMany"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
-
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
-   * associated with the current instance, this records should also
-   * holds the condition of search argument, all of them sorted as specified by the order argument.
-   *
-   * @param  {object} search     Search argument for filtering associated records
-   * @param  {array} order       Type of sorting (ASC, DESC) for each field
-   * @param  {object} pagination Offset and limit to get the records from and to respectively
-   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
-   */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
-    if(search === undefined)
-    {
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
-    }else{
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
-    }
-  }
-
-  /**
-   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
-   *
-   * @param  {object} {search} description
-   * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}          Number of associated records that holds the conditions specified in the search argument
-   */
-  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
-
-    if(search === undefined)
-    {
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
-    }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
-    }
-  }
-
-<%}-%>
-
-<% associations_temp = associations.implicit_associations["belongsToMany"]-%>
+<% associations_temp = associations["belongsToMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
@@ -162,32 +86,33 @@ const validatorUtil = require('../utils/validatorUtil');
   }
 
 <%}-%>
-<% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
 
+
+<%let associations_one = associations["belongsTo"]-%>
+<% for(let i=0; i < associations_one.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>}, context);
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
+    return resolvers.readOne<%=associations_one[i].target_cp%>({"id" : this.<%=associations_one[i].targetKey%>}, context);
   }
 <%}-%>
 
-<% associations_temp = associations.explicit_resolvers["hasOne"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
+<%associations_one = associations["hasOne"]-%>
+<% for(let i=0; i < associations_one.length; i++){ -%>
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
+   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
+    return resolvers.<%=associations_one[i].target_lc_pl%>({"search":{"field" : "<%=associations_one[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
     .then((res)=>{
       return res[0];
     }).catch( error => {
@@ -196,8 +121,10 @@ const validatorUtil = require('../utils/validatorUtil');
   }
 <%}-%>
 
-<% associations_temp = associations.explicit_resolvers["hasMany"]-%>
+
+<% associations_temp = associations["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
+
   /**
    * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
@@ -209,15 +136,13 @@ const validatorUtil = require('../utils/validatorUtil');
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order, pagination}, context){
-
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
     if(search === undefined)
     {
-      return resolvers.<%=associations_temp[i].target_pl%>({"search":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order, pagination }, context);
+      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
     }else{
-      return resolvers.<%=associations_temp[i].target_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
+      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
     }
-
   }
 
   /**
@@ -233,11 +158,14 @@ const validatorUtil = require('../utils/validatorUtil');
     {
       return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
     }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
+      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
     }
-
   }
+
 <%}-%>
+
+
+
 
 module.exports = {
 
@@ -290,7 +218,7 @@ module.exports = {
   },
 
   /**
-   * readOne<%- nameCp -%> - Check user authorization and return one book with the specified id in the id argument.
+   * readOne<%- nameCp -%> - Check user authorization and return one record with the specified id in the id argument.
    *
    * @param  {number} {id}    Id of the record to retrieve
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
@@ -325,9 +253,11 @@ module.exports = {
         } else {
             return <%- nameLc -%>.create(input)
                 .then( <%- nameLc -%> =>{
-                <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
+                <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
                 <%for(let i=0; i < associations_temp.length; i++){-%>
-                if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                  <%if(associations_temp[i].targetStorageType === 'sql'){-%>
+                    if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                  <%}-%>
             <%}-%>
             return <%- nameLc -%>;
             });
@@ -460,10 +390,12 @@ module.exports = {
                 return <%- nameLc -%>
                     .findById(input.id)
                     .then( <%- nameLc -%> => {
-                    <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
+                    <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
                     <%for(let i=0; i < associations_temp.length; i++){-%>
+                      <%if(associations_temp[i].targetStorageType === 'sql'){-%>
                         if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
                         if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
+                      <%}-%>
                     <%}-%>
                     return <%- nameLc -%>.update(input);
                     });

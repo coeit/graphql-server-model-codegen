@@ -8,14 +8,15 @@ const ejsRenderFile = promisify( ejs.renderFile );
 
 
 /**
- *  Allowed type of associations classified accordingly the number of model involved
+ *  Allowed type of associations classified accordingly the number of possible records involved
  *  @constant
  *  @type {object}
  */
 associations_type = {
-  "many" : ['sql_hasMany', 'sql_belongsToMany','cross_hasMany'],
-  "one" : ['sql_hasOne', 'sql_belongsTo', 'cross_hasOne','cross_belongsTo']
+  "many" : ['hasMany', 'belongsToMany'],
+  "one" : ['hasOne', 'belongsTo']
 }
+
 
 /**
  * parseFile - Parse a json file
@@ -227,7 +228,7 @@ writeIndexModelsCommons = function(dir_write){
   })
   .forEach(function(file) {
     var model = sequelize['import'](path.join(__dirname, file));
-    
+
     let validator_patch = path.join(__dirname,'../','validations', file);
     if(fs.existsSync(validator_patch)){
         model = require(validator_patch).validator_patch(model);
@@ -237,7 +238,7 @@ writeIndexModelsCommons = function(dir_write){
     if(fs.existsSync(patches_patch)){
         model = require(patches_patch).logic_patch(model);
     }
-    
+
     models[model.name] = model;
   });
   //Important: creates associations based on associations defined in associate function in the model files
@@ -286,18 +287,14 @@ convertToType = function(many, model_name){
 module.exports.getOptions = function(dataModel){
   //let dataModel = parseFile(json_file);
   //console.log(dataModel.associations);
+
   let opts = {
     name : dataModel.model,
-    //nameCp: inflection.capitalize(dataModel.model),
     nameCp: capitalizeString(dataModel.model),
     storageType : dataModel.storageType.toLowerCase(),
-    //table : inflection.pluralize(dataModel.model.toLowerCase()),
-    //nameLc: dataModel.model.toLowerCase(),
-    //namePl: inflection.pluralize(dataModel.model.toLowerCase()),
     table: inflection.pluralize(uncapitalizeString(dataModel.model)),
     nameLc: uncapitalizeString(dataModel.model),
     namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
-    //namePlCp: inflection.pluralize(inflection.capitalize(dataModel.model)),
     namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
     attributes: dataModel.attributes,
     attributesStr: attributesToString(dataModel.attributes),
@@ -310,79 +307,69 @@ module.exports.getOptions = function(dataModel){
 }
 
 
-/**
- * parseAssociations - Parse associations of a given data model.
- * Classification of associations will be accordingly to the type of association and storage type of target model.
- *
- * @param  {object} associations Description of each association
- * @param  {string} storageType  Storage type(i.e. sql, webservice) where source model is stored.
- * @return {object}              Object containing explicit information needed for generating files with templates.
- */
-parseAssociations = function(associations, storageType){
-  associations_info = {
-    "schema_attributes" : {
-      "many" : {},
-      "one" : {}
-    },
-    "mutations_attributes" : {},
-    "explicit_resolvers" : {
-      "belongsTo" : [],
-      "hasOne" : [],
-      "hasMany" : []
-    },
-    "implicit_associations" : {
+  /**
+   * parseAssociations - Parse associations of a given data model.
+   * Classification of associations will be accordingly to the type of association and storage type of target model.
+   *
+   * @param  {object} associations Description of each association
+   * @param  {string} storageType  Storage type(i.e. sql, webservice) where source model is stored.
+   * @return {object}              Object containing explicit information needed for generating files with templates.
+   */
+  parseAssociations = function(associations, storageType){
+
+
+    associations_info = {
+      "schema_attributes" : {
+        "many" : {},
+        "one" : {}
+      },
+      "mutations_attributes" : {},
       "belongsTo" : [],
       "hasOne" : [],
       "hasMany" : [],
       "belongsToMany" : []
     }
-  }
 
-  if(associations!==undefined){
-    Object.entries(associations).forEach(([name, association]) => {
-        association.targetStorageType = association.targetStorageType.toLowerCase();
-        //let target_schema = association.target;
-        let type = association.type.split("_")[1];
-        if(type === "belongsTo"){ //adds column and attribute to source model
-          associations_info.mutations_attributes[association.targetKey] = "Int";
-        }
+    if(associations!==undefined){
+      Object.entries(associations).forEach(([name, association]) => {
+          association.targetStorageType = association.targetStorageType.toLowerCase();
+          //let target_schema = association.target;
+          let type = association.type;
+          if(type === "belongsTo" && storageType === 'sql'){ //adds column and attribute to source model
+            associations_info.mutations_attributes[association.targetKey] = "Int";
+          }
 
-        if(associations_type["many"].includes(association.type) )
-        {
-          //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
-          associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];          
-        }else if(associations_type["one"].includes(association.type))
-        {
-          associations_info.schema_attributes["one"][name] = association.target;
-        }else{
-          console.log("Association type"+ association.type + "not supported.");
-          return;
-        }
+          if(associations_type["many"].includes(association.type) )
+          {
+            //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
+            associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
+          }else if(associations_type["one"].includes(association.type))
+          {
+            associations_info.schema_attributes["one"][name] = association.target;
+          }else{
+            console.log("Association type "+ association.type + " not supported.");
+            return;
+          }
 
-        let assoc = association;
-        assoc["name"] = name;
-        assoc["name_lc"] = uncapitalizeString(name);
-        assoc["name_cp"] = capitalizeString(name);
-        assoc["target_lc"] = uncapitalizeString(association.target);
-        assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
-        assoc["target_pl"] = inflection.pluralize(association.target);
-        assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
-        assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
-        //in this case handle the resolver via sequelize
-        if(storageType === 'sql' && association.targetStorageType === 'sql' )
-        {
-          associations_info.implicit_associations[type].push( assoc );
-        }else{ //handle the association via resolvers
-          associations_info.explicit_resolvers[type].push( assoc );
-        }
-      });
+          let assoc = association;
+          assoc["name"] = name;
+          assoc["name_lc"] = uncapitalizeString(name);
+          assoc["name_cp"] = capitalizeString(name);
+          assoc["target_lc"] = uncapitalizeString(association.target);
+          assoc["target_lc_pl"] = inflection.pluralize(uncapitalizeString(association.target));
+          assoc["target_pl"] = inflection.pluralize(association.target);
+          assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
+          assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
 
-      //console.log(associations_info);
-      //console.log(associations_info.implicit_associations);
+          associations_info[type].push(assoc);
+        });
+
+      }
+      associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
+      return associations_info;
     }
-    associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
-    return associations_info;
-  }
+
+
 
 
 
@@ -395,33 +382,37 @@ parseAssociations = function(associations, storageType){
  */
 generateAssociationsMigrations =  function( opts, dir_write){
 
-    opts.associations.implicit_associations.belongsTo.forEach( async (assoc) =>{
-      assoc["source"] = opts.table;
-      assoc["cross"] = false;
-      let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
-      let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
-      fs.writeFile( name_migration, generatedMigration, function(err){
-        if (err)
-        {
-          return console.log(err);
-        }else{
-          console.log(name_migration+" writen succesfully!");
+    opts.associations.belongsTo.forEach( async (assoc) =>{
+        if(assoc.targetStorageType === 'sql'){
+          assoc["source"] = opts.table;
+          assoc["cross"] = false;
+          let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
+          let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
+          fs.writeFile( name_migration, generatedMigration, function(err){
+            if (err)
+            {
+              return console.log(err);
+            }else{
+              console.log(name_migration+" writen succesfully!");
+            }
+          });
         }
-      });
     });
 
-    opts.associations.implicit_associations.belongsToMany.forEach( async (assoc) =>{
-      assoc["source"] = opts.table;
-      let generatedMigration = await module.exports.generateJs('create-through-migration',assoc);
-      let name_migration = createNameMigration(dir_write, 'z-through-'+assoc.keysIn);
-      fs.writeFile( name_migration, generatedMigration, function(err){
-        if (err)
-        {
-          return console.log(err);
-        }else{
-          console.log(name_migration+" writen succesfully!");
-        }
-      });
+    opts.associations.belongsToMany.forEach( async (assoc) =>{
+      if(assoc.targetStorageType === 'sql'){
+          assoc["source"] = opts.table;
+          let generatedMigration = await module.exports.generateJs('create-through-migration',assoc);
+          let name_migration = createNameMigration(dir_write, 'z-through-'+assoc.keysIn);
+          fs.writeFile( name_migration, generatedMigration, function(err){
+            if (err)
+            {
+              return console.log(err);
+            }else{
+              console.log(name_migration+" writen succesfully!");
+            }
+          });
+      }
     });
 }
 

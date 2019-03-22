@@ -52,13 +52,18 @@ module.exports = `
     vueTable<%- nameCp -%> : VueTable<%- nameCp -%>
   }
 
+    type Mutation {
   <% if(storageType === 'sql'){-%>
-  type Mutation {
     add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID]<%}-%> ): <%- name %>!
-    delete<%- nameCp -%>(id: ID!): String!
     update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID], remove<%= associations.schema_attributes.many[key][2]%>:[ID] <%}-%>): <%- name %>!
-    bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
-    bulkAdd<%- nameCp -%>Csv: [<%- name -%>]
-}
+  <%}else{-%>
+    add<%- nameCp -%>( <%- attributesStr -%>): <%- name %>!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%>): <%- name %>!
   <%}-%>
+
+
+  delete<%- nameCp -%>(id: ID!): String!
+  bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
+  bulkAdd<%- nameCp -%>Csv: [<%- name -%>] }
+
 `;
