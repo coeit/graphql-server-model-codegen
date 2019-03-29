@@ -470,3 +470,72 @@ describe(
         });
 
     });
+
+
+describe(
+    'JOIN models',
+    function() {
+
+        let individual_id = 0;
+        let transcript_count_id = 0;
+
+        it('01. Add associated records', function () {
+
+            let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "AssociatedIndividual") { id name } }');
+            let resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+            individual_id = resBody.data.addIndividual.id;
+            expect(individual_id !== 0).to.equal(true);
+
+            res = itHelpers.request_graph_ql_post(`mutation { addTranscript_count(` +
+                      `gene: "associated_gene", ` +
+                      `aminoacidsequence_id: 63165, ` +
+                      `individual_id: ${individual_id}) { id } }`);
+            resBody = JSON.parse(res.body.toString('utf8'));
+            expect(res.statusCode).to.equal(200);
+            transcript_count_id = resBody.data.addTranscript_count.id;
+            expect(transcript_count_id !== 0).to.equal(true);
+        });
+
+        it('02. Check filtered JOIN with JSON response', async function () {
+
+            let modelAdjacencies = `[` +
+            // individual
+            `{ "name"  : "individual", "association_name" : "transcript_counts", ` +
+                // search parameter for individual
+                `"search" : { ` +
+                `   "field" : "id", ` +
+                `   "value" : { "value" : 18 ,` +
+                `   "operator" : "eq"` +
+                            `}}, ` +
+                // filter individual attributes to show
+                ` "attributes" : ["id", "name"]` +
+            `},` +
+            // transcript_count
+            `{ "name" : "transcript_count",` +
+                // TODO: check web associations
+                //`"association_name" : "aminoacidsequence", ` +
+                // filter transcript_count attributes to show
+                ` "attributes" : ["id", "gene"]` +
+            `}` +
+            // aminoacidsequence
+            //`, { "name" : "aminoacidsequence" }` +
+            `]`;
+
+            console.log(modelAdjacencies);
+
+            try {
+                let res = await itHelpers.request_join_post(modelAdjacencies);
+                console.log(res.data);
+            }catch(err){
+                console.log(err.response.data);
+            }
+
+            // TODO: JOIN BUG - do not print anything if there is no data found
+
+
+        });
+
+
+
+    });

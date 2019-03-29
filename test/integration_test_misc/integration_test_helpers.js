@@ -4,18 +4,44 @@ const FormData = require('form-data');
 const fs = require('fs');
 const request = require('sync-request');
 const graphqlUrl = 'http://0.0.0.0:3000/graphql';
+const joinSrvUrl = 'http://0.0.0.0:3000/join';
 const srvUrl = 'http://0.0.0.0:3344';
 
 /**
  * request_graph_ql_post - Send "POST" request to the local GraphQL server
  *
  * @param  {query} {string}  Any query string in GraphQL format
- * @return {integer}         Request response
+ * @return {object}          Request response
  */
 module.exports.request_graph_ql_post = function (query){
     return request('POST', graphqlUrl, {
         json: {
             query: `${query}`
+        }
+    });
+};
+
+/**
+ * request_join_post - Send "POST" request to the JOIN service of the local GraphQL server
+ *
+ * @param  {query} {string}  Any query string in JOIN format
+ * @return {object}          Request response
+ */
+module.exports.request_join_post = async function (modelAdjacencies){
+
+    // some dummy token for no_acl server mode (the const secret-key can be invalid with time)
+    let token = jsonwebtoken.sign({
+        id: 1,
+        email: "sci.db.service@gmail.com",
+        roles: "admin"
+    }, 'something-secret', { expiresIn: '1h' });
+
+    // returning the response object
+    return await axios.post(joinSrvUrl, modelAdjacencies, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/text',
+            'authorization': token
         }
     });
 };
