@@ -7,7 +7,7 @@
 # process it is possible to not remove the selected images. Each of the images that wou prefer to keep alive
 # shell be preceeded with the -k or --keep-image key. For example:
 
-#$ npm run test-integration -- -k gql_postgres -k gql_science_db_graphql_server
+#$ npm run test-integration -- -k gql_postgres -k gql_science_db_graphql_server -k gql_ncbi_sim_srv
 
 # Also this script can take an optional  "--run-docker-only" parameter. In this case
 # a docker will stay running and no tests will be executed automatically. This mode is useful for

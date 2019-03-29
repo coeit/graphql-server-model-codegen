@@ -488,7 +488,7 @@ describe(
             expect(individual_id !== 0).to.equal(true);
 
             res = itHelpers.request_graph_ql_post(`mutation { addTranscript_count(` +
-                      `gene: "associated_gene", ` +
+                      `gene: "AssociatedGene", ` +
                       `aminoacidsequence_id: 63165, ` +
                       `individual_id: ${individual_id}) { id } }`);
             resBody = JSON.parse(res.body.toString('utf8'));
@@ -499,37 +499,45 @@ describe(
 
         it('02. Check filtered JOIN with JSON response', async function () {
 
-            let modelAdjacencies = `[` +
-            // individual
-            `{ "name"  : "individual", "association_name" : "transcript_counts", ` +
-                // search parameter for individual
-                `"search" : { ` +
-                `   "field" : "id", ` +
-                `   "value" : { "value" : 18 ,` +
-                `   "operator" : "eq"` +
-                            `}}, ` +
-                // filter individual attributes to show
-                ` "attributes" : ["id", "name"]` +
-            `},` +
-            // transcript_count
-            `{ "name" : "transcript_count",` +
-                // TODO: check web associations
-                //`"association_name" : "aminoacidsequence", ` +
-                // filter transcript_count attributes to show
-                ` "attributes" : ["id", "gene"]` +
-            `}` +
-            // aminoacidsequence
-            //`, { "name" : "aminoacidsequence" }` +
-            `]`;
+            let modelAdjacencies = [
+                {
+                    name : "individual",
+                    association_name : "transcript_counts",
+                    search : {
+                        field : "id",
+                        value : { value : individual_id },
+                        operator : "eq"
+                    },
+                    attributes : [ "id" , "name" ]
+                },{
+                    name : "transcript_count",
+                    //association_name : "aminoacidsequence",
+                    attributes : [ "id", "gene"]
+                }//,{
+                 //   name: "aminoacidsequence"
+                 //}
+            ];
 
-            console.log(modelAdjacencies);
-
+            let res = {};
             try {
-                let res = await itHelpers.request_join_post(modelAdjacencies);
+                modelAdjacencies = JSON.stringify(modelAdjacencies);
+                res = await itHelpers.request_join_post(modelAdjacencies);
                 console.log(res.data);
             }catch(err){
                 console.log(err.response.data);
-            }
+            };
+
+            // TODO: Add normal check, maybe I send not a JSON string back to user !?!?!
+            // .toString('utf8')
+            /*let resBody = JSON.parse(res.body);
+            console.log(resBody);*/
+
+            /*expect(res.data).to.deep.equal({
+                'individual_id' : individual_id,
+                'individual.name': 'AssociatedIndividual',
+                'transcript_count.id': transcript_count_id,
+                'transcript_count.gene': 'AssociatedGene'
+            });*/
 
             // TODO: JOIN BUG - do not print anything if there is no data found
 
