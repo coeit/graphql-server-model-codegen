@@ -274,7 +274,7 @@ convertToType = function(many, model_name){
   }
 
   return model_name;
-}
+};
 
 
 
@@ -367,7 +367,7 @@ module.exports.getOptions = function(dataModel){
       }
       associations_info.mutations_attributes = attributesToString(associations_info.mutations_attributes);
       return associations_info;
-    }
+    };
 
 
 
@@ -414,7 +414,7 @@ generateAssociationsMigrations =  function( opts, dir_write){
           });
       }
     });
-}
+};
 
 
  /**
@@ -458,8 +458,9 @@ createNameMigration = function(dir_write, model_name){
  */
 writeCommons = function(dir_write){
   writeSchemaCommons(dir_write);
-  writeIndexModelsCommons(dir_write);
-}
+  //deprecated due to static global index, to be removed
+  //writeIndexModelsCommons(dir_write);
+};
 
 
 

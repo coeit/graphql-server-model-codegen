@@ -21,16 +21,20 @@ PWD=`pwd`
 bash -C "${PWD}/test/sh_integration_test_clear.sh" "$@"
 
 # Generate the code for the integration test models
-node ./index.js generate ./test/integration_test_models ./docker/integration_test_run
+#TARGET_DIR="./docker/integration_test_run"
+TARGET_DIR="/home/morrigan/WebstormProjects/graphql-server/"
+node ./index.js generate ./test/integration_test_models ${TARGET_DIR}
 
 # Patch the resolver for web-server
-patch -V never ./docker/integration_test_run/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
 
 # Add simple sequalize validation to the Individual model
 # patch -V never ./docker/integration_test_run/models/individual.js ./test/integration_test_misc/individual_validate_sequelize.patch
 
 # Add monkey-patching validation with Joi
-patch -V never ./docker/integration_test_run/validations/individual.js ./test/integration_test_misc/individual_validate_joi.patch
+patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate_joi.patch
+
+exit 0
 
 # Setup and launch the generated GraphQL web-server
 docker-compose -f ./docker/docker-compose-test.yml up -d

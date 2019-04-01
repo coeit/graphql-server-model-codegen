@@ -492,6 +492,7 @@ describe(
                       `aminoacidsequence_id: 63165, ` +
                       `individual_id: ${individual_id}) { id } }`);
             resBody = JSON.parse(res.body.toString('utf8'));
+            console.log(resBody);
             expect(res.statusCode).to.equal(200);
             transcript_count_id = resBody.data.addTranscript_count.id;
             expect(transcript_count_id !== 0).to.equal(true);
@@ -511,36 +512,33 @@ describe(
                     attributes : [ "id" , "name" ]
                 },{
                     name : "transcript_count",
+                    //TODO: Web service generates a class object that is incompatible with
+                    //TODO: sequelize object. All types of models shell have the same interface to
+                    //TODO: proceed with generic JOIN.
                     //association_name : "aminoacidsequence",
                     attributes : [ "id", "gene"]
-                }//,{
-                 //   name: "aminoacidsequence"
-                 //}
+                }/*,{
+                    name: "aminoacidsequence"
+                 }*/
             ];
 
             let res = {};
             try {
                 modelAdjacencies = JSON.stringify(modelAdjacencies);
                 res = await itHelpers.request_join_post(modelAdjacencies);
-                console.log(res.data);
             }catch(err){
                 console.log(err.response.data);
-            };
+                throw err;
+            }
 
-            // TODO: Add normal check, maybe I send not a JSON string back to user !?!?!
-            // .toString('utf8')
-            /*let resBody = JSON.parse(res.body);
-            console.log(resBody);*/
+            console.log(res.data);
 
-            /*expect(res.data).to.deep.equal({
-                'individual_id' : individual_id,
-                'individual.name': 'AssociatedIndividual',
-                'transcript_count.id': transcript_count_id,
-                'transcript_count.gene': 'AssociatedGene'
-            });*/
-
-            // TODO: JOIN BUG - do not print anything if there is no data found
-
+            expect(res.data).to.deep.equal({
+                'individual.id' : Number(individual_id),
+                'individual.name': "AssociatedIndividual",
+                'transcript_count.id': Number(transcript_count_id),
+                'transcript_count.gene': "AssociatedGene"
+            });
 
         });
 

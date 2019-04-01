@@ -62,7 +62,7 @@ module.exports.individualResolvers = `
     Resolvers for basic CRUD operations
 */
 
-const individual = require('../models/index').individual;
+const individual = require('../models_index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -78,6 +78,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 
 
@@ -570,7 +572,7 @@ module.exports.individual_no_assoc_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const individual = require('../models/index').individual;
+const individual = require('../models_index').individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -586,6 +588,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 
 
@@ -1017,7 +1021,7 @@ module.exports.transcript_count_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const transcript_count = require('../models/index').transcript_count;
+const transcript_count = require('../models_index').transcript_count;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -1033,6 +1037,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 /**
  * transcript_count.prototype.individual - Return associated record
@@ -1354,7 +1360,7 @@ module.exports.person_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const person = require('../models/index').person;
+const person = require('../models_index').person;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -1370,6 +1376,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
 
 /**
  * person.prototype.booksFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -1445,6 +1452,12 @@ person.prototype.countFilteredBooks = function({
 
     return this.countBooks(options);
 }
+
+
+
+
+
+
 
 /**
  * person.prototype.dogsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -1528,6 +1541,10 @@ person.prototype.countFilteredDogs = function({
         }, context)
     }
 }
+
+
+
+
 
 module.exports = {
 
@@ -1848,7 +1865,7 @@ module.exports.book_resolver_limit = `
     Resolvers for basic CRUD operations
 */
 
-const book = require('../models/index').book;
+const book = require('../models_index').book;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -1864,10 +1881,6 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
 
 
 /**
@@ -1946,6 +1959,7 @@ book.prototype.countFilteredPeople = function({
 }
 
 
+
 /**
  * book.prototype.publisher - Return associated record
  *
@@ -1958,6 +1972,10 @@ book.prototype.publisher = function(_, context) {
         "id": this.publisherId
     }, context);
 }
+
+
+
+
 
 
 
@@ -2331,7 +2349,7 @@ module.exports.researcher_resolver = `
     Resolvers for basic CRUD operations
 */
 
-const researcher = require('../models/index').researcher;
+const researcher = require('../models_index').researcher;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -2347,6 +2365,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
 
 /**
  * researcher.prototype.projectsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -2424,6 +2443,8 @@ researcher.prototype.countFilteredProjects = function({
 }
 
 
+
+
 /**
  * researcher.prototype.dog - Return associated record
  *
@@ -2447,6 +2468,11 @@ researcher.prototype.dog = function(_, context) {
             handleError(error);
         });
 }
+
+
+
+
+
 
 module.exports = {
 
@@ -3093,7 +3119,7 @@ module.exports.book_resolver_table = `
     Resolvers for basic CRUD operations
 */
 
-const book = require('../models/index').book;
+const book = require('../models_index').book;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -3109,10 +3135,6 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
 
 
 /**
@@ -3191,6 +3213,7 @@ book.prototype.countFilteredPeople = function({
 }
 
 
+
 /**
  * book.prototype.publisher - Return associated record
  *
@@ -3203,6 +3226,10 @@ book.prototype.publisher = function(_, context) {
         "id": this.publisherId
     }, context);
 }
+
+
+
+
 
 
 
@@ -3576,7 +3603,7 @@ module.exports.dog_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const dog = require('../models/index').dog;
+const dog = require('../models_index').dog;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -3592,6 +3619,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 /**
  * dog.prototype.person - Return associated record
@@ -4375,7 +4404,7 @@ module.exports.individual_resolvers_camelcase = `
     Resolvers for basic CRUD operations
 */
 
-const inDiVIdual = require('../models/index').inDiVIdual;
+const inDiVIdual = require('../models_index').inDiVIdual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -4391,6 +4420,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 
 
@@ -4852,7 +4883,7 @@ module.exports.transcriptCount_resolvers_camelcase = `
     Resolvers for basic CRUD operations
 */
 
-const transcriptCount = require('../models/index').transcriptCount;
+const transcriptCount = require('../models_index').transcriptCount;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -4868,6 +4899,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 /**
  * transcriptCount.prototype.individual - Return associated record
@@ -5189,7 +5222,7 @@ module.exports.dog_owner_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const dog = require('../models/index').dog;
+const dog = require('../models_index').dog;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -5205,6 +5238,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 /**
  * dog.prototype.owner - Return associated record
@@ -5748,7 +5783,7 @@ module.exports.academicTeam_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const academicTeam = require('../models/index').academicTeam;
+const academicTeam = require('../models_index').academicTeam;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
@@ -5764,6 +5799,8 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+
+
 
 
 
