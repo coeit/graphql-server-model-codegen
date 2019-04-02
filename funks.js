@@ -199,6 +199,9 @@ writeSchemaCommons = function(dir_write){
     offset: Int
   }
 
+  scalar Date
+  scalar Time
+  scalar DateTime
 \`;`;
 
   fs.writeFile(dir_write + '/schemas/' +  'commons.js' , commons, function(err) {
