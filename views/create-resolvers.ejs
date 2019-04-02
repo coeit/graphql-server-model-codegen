@@ -306,26 +306,42 @@ module.exports = {
 
             context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                     try {
-                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                            'ScienceDB batch add',
-                            'Your data has been successfully added to the database.');
-                    }catch (error){
-                        console.log(error.message);
-                    }
+                        console.log(`Sending ${addedZipFilePath} to the user.`);
 
-                    fs.unlinkSync(tmpFile);
-                }).catch((error) => {
-                    try {
-                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                            'ScienceDB batch add', `${error.message}`);
-                    }catch(error){
-                        console.log(error.message);
-                    }
+                        let attach = [];
+                        attach.push({
+                            filename: path.basename("added_data.zip"),
+                            path: addedZipFilePath
+                        });
 
-                    fs.unlinkSync(tmpFile);
-                });
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                        'ScienceDB batch add',
+                        'Your data has been successfully added to the database.',
+                        attach).then(function(info){
+                            fileTools.deleteIfExists(addedZipFilePath);
+                            console.log(info);
+                        }).catch(function(err){
+                            fileTools.deleteIfExists(addedZipFilePath);
+                            console.log(err);
+                        });
+
+                        }catch (error) {
+                            console.log(error.message);
+                        }
+
+                        fs.unlinkSync(tmpFile);
+                        }).catch((error) => {
+                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', `${error.message}`).then(function(info){
+                            console.log(info);
+                            }).catch(function(err){
+                            console.log(err);
+                        });
+
+                        fs.unlinkSync(tmpFile);
+                     });
 
             }).catch((error) => {
                 return new Error(error);

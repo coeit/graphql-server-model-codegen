@@ -57,8 +57,7 @@ module.exports.transcript_countSchema = `
   \`;
 `
 
-module.exports.individualResolvers = `
-/*
+module.exports.individualResolvers = `/*
     Resolvers for basic CRUD operations
 */
 
@@ -324,23 +323,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -747,23 +762,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -1208,23 +1239,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -1701,23 +1748,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -2131,23 +2194,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -2626,23 +2705,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -2778,6 +2873,8 @@ module.exports = {
     }
 }
 `
+
+
 module.exports.individual_schema = `
 module.exports = \`
   type individual  {
@@ -3385,23 +3482,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -3537,6 +3650,8 @@ module.exports = {
     }
 }
 `
+
+
 
 module.exports.person_schema = `
 module.exports = \`
@@ -3802,23 +3917,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -4399,6 +4530,7 @@ module.exports = function(sequelize, DataTypes) {
     return inDiVIdual;
 };
 `
+
 module.exports.individual_resolvers_camelcase = `
 /*
     Resolvers for basic CRUD operations
@@ -4666,23 +4798,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -5070,23 +5218,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -5421,23 +5585,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
@@ -6045,23 +6225,39 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then(() => {
+                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
                         try {
+                            console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                            let attach = [];
+                            attach.push({
+                                filename: path.basename("added_data.zip"),
+                                path: addedZipFilePath
+                            });
+
                             email.sendEmail(helpersAcl.getTokenFromContext(context).email,
                                 'ScienceDB batch add',
-                                'Your data has been successfully added to the database.');
+                                'Your data has been successfully added to the database.',
+                                attach).then(function(info) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(info);
+                            }).catch(function(err) {
+                                fileTools.deleteIfExists(addedZipFilePath);
+                                console.log(err);
+                            });
+
                         } catch (error) {
                             console.log(error.message);
                         }
 
                         fs.unlinkSync(tmpFile);
                     }).catch((error) => {
-                        try {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                                'ScienceDB batch add', \`\${error.message}\`);
-                        } catch (error) {
-                            console.log(error.message);
-                        }
+                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                            'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                            console.log(info);
+                        }).catch(function(err) {
+                            console.log(err);
+                        });
 
                         fs.unlinkSync(tmpFile);
                     });
