@@ -513,5 +513,13 @@ describe('Implement date/time types', function(){
     expect(g_model).to.be.equal(test_model);
   });
 
+  it('Migration - Person', async function(){
+    let opts = funks.getOptions(models.person_date);
+    let generated_migration =await funks.generateJs('create-migrations', opts);
+    let g_migration = generated_migration.replace(/\s/g, '');
+    let test_migration = test.person_date_migration.replace(/\s/g, '');
+    expect(g_migration).to.be.equal(test_migration);
+  });
+
 });
 
