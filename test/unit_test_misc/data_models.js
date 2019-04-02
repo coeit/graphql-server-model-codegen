@@ -359,3 +359,42 @@ module.exports.academicTeam = {
   }
 
 }
+
+module.exports.person_date = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String",
+    "birthday": "Date"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql",
+      "label": "name"
+    },
+
+    "patients":{
+      "type" : "hasMany",
+      "target" : "Dog",
+      "targetKey" : "doctor_Id",
+      "targetStorageType" : "sql",
+      "label": "name"
+    },
+
+    "books":{
+      "type" : "belongsToMany",
+      "target" : "Book",
+      "targetKey" : "book_Id",
+      "sourceKey" : "person_Id",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql",
+      "label" : "title"
+    }
+
+  }
+}

@@ -1038,6 +1038,7 @@ module.exports.transcript_count_no_assoc_model = `
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'transcript_count',
@@ -4546,7 +4547,6 @@ module.exports.researcher_model = `
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
-
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'Researcher',
@@ -5045,7 +5045,6 @@ const definition = {
         }
     }
 };
-
 
 /**
  * module - Creates a sequelize model
@@ -6498,7 +6497,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -6596,7 +6594,6 @@ const definition = {
         'phone'
     ]
 };
-
 
 /**
  * module - Creates a sequelize model
@@ -7289,7 +7286,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -7328,6 +7324,58 @@ module.exports = function(sequelize, DataTypes) {
     });
 
     return academicTeam;
+};
+`
+
+module.exports.person_date_model = `
+'use strict';
+
+
+const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var Person = sequelize.define('person', {
+
+        firstName: {
+            type: Sequelize[ dict['String'] ]
+        },
+        lastName: {
+            type: Sequelize[ dict['String'] ]
+        },
+        email: {
+            type: Sequelize[ dict['String'] ]
+        },
+        birthday: {
+          type: Sequelize[ dict['Date'] ]
+        }
+    });
+
+    Person.associate = function(models) {
+        Person.hasMany(models.dog, {
+            as: 'dogs',
+            foreignKey: 'personId'
+        });
+        Person.hasMany(models.dog, {
+            as: 'patients',
+            foreignKey: 'doctor_Id'
+        });
+        Person.belongsToMany(models.book, {
+            as: 'books',
+            foreignKey: 'person_Id',
+            through: 'books_to_people',
+            onDelete: 'CASCADE'
+        });
+    };
+
+    return Person;
 };
 `
 
