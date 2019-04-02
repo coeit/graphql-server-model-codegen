@@ -481,6 +481,7 @@ module.exports.individualModel = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -493,7 +494,7 @@ module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -898,6 +899,7 @@ module.exports.transcript_count_no_assoc_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -910,16 +912,16 @@ module.exports = function(sequelize, DataTypes) {
     var transcript_count = sequelize.define('transcript_count', {
 
         gene: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         variable: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         count: {
-            type: Sequelize.FLOAT
+            type: Sequelize[ dict['Float'] ]
         },
         tissue_or_condition: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -932,6 +934,7 @@ module.exports.individual_no_assoc_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -944,7 +947,7 @@ module.exports = function(sequelize, DataTypes) {
     var individual = sequelize.define('individual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -4016,6 +4019,7 @@ module.exports.researcher_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -4028,13 +4032,13 @@ module.exports = function(sequelize, DataTypes) {
     var Researcher = sequelize.define('researcher', {
 
         firstName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         lastName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         email: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -4373,6 +4377,7 @@ module.exports.individual_model_camelcase = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -4385,7 +4390,7 @@ module.exports = function(sequelize, DataTypes) {
     var inDiVIdual = sequelize.define('inDiVIdual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -5628,6 +5633,7 @@ module.exports.dog_owner_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -5640,10 +5646,10 @@ module.exports = function(sequelize, DataTypes) {
     var Dog = sequelize.define('dog', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         breed: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -5667,6 +5673,7 @@ module.exports.person_indices_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -5679,16 +5686,16 @@ module.exports = function(sequelize, DataTypes) {
     var Person = sequelize.define('person', {
 
         firstName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         lastName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         email: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         phone: {
-          type: Sequelize.STRING
+          type: Sequelize[ dict['String'] ]
         }
     },{
       indexes: ['email', 'phone']
@@ -6260,6 +6267,7 @@ module.exports.academicTeam_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * module - Creates a sequelize model
@@ -6272,13 +6280,13 @@ module.exports = function(sequelize, DataTypes) {
     var academicTeam = sequelize.define('academicTeam', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         department: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         subject: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
     });
 
@@ -6290,6 +6298,58 @@ module.exports = function(sequelize, DataTypes) {
     };
 
     return academicTeam;
+};
+`
+
+module.exports.person_date_model = `
+'use strict';
+
+
+const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+module.exports = function(sequelize, DataTypes) {
+    var Person = sequelize.define('person', {
+
+        firstName: {
+            type: Sequelize[ dict['String'] ]
+        },
+        lastName: {
+            type: Sequelize[ dict['String'] ]
+        },
+        email: {
+            type: Sequelize[ dict['String'] ]
+        },
+        birthday: {
+          type: Sequelize[ dict['Date'] ]
+        }
+    });
+
+    Person.associate = function(models) {
+        Person.hasMany(models.dog, {
+            as: 'dogs',
+            foreignKey: 'personId'
+        });
+        Person.hasMany(models.dog, {
+            as: 'patients',
+            foreignKey: 'doctor_Id'
+        });
+        Person.belongsToMany(models.book, {
+            as: 'books',
+            foreignKey: 'person_Id',
+            through: 'books_to_people',
+            onDelete: 'CASCADE'
+        });
+    };
+
+    return Person;
 };
 `
 

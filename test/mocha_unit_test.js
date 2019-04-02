@@ -471,3 +471,15 @@ describe('All webservice models', function(){
   })
 
 });
+
+describe('Implement date/time types', function(){
+
+  it('Model - Person', async function(){
+    let opts = funks.getOptions(models.person_date);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.person_date_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+});

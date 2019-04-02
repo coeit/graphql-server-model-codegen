@@ -131,6 +131,8 @@ attributesToJoiString = function(attributes){
             joi_type += 'number()';
         }else if(attributes[key] === 'Boolean'){
             joi_type += 'boolean()';
+        }else if(attributes[key] === 'Date' || attributes[key] === 'Time' || attributes[key] === 'DateTime' ){
+            joi_type += 'string()'
         }else{
             throw new Error(`Unsupported attribute type: ${attributes[key]}`);
         }
