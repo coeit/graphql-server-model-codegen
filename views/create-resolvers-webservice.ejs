@@ -240,7 +240,7 @@ module.exports = {
    * vueTable<%- nameCp-%> - Returns table of records as needed for displaying a vuejs table
    *
    * @param  {string} _       First parameter is not used
-   * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {object}         Records with format as needed for displaying a vuejs table
    */
   vueTable<%- nameCp-%>: function(_,context){
@@ -248,5 +248,19 @@ module.exports = {
     YOUR CODE GOES HERE
     */
     throw new Error('vueTable<%- nameCp-%> is not implemented');
+  },
+
+  /**
+   * csvTableTemplate<%- nameCp-%> - Returns table's template
+   *
+   * @param  {string} _       First parameter is not used
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {Array}         Strings, one for header and one columns types
+   */
+  csvTableTemplate<%- nameCp-%>: function(_, context){
+    /*
+    YOUR CODE GOES HERE
+    */
+    throw new Error('csvTableTemplate<%- nameCp-%> is not implemented');
   }
 }

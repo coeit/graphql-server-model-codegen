@@ -71,7 +71,9 @@ module.exports = \`
     books(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput ): [book]
     readOneBook(id: ID!): book
     countBooks(search: searchBookInput ): Int
-    vueTableBook : VueTableBook  }
+    vueTableBook : VueTableBook
+    csvTableTemplateBook: [String]
+  }
 
     type Mutation {
     addBook( title: String,  subject: String, Price : Float, publisher_id: Int  ): book!
@@ -264,7 +266,7 @@ module.exports = {
      * vueTableBook - Returns table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_,context){
@@ -272,6 +274,20 @@ module.exports = {
       YOUR CODE GOES HERE
       */
       throw new Error('vueTableBook is not implemented');
+    },
+
+    /**
+     * csvTableTemplateBook - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateBook: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('csvTableTemplateBook is not implemented');
     }
 }
 `
@@ -341,7 +357,9 @@ module.exports = \`
     publi_shers(search: searchPubli_sherInput, order: [ orderPubli_sherInput ], pagination: paginationInput ): [publi_sher]
     readOnePubli_sher(id: ID!): publi_sher
     countPubli_shers(search: searchPubli_sherInput ): Int
-    vueTablePubli_sher : VueTablePubli_sher  }
+    vueTablePubli_sher : VueTablePubli_sher
+    csvTableTemplatePubli_sher: [String]
+   }
 
     type Mutation {
     addPubli_sher( name: String,  phone: String  ): publi_sher!
@@ -543,7 +561,7 @@ module.exports = {
      * vueTablePubli_sher - Returns table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTablePubli_sher: function(_,context){
@@ -551,6 +569,20 @@ module.exports = {
       YOUR CODE GOES HERE
       */
       throw new Error('vueTablePubli_sher is not implemented');
+    },
+
+    /**
+     * csvTableTemplatePubli_sher - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplatePubli_sher: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('csvTableTemplatePubli_sher is not implemented');
     }
 }
 
@@ -630,7 +662,9 @@ module.exports = \`
     people(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput ): [Person]
     readOnePerson(id: ID!): Person
     countPeople(search: searchPersonInput ): Int
-    vueTablePerson : VueTablePerson  }
+    vueTablePerson : VueTablePerson
+    csvTableTemplatePerson: [String]
+  }
 
     type Mutation {
     addPerson( firstName: String, lastName: String, Age: Int , companyId: Int ): Person!
@@ -825,7 +859,7 @@ module.exports = {
      * vueTablePerson - Returns table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTablePerson: function(_,context){
@@ -833,6 +867,20 @@ module.exports = {
       YOUR CODE GOES HERE
       */
       throw new Error('vueTablePerson is not implemented');
+    },
+
+    /**
+     * csvTableTemplatePerson - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplatePerson: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('csvTableTemplatePerson is not implemented');
     }
 }
 `

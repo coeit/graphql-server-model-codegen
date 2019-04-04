@@ -455,7 +455,7 @@ module.exports = {
    * vueTable<%- nameCp-%> - Return table of records as needed for displaying a vuejs table
    *
    * @param  {string} _       First parameter is not used
-   * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {object}         Records with format as needed for displaying a vuejs table
    */
   vueTable<%- nameCp-%>: function(_,context){
@@ -468,5 +468,25 @@ module.exports = {
   }).catch( error =>{
         handleError( error);
   })
+},
+
+  /**
+   * csvTableTemplate<%- nameCp-%> - Returns table's template
+   *
+   * @param  {string} _       First parameter is not used
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {Array}         Strings, one for header and one columns types
+   */
+  csvTableTemplate<%- nameCp-%>: function(_, context){
+    return checkAuthorization(context, '<%- name -%>', 'read').then(authorization => {
+        if (authorization === true) {
+            return helper.csvTableTemplate(<%- nameLc -%>);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
   }
+
 }

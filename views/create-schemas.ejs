@@ -50,6 +50,7 @@ module.exports = `
     readOne<%- nameCp -%>(id: ID!): <%- name %>
     count<%- namePlCp -%>(search: search<%- nameCp -%>Input ): Int
     vueTable<%- nameCp -%> : VueTable<%- nameCp -%>
+    csvTableTemplate<%- nameCp -%>: [String]
   }
 
     type Mutation {

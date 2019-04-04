@@ -157,7 +157,7 @@ describe('Count for model', function(){
 });
 
 
-describe('VueTable', function(){
+describe('VueTable - tableTemplate', function(){
 
   it('GraphQL Schema - book', async function(){
     let opts = funks.getOptions(models.book);

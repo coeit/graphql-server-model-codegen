@@ -45,7 +45,9 @@ module.exports.transcript_countSchema = `
     transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
     countTranscript_counts(search: searchTranscript_countInput ): Int
-    vueTableTranscript_count : VueTableTranscript_count  }
+    vueTableTranscript_count : VueTableTranscript_count
+    csvTableTemplateTranscript_count: [String]
+  }
 
   type Mutation {
     addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
@@ -475,7 +477,7 @@ module.exports = {
      * vueTableIndividual - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
@@ -488,6 +490,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateIndividual - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateIndividual: function(_, context){
+      return checkAuthorization(context, 'individual', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(individual);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -570,6 +591,7 @@ module.exports = \`
     readOneTranscript_count(id: ID!): transcript_count
     countTranscript_counts(search: searchTranscript_countInput ): Int
     vueTableTranscript_count : VueTableTranscript_count
+    csvTableTemplateTranscript_count: [String]
   }
 
     type Mutation {
@@ -908,7 +930,7 @@ module.exports = {
      * vueTableIndividual - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableIndividual: function(_, context) {
@@ -921,6 +943,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateIndividual - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateIndividual: function(_, context){
+      return checkAuthorization(context, 'individual', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(individual);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -1385,7 +1426,7 @@ module.exports = {
      * vueTableTranscript_count - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableTranscript_count: function(_, context) {
@@ -1398,6 +1439,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateTranscript_count - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateTranscript_count: function(_, context){
+      return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(transcript_count);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -1906,7 +1966,7 @@ module.exports = {
      * vueTablePerson - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTablePerson: function(_, context) {
@@ -1919,6 +1979,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplatePerson - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplatePerson: function(_, context){
+      return checkAuthorization(context, 'Person', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(person);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -2346,7 +2425,7 @@ module.exports = {
      * vueTableBook - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
@@ -2359,6 +2438,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateBook - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateBook: function(_, context){
+      return checkAuthorization(context, 'Book', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(book);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -2411,6 +2509,7 @@ module.exports = \`
     readOneResearcher(id: ID!): Researcher
     countResearchers(search: searchResearcherInput ): Int
     vueTableResearcher : VueTableResearcher
+    csvTableTemplateResearcher: [String]
   }
 
     type Mutation {
@@ -2857,7 +2956,7 @@ module.exports = {
      * vueTableResearcher - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableResearcher: function(_, context) {
@@ -2870,6 +2969,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateResearcher - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateResearcher: function(_, context){
+      return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(researcher);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -2917,6 +3035,7 @@ module.exports = \`
     readOneIndividual(id: ID!): individual
     countIndividuals(search: searchIndividualInput): Int
     vueTableIndividual : VueTableIndividual
+    csvTableTemplateIndividual: [String]
   }
 
     type Mutation {
@@ -3141,7 +3260,7 @@ module.exports = {
      * vueTableSpecie - Returns table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableSpecie: function(_,context){
@@ -3149,6 +3268,20 @@ module.exports = {
       YOUR CODE GOES HERE
       */
       throw new Error('vueTableSpecie is not implemented');
+    },
+
+    /**
+     * csvTableTemplateSpecie - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateSpecie: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('csvTableTemplateSpecie is not implemented');
     }
 }
 `
@@ -3199,6 +3332,7 @@ type VueTableBook{
     readOneBook(id: ID!): Book
     countBooks(search: searchBookInput ): Int
     vueTableBook : VueTableBook
+    csvTableTemplateBook: [String]
   }
 
     type Mutation {
@@ -3634,7 +3768,7 @@ module.exports = {
      * vueTableBook - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableBook: function(_, context) {
@@ -3647,7 +3781,29 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+
+    /**
+     * csvTableTemplateBook - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateBook: function(_, context){
+      return checkAuthorization(context, 'Book', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(book);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
+
+
 }
 `
 
@@ -3701,7 +3857,9 @@ module.exports = \`
     people(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput ): [Person]
     readOnePerson(id: ID!): Person
     countPeople(search: searchPersonInput ): Int
-    vueTablePerson : VueTablePerson  }
+    vueTablePerson : VueTablePerson
+    csvTableTemplatePerson: [String]
+  }
 
     type Mutation {
     addPerson( firstName: String, lastName: String, email: String, addDogs:[ID], addBooks:[ID]): Person!
@@ -4063,7 +4221,7 @@ module.exports = {
      * vueTableDog - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableDog: function(_, context) {
@@ -4076,6 +4234,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateDog - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateDog: function(_, context){
+      return checkAuthorization(context, 'Dog', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(dog);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -4267,7 +4444,9 @@ module.exports = \`
     aminoAcidSequences(search: searchAminoAcidSequenceInput, order: [ orderAminoAcidSequenceInput ], pagination: paginationInput ): [aminoAcidSequence]
     readOneAminoAcidSequence(id: ID!): aminoAcidSequence
     countAminoAcidSequences(search: searchAminoAcidSequenceInput ): Int
-    vueTableAminoAcidSequence : VueTableAminoAcidSequence  }
+    vueTableAminoAcidSequence : VueTableAminoAcidSequence
+    csvTableTemplateAminoAcidSequence: [String]
+  }
 
   type Mutation {
     addAminoAcidSequence(  accession: String, sequence: String): aminoAcidSequence!
@@ -4433,7 +4612,7 @@ module.exports = {
      * vueTableAminoAcidSequence - Returns table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableAminoAcidSequence: function(_,context){
@@ -4441,6 +4620,20 @@ module.exports = {
       YOUR CODE GOES HERE
       */
       throw new Error('vueTableAminoAcidSequence is not implemented');
+    },
+
+    /**
+     * csvTableTemplateAminoAcidSequence - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateAminoAcidSequence: function(_, context){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('csvTableTemplateAminoAcidSequence is not implemented');
     }
 }
 
@@ -4488,7 +4681,9 @@ module.exports = \`
     inDiVIduals(search: searchInDiVIdualInput, order: [ orderInDiVIdualInput ], pagination: paginationInput ): [inDiVIdual]
     readOneInDiVIdual(id: ID!): inDiVIdual
     countInDiVIduals(search: searchInDiVIdualInput ): Int
-    vueTableInDiVIdual : VueTableInDiVIdual  }
+    vueTableInDiVIdual : VueTableInDiVIdual
+    csvTableTemplateInDiVIdual: [String]
+  }
 
     type Mutation {
     addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
@@ -4950,7 +5145,7 @@ module.exports = {
      * vueTableInDiVIdual - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableInDiVIdual: function(_, context) {
@@ -4963,6 +5158,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateInDiVIdual - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateInDiVIdual: function(_, context){
+      return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(inDiVIdual);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `;
@@ -5014,7 +5228,9 @@ module.exports = \`
     transcriptCounts(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput ): [transcriptCount]
     readOneTranscriptCount(id: ID!): transcriptCount
     countTranscriptCounts(search: searchTranscriptCountInput ): Int
-    vueTableTranscriptCount : VueTableTranscriptCount  }
+    vueTableTranscriptCount : VueTableTranscriptCount
+    csvTableTemplateTranscriptCount: [String]
+  }
 
     type Mutation {
     addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
@@ -5364,7 +5580,7 @@ module.exports = {
      * vueTableTranscriptCount - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableTranscriptCount: function(_, context) {
@@ -5377,6 +5593,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateTranscriptCount - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateTranscriptCount: function(_, context){
+      return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(transcriptCount);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -5731,7 +5966,7 @@ module.exports = {
      * vueTableDog - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableDog: function(_, context) {
@@ -5744,6 +5979,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateDog - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateDog: function(_, context){
+      return checkAuthorization(context, 'Dog', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(dog);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -5792,7 +6046,9 @@ type Query {
   dogs(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput ): [Dog]
   readOneDog(id: ID!): Dog
   countDogs(search: searchDogInput ): Int
-  vueTableDog : VueTableDog  }
+  vueTableDog : VueTableDog
+  csvTableTemplateDog: [String]
+}
 
   type Mutation {
   addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
@@ -6377,7 +6633,7 @@ module.exports = {
      * vueTableAcademicTeam - Return table of records as needed for displaying a vuejs table
      *
      * @param  {string} _       First parameter is not used
-     * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {object}         Records with format as needed for displaying a vuejs table
      */
     vueTableAcademicTeam: function(_, context) {
@@ -6390,6 +6646,25 @@ module.exports = {
         }).catch(error => {
             handleError(error);
         })
+    },
+
+    /**
+     * csvTableTemplateAcademicTeam - Returns table's template
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     * @return {Array}         Strings, one for header and one columns types
+     */
+    csvTableTemplateAcademicTeam: function(_, context){
+      return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
+          if (authorization === true) {
+              return helper.csvTableTemplate(academicTeam);
+          } else {
+              return new Error("You don't have authorization to perform this action");
+          }
+      }).catch(error => {
+          handleError(error);
+      })
     }
 }
 `
@@ -6440,7 +6715,9 @@ type Query {
   academicTeams(search: searchAcademicTeamInput, order: [ orderAcademicTeamInput ], pagination: paginationInput ): [academicTeam]
   readOneAcademicTeam(id: ID!): academicTeam
   countAcademicTeams(search: searchAcademicTeamInput ): Int
-  vueTableAcademicTeam : VueTableAcademicTeam  }
+  vueTableAcademicTeam : VueTableAcademicTeam
+  csvTableTemplateAcademicTeam: [String]
+}
 
   type Mutation {
   addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
