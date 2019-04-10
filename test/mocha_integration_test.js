@@ -452,8 +452,7 @@ describe(
         });
 
 
-        // TODO: Validation knoks down a server, check catch statements!!!
-        /*it('04. Validate SCV individual batch upload', async function () {
+        it('04. Validate SCV individual batch upload', async function () {
             let csvPath = path.join(__dirname, 'integration_test_misc', 'individual_invalid.csv');
 
             // count records before upload
@@ -469,7 +468,7 @@ describe(
             // count records before upload
             let cnt2 = await itHelpers.count_all_records('countIndividuals');
             expect(cnt2 - cnt1).to.equal(0);
-        });*/
+        });
 
     });
 
