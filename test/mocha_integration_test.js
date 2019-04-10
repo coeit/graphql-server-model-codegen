@@ -394,7 +394,7 @@ describe( 'Batch Upload', function() {
         // batch_upload_csv start new background, there is no way to test the actual result
         // without explicit delay. The test may fail if delay is too small, just check the
         // resulting DB table to be sure that all records from file individual_valid.csv were added.
-        let success = await itHelpers.batch_upload_csv(csvPath, 'bulkAddIndividualCsv');
+        let success = await itHelpers.batch_upload_csv(csvPath, 'mutation {bulkAddIndividualCsv{id}}');
         expect(success).equal(true);
         await delay(500);
 
@@ -461,13 +461,31 @@ describe(
             // batch_upload_csv start new background, it returns a response without
             // an error independently if there are validation errors during batch add or not.
             // These errors will be sent to the user's e-mail.
-            let success = await itHelpers.batch_upload_csv(csvPath, 'bulkAddIndividualCsv');
+            let success = await itHelpers.batch_upload_csv(csvPath, 'mutation {bulkAddIndividualCsv{ id}}');
             expect(success).equal(true);
             await delay(500);
 
             // count records before upload
             let cnt2 = await itHelpers.count_all_records('countIndividuals');
             expect(cnt2 - cnt1).to.equal(0);
+        });
+
+        it('05. CSV with explicit Null values', async function () {
+            let csvPath = path.join(__dirname, 'integration_test_misc', 'transcript_count_nulls.csv');
+
+            // count records before upload
+            let cnt1 = await itHelpers.count_all_records('countTranscript_counts');
+
+            // batch_upload_csv start new background, it returns a response without
+            // an error independently if there are validation errors during batch add or not.
+            // These errors will be sent to the user's e-mail.
+            let success = await itHelpers.batch_upload_csv(csvPath, 'mutation { bulkAddTranscript_countCsv {id}}');
+            expect(success).equal(true);
+            await delay(500);
+
+            // count records before upload
+            let cnt2 = await itHelpers.count_all_records('countTranscript_counts');
+            expect(cnt2 - cnt1).to.equal(1);
         });
 
     });

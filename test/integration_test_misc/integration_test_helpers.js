@@ -92,7 +92,8 @@ module.exports.batch_upload_csv = async function (csvPath, mutation){
 
 
     formData.append('csv_file', fs.createReadStream(csvPath));
-    formData.append('query', 'mutation {bulkAddIndividualCsv{ id}}');
+    //mutation {bulkAddIndividualCsv{ id}}
+    formData.append('query', `${mutation}`);
 
     return await axios.post(graphqlUrl, formData,  {
         headers: {

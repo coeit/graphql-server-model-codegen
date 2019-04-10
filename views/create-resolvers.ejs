@@ -306,7 +306,7 @@ module.exports = {
 
             context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                fileTools.parseCsvStream(tmpFile, <%- nameLc -%>, delim, cols).then((addedZipFilePath) => {
                     try {
                         console.log(`Sending ${addedZipFilePath} to the user.`);
 
