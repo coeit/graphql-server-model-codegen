@@ -63,13 +63,13 @@ module.exports.individualResolvers = `/*
     Resolvers for basic CRUD operations
 */
 
-const individual = require('../models_index').individual;
+const path = require('path');
+const individual = require(path.join(__dirname, '..', 'models_index.js')).individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -609,13 +609,13 @@ module.exports.individual_no_assoc_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const individual = require('../models_index').individual;
+const path = require('path');
+const individual = require(path.join(__dirname, '..', 'models_index.js')).individual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -1093,13 +1093,13 @@ module.exports.transcript_count_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const transcript_count = require('../models_index').transcript_count;
+const path = require('path');
+const transcript_count = require(path.join(__dirname, '..', 'models_index.js')).transcript_count;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -1280,7 +1280,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, transcript_count, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -1448,17 +1448,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateTranscript_count: function(_, context){
-      return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(transcript_count);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateTranscript_count: function(_, context) {
+        return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(transcript_count);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -1467,13 +1468,13 @@ module.exports.person_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const person = require('../models_index').person;
+const path = require('path');
+const person = require(path.join(__dirname, '..', 'models_index.js')).person;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -1808,7 +1809,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, person, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -1988,17 +1989,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplatePerson: function(_, context){
-      return checkAuthorization(context, 'Person', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(person);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplatePerson: function(_, context) {
+        return checkAuthorization(context, 'Person', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(person);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -2007,13 +2009,13 @@ module.exports.book_resolver_limit = `
     Resolvers for basic CRUD operations
 */
 
-const book = require('../models_index').book;
+const path = require('path');
+const book = require(path.join(__dirname, '..', 'models_index.js')).book;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -2273,7 +2275,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, book, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -2447,17 +2449,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateBook: function(_, context){
-      return checkAuthorization(context, 'Book', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(book);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateBook: function(_, context) {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(book);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -2527,13 +2530,13 @@ module.exports.researcher_resolver = `
     Resolvers for basic CRUD operations
 */
 
-const researcher = require('../models_index').researcher;
+const path = require('path');
+const researcher = require(path.join(__dirname, '..', 'models_index.js')).researcher;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -2804,7 +2807,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, researcher, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -2978,17 +2981,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateResearcher: function(_, context){
-      return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(researcher);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateResearcher: function(_, context) {
+        return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(researcher);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -3350,13 +3354,13 @@ module.exports.book_resolver_table = `
     Resolvers for basic CRUD operations
 */
 
-const book = require('../models_index').book;
+const path = require('path');
+const book = require(path.join(__dirname, '..', 'models_index.js')).book;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -3616,7 +3620,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, book, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -3783,7 +3787,6 @@ module.exports = {
         })
     },
 
-
     /**
      * csvTableTemplateBook - Returns table's template
      *
@@ -3791,18 +3794,17 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateBook: function(_, context){
-      return checkAuthorization(context, 'Book', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(book);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateBook: function(_, context) {
+        return checkAuthorization(context, 'Book', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(book);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
-
 
 }
 `
@@ -3876,13 +3878,13 @@ module.exports.dog_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const dog = require('../models_index').dog;
+const path = require('path');
+const dog = require(path.join(__dirname, '..', 'models_index.js')).dog;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -4075,7 +4077,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, dog, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -4243,17 +4245,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateDog: function(_, context){
-      return checkAuthorization(context, 'Dog', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(dog);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateDog: function(_, context) {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(dog);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -4731,13 +4734,13 @@ module.exports.individual_resolvers_camelcase = `
     Resolvers for basic CRUD operations
 */
 
-const inDiVIdual = require('../models_index').inDiVIdual;
+const path = require('path');
+const inDiVIdual = require(path.join(__dirname, '..', 'models_index.js')).inDiVIdual;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -4993,7 +4996,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, inDiVIdual, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -5167,17 +5170,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateInDiVIdual: function(_, context){
-      return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(inDiVIdual);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateInDiVIdual: function(_, context) {
+        return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(inDiVIdual);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `;
 
@@ -5247,13 +5251,13 @@ module.exports.transcriptCount_resolvers_camelcase = `
     Resolvers for basic CRUD operations
 */
 
-const transcriptCount = require('../models_index').transcriptCount;
+const path = require('path');
+const transcriptCount = require(path.join(__dirname, '..', 'models_index.js')).transcriptCount;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -5434,7 +5438,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, transcriptCount, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -5602,17 +5606,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateTranscriptCount: function(_, context){
-      return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(transcriptCount);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateTranscriptCount: function(_, context) {
+        return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(transcriptCount);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -5621,13 +5626,13 @@ module.exports.dog_owner_resolvers =`
     Resolvers for basic CRUD operations
 */
 
-const dog = require('../models_index').dog;
+const path = require('path');
+const dog = require(path.join(__dirname, '..', 'models_index.js')).dog;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -5820,7 +5825,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, dog, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -5988,17 +5993,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateDog: function(_, context){
-      return checkAuthorization(context, 'Dog', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(dog);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateDog: function(_, context) {
+        return checkAuthorization(context, 'Dog', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(dog);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
@@ -6219,13 +6225,13 @@ module.exports.academicTeam_resolvers = `
     Resolvers for basic CRUD operations
 */
 
-const academicTeam = require('../models_index').academicTeam;
+const path = require('path');
+const academicTeam = require(path.join(__dirname, '..', 'models_index.js')).academicTeam;
 const searchArg = require('../utils/search-argument');
 const fileTools = require('../utils/file-tools');
 const helper = require('../utils/helper');
 const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path');
 const fs = require('fs');
 const uuidv4 = require('uuidv4');
 const resolvers = require('./index');
@@ -6481,7 +6487,7 @@ module.exports = {
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
-                    fileTools.parseCsvStream(tmpFile, individual, delim, cols).then((addedZipFilePath) => {
+                    fileTools.parseCsvStream(tmpFile, academicTeam, delim, cols).then((addedZipFilePath) => {
                         try {
                             console.log(\`Sending \${addedZipFilePath} to the user.\`);
 
@@ -6655,17 +6661,18 @@ module.exports = {
      * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
      * @return {Array}         Strings, one for header and one columns types
      */
-    csvTableTemplateAcademicTeam: function(_, context){
-      return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
-          if (authorization === true) {
-              return helper.csvTableTemplate(academicTeam);
-          } else {
-              return new Error("You don't have authorization to perform this action");
-          }
-      }).catch(error => {
-          handleError(error);
-      })
+    csvTableTemplateAcademicTeam: function(_, context) {
+        return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
+            if (authorization === true) {
+                return helper.csvTableTemplate(academicTeam);
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            handleError(error);
+        })
     }
+
 }
 `
 
