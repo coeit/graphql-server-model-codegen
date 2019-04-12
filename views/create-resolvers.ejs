@@ -404,7 +404,7 @@ module.exports = {
                 return err;
             } else {
                 return <%- nameLc -%>
-                    .findById(input.id)
+                    .findByPk(input.id)
                     .then( <%- nameLc -%> => {
                     <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
                     <%for(let i=0; i < associations_temp.length; i++){-%>

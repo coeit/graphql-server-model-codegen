@@ -425,7 +425,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return individual.findById(input.id)
+                    return individual.findByPk(input.id)
                         .then(individual => {
                             if (input.addTranscript_counts) {
                                 individual.addTranscript_counts(input.addTranscript_counts);
@@ -884,7 +884,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return individual.findById(input.id)
+                    return individual.findByPk(input.id)
                         .then(individual => {
                             return individual.update(input);
                         });
@@ -1380,7 +1380,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return transcript_count.findById(input.id)
+                    return transcript_count.findByPk(input.id)
                         .then(transcript_count => {
                             return transcript_count.update(input);
                         });
@@ -1909,7 +1909,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return person.findById(input.id)
+                    return person.findByPk(input.id)
                         .then(person => {
                             if (input.addDogs) {
                                 person.addDogs(input.addDogs);
@@ -2375,7 +2375,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return book.findById(input.id)
+                    return book.findByPk(input.id)
                         .then(book => {
                             if (input.addPeople) {
                                 book.addPeople(input.addPeople);
@@ -2907,7 +2907,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return researcher.findById(input.id)
+                    return researcher.findByPk(input.id)
                         .then(researcher => {
                             if (input.addProjects) {
                                 researcher.addProjects(input.addProjects);
@@ -3720,7 +3720,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return book.findById(input.id)
+                    return book.findByPk(input.id)
                         .then(book => {
                             if (input.addPeople) {
                                 book.addPeople(input.addPeople);
@@ -4177,7 +4177,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return dog.findById(input.id)
+                    return dog.findByPk(input.id)
                         .then(dog => {
                             return dog.update(input);
                         });
@@ -5096,7 +5096,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return inDiVIdual.findById(input.id)
+                    return inDiVIdual.findByPk(input.id)
                         .then(inDiVIdual => {
                             if (input.addTranscriptCounts) {
                                 inDiVIdual.addTranscriptCounts(input.addTranscriptCounts);
@@ -5538,7 +5538,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return transcriptCount.findById(input.id)
+                    return transcriptCount.findByPk(input.id)
                         .then(transcriptCount => {
                             return transcriptCount.update(input);
                         });
@@ -5925,7 +5925,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return dog.findById(input.id)
+                    return dog.findByPk(input.id)
                         .then(dog => {
                             return dog.update(input);
                         });
@@ -6587,7 +6587,7 @@ module.exports = {
                 if (!!err) {
                     return err;
                 } else {
-                    return academicTeam.findById(input.id)
+                    return academicTeam.findByPk(input.id)
                         .then(academicTeam => {
                             if (input.addMembers) {
                                 academicTeam.addMembers(input.addMembers);
