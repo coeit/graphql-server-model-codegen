@@ -335,7 +335,7 @@ module.exports.getOptions = function(dataModel){
           association.targetStorageType = association.targetStorageType.toLowerCase();
           //let target_schema = association.target;
           let type = association.type;
-          if(type === "belongsTo" && storageType === 'sql'){ //adds column and attribute to source model
+          if(type === "belongsTo" && storageType === 'sql' && association.targetStorageType === 'sql'){ //adds column and attribute to source model
             associations_info.mutations_attributes[association.targetKey] = "Int";
           }
 

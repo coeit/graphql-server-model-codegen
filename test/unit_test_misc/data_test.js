@@ -3296,6 +3296,7 @@ module.exports = \`
       id: ID
       title: String
       genre: String
+      publisherId: Int
         publisher: Publisher
         peopleFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
     countFilteredPeople(search: searchPersonInput) : Int
@@ -3317,6 +3318,7 @@ type VueTableBook{
     id
     title
     genre
+    publisherId
   }
 
   input searchBookInput {

@@ -84,7 +84,8 @@ module.exports.book = {
   "storageType" : "sql",
   "attributes" : {
     "title" : "String",
-    "genre" : "String"
+    "genre" : "String",
+    "publisherId": "Int"
   },
   "associations":{
 
