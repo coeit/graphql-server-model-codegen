@@ -1,16 +1,33 @@
 
 module.exports = `
   type <%- name -%>
-  {
+{
+    """
+    @original-field
+    """
     id: ID
-  <%for(var key in attributes){-%>
-  <%= key %>: <%= attributes[key]%>
+
+  <%for(var key in attributes)
+{-%>
+  """
+    @original-field
+    """
+    <%= key %>: <%= attributes[key]%>
+
   <%}-%>
   <%for(var key in associations.schema_attributes.one){-%>
 <%=key %>: <%= associations.schema_attributes.one[key]%>
   <%}-%>
   <%for(var key in associations.schema_attributes.many){-%>
-<%=key%>Filter(search: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]-%>]
+
+    """
+    @search-request
+    """
+    <%=key%>Filter(search: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]-%>]
+
+    """
+    @count-request
+    """
     countFiltered<%= associations.schema_attributes.many[key][2]%>(search: search<%= associations.schema_attributes.many[key][1] -%>Input) : Int
   <%}-%>
 }

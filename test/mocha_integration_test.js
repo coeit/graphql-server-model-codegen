@@ -531,14 +531,12 @@ describe(
                     attributes : [ "id" , "name" ]
                 },{
                     name : "transcript_count",
-                    //TODO: Web service generates a class object that is incompatible with
-                    //TODO: sequelize object. All types of models shell have the same interface to
-                    //TODO: proceed with generic JOIN.
-                    //association_name : "aminoacidsequence",
+                    // note, this is a web service
+                    association_name : "aminoacidsequence",
                     attributes : [ "id", "gene"]
-                }/*,{
+                },{
                     name: "aminoacidsequence"
-                 }*/
+                }
             ];
 
             let res = {};
