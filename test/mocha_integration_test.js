@@ -511,7 +511,6 @@ describe(
                       `aminoacidsequence_id: 63165, ` +
                       `individual_id: ${individual_id}) { id } }`);
             resBody = JSON.parse(res.body.toString('utf8'));
-            console.log(resBody);
             expect(res.statusCode).to.equal(200);
             transcript_count_id = resBody.data.addTranscript_count.id;
             expect(transcript_count_id !== 0).to.equal(true);
@@ -533,9 +532,10 @@ describe(
                     name : "transcript_count",
                     // note, this is a web service
                     association_name : "aminoacidsequence",
-                    attributes : [ "id", "gene"]
+                    attributes : [ "id", "gene", "aminoacidsequence_id"]
                 },{
-                    name: "aminoacidsequence"
+                    name: "aminoacidsequence",
+                    attributes : [ "id"]
                 }
             ];
 
@@ -550,12 +550,52 @@ describe(
 
             console.log(res.data);
 
-            expect(res.data).to.deep.equal({
-                'individual.id' : Number(individual_id),
+            expect(res.data).to.deep.equal(
+            {   'individual.id': Number(individual_id),
                 'individual.name': "AssociatedIndividual",
+                'transcript_count.aminoacidsequence_id': 63165,
+                'transcript_count.gene': "AssociatedGene",
                 'transcript_count.id': Number(transcript_count_id),
-                'transcript_count.gene': "AssociatedGene"
+                'aminoacidsequence.id': 63165
             });
+
+        });
+
+        it('03. Start to JOIN from remote service', async function () {
+
+            let modelAdjacencies = [
+                {
+                    // note, this is a web service
+                    name: "aminoacidsequence",
+                    attributes : [ "id"],
+                    association_name : "transcript_counts",
+                },
+                {
+                    name : "transcript_count",
+                    attributes : [ "id", "gene", "aminoacidsequence_id"]
+                }
+            ];
+
+            let res = {};
+            try {
+                modelAdjacencies = JSON.stringify(modelAdjacencies);
+                res = await itHelpers.request_join_post(modelAdjacencies);
+            }catch(err){
+                console.log(err.response.data);
+                throw err;
+            }
+
+            console.log(res.data);
+
+            //TODO: just change comparison criteria
+            expect(res.data).to.deep.equal(
+                {   'individual.id': Number(individual_id),
+                    'individual.name': "AssociatedIndividual",
+                    'transcript_count.aminoacidsequence_id': 63165,
+                    'transcript_count.gene': "AssociatedGene",
+                    'transcript_count.id': Number(transcript_count_id),
+                    'aminoacidsequence.id': 63165
+                });
 
         });
 

@@ -1,5 +1,5 @@
---- aminoacidsequence.js	2019-02-07 01:36:28.000000000 -0600
-+++ aminoacidsequence_new.js	2019-02-07 00:07:02.000000000 -0600
+--- aminoacidsequence.js	2019-04-20 18:46:29.000000000 -0500
++++ aminoacidsequence_patch.js	2019-04-21 15:10:42.714230161 -0500
 @@ -1,6 +1,8 @@
  const aminoacidsequence = require('../models-webservice/aminoacidsequence');
  const searchArg = require('../utils/search-argument');
@@ -9,7 +9,37 @@
  
  
  
-@@ -88,10 +90,9 @@
+@@ -113,10 +115,25 @@
+         order,
+         pagination
+     }, context) {
+-        /*
+-        YOUR CODE GOES HERE
+-        */
+-        throw new Error('aminoacidsequences is not implemented');
++
++        let ids = [69905, 10644, 63165];
++        let unfiltered = [];
++
++        let cnt = 0;
++        for(idx in ids){
++            if(idx >= pagination.offset) {
++                console.log(ids[idx]);
++                let res = request('get', baseUrl + ids[idx]);
++                if (res.statusCode !== 200) throw new Error(`Remote service response status code for ${ids[idx]}: ${res.statusCode}`);
++                unfiltered.push(new aminoacidsequence(JSON.parse(res.body.toString('utf8'))));
++
++                cnt++;
++                if(cnt === pagination.limit)
++                    break;
++            }
++        }
++
++        return unfiltered;
+     },
+ 
+     /**
+@@ -129,10 +146,9 @@
      readOneAminoacidsequence: function({
          id
      }, context) {
@@ -18,14 +48,14 @@
 -        */
 -        throw new Error('readOneAminoacidsequence is not implemented');
 +        let res = request('get', baseUrl + id);
-+        if(res.statusCode !== 200) throw new Error(`Remote service response status code: ${res.statusCode}`);
-+        return JSON.parse(res.body.toString('utf8'));
++        if(res.statusCode !== 200) throw new Error(`Remote service response status code for ${id}: ${res.statusCode}`);
++        return new aminoacidsequence(JSON.parse(res.body.toString('utf8')));
      },
  
-     countAminoacidsequences: function({
-@@ -102,4 +103,4 @@
+     /**
+@@ -248,4 +264,4 @@
          */
-         throw new Error('countAminoacidsequences is not implemented');
+         throw new Error('csvTableTemplateAminoacidsequence is not implemented');
      }
 -}
 \ No newline at end of file
