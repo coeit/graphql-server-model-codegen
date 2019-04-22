@@ -518,8 +518,9 @@ describe(
 
         it('02. Check filtered JOIN with JSON response', async function () {
 
-            let modelAdjacencies = [
-                {
+            let params = {
+                outputFormat : "JSON",
+                modelAdjacencies : [{
                     name : "individual",
                     association_name : "transcript_counts",
                     search : {
@@ -537,18 +538,19 @@ describe(
                     name: "aminoacidsequence",
                     attributes : [ "id"]
                 }
-            ];
+            ]};
 
             let res = {};
             try {
-                modelAdjacencies = JSON.stringify(modelAdjacencies);
-                res = await itHelpers.request_join_post(modelAdjacencies);
+                params = JSON.stringify(params);
+                res = await itHelpers.request_join_post(params);
             }catch(err){
                 console.log(err.response.data);
                 throw err;
             }
 
             console.log(res.data);
+            console.log("\n\n");
 
             expect(res.data).to.deep.equal(
             {   'individual.id': Number(individual_id),
@@ -563,23 +565,62 @@ describe(
 
         it('03. Start to JOIN from remote service', async function () {
 
-            let modelAdjacencies = [
+            let params = {
+                outputFormat : "JSON",
+                modelAdjacencies : [
                 {
                     // note, this is a web service
                     name: "aminoacidsequence",
                     attributes : [ "id"],
-                    association_name : "transcript_counts",
+                    association_name : "transcript_counts"
                 },
                 {
-                    name : "transcript_count",
-                    attributes : [ "id", "gene", "aminoacidsequence_id"]
+                    name : "transcript_count"
                 }
-            ];
+            ]};
 
             let res = {};
             try {
-                modelAdjacencies = JSON.stringify(modelAdjacencies);
-                res = await itHelpers.request_join_post(modelAdjacencies);
+                params = JSON.stringify(params);
+                res = await itHelpers.request_join_post(params);
+            }catch(err){
+                console.log(err.response.data);
+                throw err;
+            }
+
+            console.log(res.data);
+            console.log("\n\n");
+
+            expect(res.data.split(/\r\n|\r|\n/).length >= 3).equal(true);
+
+        });
+
+        it('04. Output JOIN to CSV format', async function () {
+
+            let params = {
+                outputFormat : "CSV",
+                modelAdjacencies : [
+                    {
+                        // note, this is a web service
+                        name: "aminoacidsequence",
+                        attributes : [ "id"],
+                        association_name : "transcript_counts"
+                    },
+                    {
+                        name : "transcript_count",
+                        attributes : ["id"],
+                        association_name : "individual"
+                    },
+                    {
+                        name : "individual",
+                        attributes : ["id"]
+                    }
+                ]};
+
+            let res = {};
+            try {
+                params = JSON.stringify(params);
+                res = await itHelpers.request_join_post(params);
             }catch(err){
                 console.log(err.response.data);
                 throw err;
@@ -587,18 +628,8 @@ describe(
 
             console.log(res.data);
 
-            //TODO: just change comparison criteria
-            expect(res.data).to.deep.equal(
-                {   'individual.id': Number(individual_id),
-                    'individual.name': "AssociatedIndividual",
-                    'transcript_count.aminoacidsequence_id': 63165,
-                    'transcript_count.gene': "AssociatedGene",
-                    'transcript_count.id': Number(transcript_count_id),
-                    'aminoacidsequence.id': 63165
-                });
+            expect(res.data.split(/\r\n|\r|\n/).length >= 3).equal(true);
 
         });
-
-
 
     });

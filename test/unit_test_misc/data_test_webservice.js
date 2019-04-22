@@ -24,14 +24,42 @@ module.exports = class book {
 
 module.exports.schema_book = `
 module.exports = \`
-  type book  {
+  type book{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     title: String
+
+    """
+    @original-field
+    """
     subject: String
-    Price : Float
+
+    """
+    @original-field
+    """
+    Price: Float
+
+    """
+    @original-field
+    """
     publisher_id: Int
+
     publisher: publi_sher
+    
+    """
+    @search-request
+    """
     authorsFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
+
+    """
+    @count-request
+    """
     countFilteredAuthors(search: searchPersonInput) : Int
   }
 
@@ -48,11 +76,11 @@ module.exports = \`
   }
 
   enum bookField {
-    id
-    title
-    subject
-    Price
-    publisher_id
+    id 
+    title  
+    subject  
+    Price  
+    publisher_id  
   }
 
   input searchBookInput {
@@ -71,18 +99,19 @@ module.exports = \`
     books(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput ): [book]
     readOneBook(id: ID!): book
     countBooks(search: searchBookInput ): Int
-    vueTableBook : VueTableBook
-    csvTableTemplateBook: [String]
+    vueTableBook : VueTableBook    csvTableTemplateBook: [String]
   }
 
     type Mutation {
-    addBook( title: String,  subject: String, Price : Float, publisher_id: Int  ): book!
-    updateBook(id: ID!, title: String, subject: String, Price : Float, publisher_id: Int ): book!
-    deleteBook(id: ID!): String!
-    bulkAddBookXlsx: [book]
-    bulkAddBookCsv: [book]
-}
-  \`;
+      addBook( title: String, subject: String, Price: Float, publisher_id: Int): book!
+    updateBook(id: ID!, title: String, subject: String, Price: Float, publisher_id: Int): book!
+  
+
+  deleteBook(id: ID!): String!
+  bulkAddBookXlsx: [book]
+  bulkAddBookCsv: [book] }
+
+\`;
 `
 
 module.exports.resolvers_book = `
@@ -314,12 +343,32 @@ module.exports = class publi_sher {
 
 module.exports.schema_publisher = `
 module.exports = \`
-  type publi_sher  {
+  type publi_sher{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     name: String
+
+    """
+    @original-field
+    """
     phone: String
+
     director: Person
+    
+    """
+    @search-request
+    """
     publicationsFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [book]
+
+    """
+    @count-request
+    """
     countFilteredPublications(search: searchBookInput) : Int
   }
 
@@ -336,9 +385,9 @@ module.exports = \`
   }
 
   enum publi_sherField {
-    id
-    name
-    phone
+    id 
+    name  
+    phone  
   }
 
   input searchPubli_sherInput {
@@ -357,18 +406,19 @@ module.exports = \`
     publi_shers(search: searchPubli_sherInput, order: [ orderPubli_sherInput ], pagination: paginationInput ): [publi_sher]
     readOnePubli_sher(id: ID!): publi_sher
     countPubli_shers(search: searchPubli_sherInput ): Int
-    vueTablePubli_sher : VueTablePubli_sher
-    csvTableTemplatePubli_sher: [String]
-   }
+    vueTablePubli_sher : VueTablePubli_sher    csvTableTemplatePubli_sher: [String]
+  }
 
     type Mutation {
-    addPubli_sher( name: String,  phone: String  ): publi_sher!
-    updatePubli_sher(id: ID!, name: String,  phone: String ): publi_sher!
-    deletePubli_sher(id: ID!): String!
-    bulkAddPubli_sherXlsx: [publi_sher]
-    bulkAddPubli_sherCsv: [publi_sher]
-  }
-  \`;
+      addPubli_sher( name: String, phone: String): publi_sher!
+    updatePubli_sher(id: ID!, name: String, phone: String): publi_sher!
+  
+
+  deletePubli_sher(id: ID!): String!
+  bulkAddPubli_sherXlsx: [publi_sher]
+  bulkAddPubli_sherCsv: [publi_sher] }
+
+\`;
 `
 
 module.exports.resolvers_publisher = `
@@ -614,16 +664,43 @@ module.exports = class person{
 
 module.exports.schema_person = `
 module.exports = \`
-  type Person  {
+  type Person{
+    """
+    @original-field
+    """
     id: ID
-    firstName: String
-    lastName: String
-    Age: Int
-    companyId: Int
-    company: publi_sher
-    worksFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [book]
-    countFilteredWorks(search: searchBookInput) : Int
 
+    """
+    @original-field
+    """
+    firstName: String
+
+    """
+    @original-field
+    """
+    lastName: String
+
+    """
+    @original-field
+    """
+    Age: Int
+
+    """
+    @original-field
+    """
+    companyId: Int
+
+    company: publi_sher
+    
+    """
+    @search-request
+    """
+    worksFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [book]
+
+    """
+    @count-request
+    """
+    countFilteredWorks(search: searchBookInput) : Int
   }
 
   type VueTablePerson{
@@ -639,11 +716,11 @@ module.exports = \`
   }
 
   enum PersonField {
-    id
-    firstName
-    lastName
-    Age
-    companyId
+    id 
+    firstName  
+    lastName  
+    Age  
+    companyId  
   }
 
   input searchPersonInput {
@@ -662,18 +739,19 @@ module.exports = \`
     people(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput ): [Person]
     readOnePerson(id: ID!): Person
     countPeople(search: searchPersonInput ): Int
-    vueTablePerson : VueTablePerson
-    csvTableTemplatePerson: [String]
+    vueTablePerson : VueTablePerson    csvTableTemplatePerson: [String]
   }
 
     type Mutation {
-    addPerson( firstName: String, lastName: String, Age: Int , companyId: Int ): Person!
-    updatePerson(id: ID!, firstName: String, lastName: String, Age: Int ,companyId: Int ): Person!
-    deletePerson(id: ID!): String!
-    bulkAddPersonXlsx: [Person]
-    bulkAddPersonCsv: [Person]
-}
-  \`;
+      addPerson( firstName: String, lastName: String, Age: Int, companyId: Int): Person!
+    updatePerson(id: ID!, firstName: String, lastName: String, Age: Int, companyId: Int): Person!
+  
+
+  deletePerson(id: ID!): String!
+  bulkAddPersonXlsx: [Person]
+  bulkAddPersonCsv: [Person] }
+
+\`;
 `
 
 module.exports.resolvers_person = `

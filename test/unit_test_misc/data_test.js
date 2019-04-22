@@ -1,12 +1,32 @@
 module.exports.transcript_countSchema = `
-  module.exports = \`
-  type transcript_count  {
+module.exports = \`
+  type transcript_count{
+    """
+    @original-field
+    """
     id: ID
-      gene: String
-      variable: String
-      count: Float
-      tissue_or_condition: String
-        individual: individual
+
+    """
+    @original-field
+    """
+    gene: String
+
+    """
+    @original-field
+    """
+    variable: String
+
+    """
+    @original-field
+    """
+    count: Float
+
+    """
+    @original-field
+    """
+    tissue_or_condition: String
+
+    individual: individual
     }
 
   type VueTableTranscript_count{
@@ -22,11 +42,11 @@ module.exports.transcript_countSchema = `
   }
 
   enum transcript_countField {
-    id
-    gene
-    variable
-    count
-    tissue_or_condition
+    id 
+    gene  
+    variable  
+    count  
+    tissue_or_condition  
   }
 
   input searchTranscript_countInput {
@@ -45,18 +65,19 @@ module.exports.transcript_countSchema = `
     transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
     countTranscript_counts(search: searchTranscript_countInput ): Int
-    vueTableTranscript_count : VueTableTranscript_count
-    csvTableTemplateTranscript_count: [String]
+    vueTableTranscript_count : VueTableTranscript_count    csvTableTemplateTranscript_count: [String]
   }
 
-  type Mutation {
-    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
+    type Mutation {
+      addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
-    deleteTranscript_count(id: ID!): String!
-    bulkAddTranscript_countXlsx: [transcript_count]
-    bulkAddTranscript_countCsv: [transcript_count]
-}
-  \`;
+  
+
+  deleteTranscript_count(id: ID!): String!
+  bulkAddTranscript_countXlsx: [transcript_count]
+  bulkAddTranscript_countCsv: [transcript_count] }
+
+\`;
 `
 
 module.exports.individualResolvers = `/*
@@ -546,32 +567,52 @@ module.exports = function(sequelize, DataTypes) {
 
 module.exports.transcript_count_no_assoc_schema = `
 module.exports = \`
-  type transcript_count  {
-      id: ID
-      gene: String
-      variable: String
-      count: Float
-      tissue_or_condition: String
+  type transcript_count{
+    """
+    @original-field
+    """
+    id: ID
+
+    """
+    @original-field
+    """
+    gene: String
+
+    """
+    @original-field
+    """
+    variable: String
+
+    """
+    @original-field
+    """
+    count: Float
+
+    """
+    @original-field
+    """
+    tissue_or_condition: String
+
       }
 
-    type VueTableTranscript_count{
-      data : [transcript_count]
-      total: Int
-      per_page: Int
-      current_page: Int
-      last_page: Int
-      prev_page_url: String
-      next_page_url: String
-      from: Int
-      to: Int
-    }
+  type VueTableTranscript_count{
+    data : [transcript_count]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
 
   enum transcript_countField {
-    id
-    gene
-    variable
-    count
-    tissue_or_condition
+    id 
+    gene  
+    variable  
+    count  
+    tissue_or_condition  
   }
 
   input searchTranscript_countInput {
@@ -590,18 +631,19 @@ module.exports = \`
     transcript_counts(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput ): [transcript_count]
     readOneTranscript_count(id: ID!): transcript_count
     countTranscript_counts(search: searchTranscript_countInput ): Int
-    vueTableTranscript_count : VueTableTranscript_count
-    csvTableTemplateTranscript_count: [String]
+    vueTableTranscript_count : VueTableTranscript_count    csvTableTemplateTranscript_count: [String]
   }
 
     type Mutation {
-    addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count!
-    updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String): transcript_count!
-    deleteTranscript_count(id: ID!): String!
-    bulkAddTranscript_countXlsx: [transcript_count]
-    bulkAddTranscript_countCsv: [transcript_count]
-}
-  \`;
+      addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String  ): transcript_count!
+    updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count!
+  
+
+  deleteTranscript_count(id: ID!): String!
+  bulkAddTranscript_countXlsx: [transcript_count]
+  bulkAddTranscript_countCsv: [transcript_count] }
+
+\`;
 `
 
 module.exports.individual_no_assoc_resolvers = `
@@ -2466,13 +2508,37 @@ module.exports = {
 
 module.exports.researcher_schema = `
 module.exports = \`
-  type Researcher  {
+  type Researcher{
+    """
+    @original-field
+    """
     id: ID
-      firstName: String
-      lastName: String
-      email: String
-        dog: Dog
-        projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
+
+    """
+    @original-field
+    """
+    firstName: String
+
+    """
+    @original-field
+    """
+    lastName: String
+
+    """
+    @original-field
+    """
+    email: String
+
+    dog: Dog
+    
+    """
+    @search-request
+    """
+    projectsFilter(search: searchProjectInput, order: [ orderProjectInput ], pagination: paginationInput): [Project]
+
+    """
+    @count-request
+    """
     countFilteredProjects(search: searchProjectInput) : Int
   }
 
@@ -2489,10 +2555,10 @@ module.exports = \`
   }
 
   enum ResearcherField {
-    id
-    firstName
-    lastName
-    email
+    id 
+    firstName  
+    lastName  
+    email  
   }
 
   input searchResearcherInput {
@@ -2511,18 +2577,19 @@ module.exports = \`
     researchers(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput ): [Researcher]
     readOneResearcher(id: ID!): Researcher
     countResearchers(search: searchResearcherInput ): Int
-    vueTableResearcher : VueTableResearcher
-    csvTableTemplateResearcher: [String]
+    vueTableResearcher : VueTableResearcher    csvTableTemplateResearcher: [String]
   }
 
     type Mutation {
-    addResearcher( firstName: String, lastName: String, email: String, addProjects:[ID] ): Researcher!
-    updateResearcher(id: ID!, firstName: String, lastName: String, email: String, addProjects:[ID], removeProjects:[ID]): Researcher!
-    deleteResearcher(id: ID!): String!
-    bulkAddResearcherXlsx: [Researcher]
-    bulkAddResearcherCsv: [Researcher]
-}
-  \`;
+      addResearcher( firstName: String, lastName: String, email: String , addProjects:[ID] ): Researcher!
+    updateResearcher(id: ID!, firstName: String, lastName: String, email: String , addProjects:[ID], removeProjects:[ID] ): Researcher!
+  
+
+  deleteResearcher(id: ID!): String!
+  bulkAddResearcherXlsx: [Researcher]
+  bulkAddResearcherCsv: [Researcher] }
+
+\`;
 `
 
 module.exports.researcher_resolver = `
@@ -2999,11 +3066,27 @@ module.exports = {
 
 module.exports.individual_schema = `
 module.exports = \`
-  type individual  {
+  type individual{
+    """
+    @original-field
+    """
     id: ID
-      name: String
-          transcript_countsFilter(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput): [transcript_count]
-      countFilteredTranscript_counts(search: searchTranscript_countInput): Int
+
+    """
+    @original-field
+    """
+    name: String
+
+      
+    """
+    @search-request
+    """
+    transcript_countsFilter(search: searchTranscript_countInput, order: [ orderTranscript_countInput ], pagination: paginationInput): [transcript_count]
+
+    """
+    @count-request
+    """
+    countFilteredTranscript_counts(search: searchTranscript_countInput) : Int
   }
 
   type VueTableIndividual{
@@ -3017,9 +3100,10 @@ module.exports = \`
     from: Int
     to: Int
   }
+
   enum individualField {
-    id
-    name
+    id 
+    name  
   }
 
   input searchIndividualInput {
@@ -3037,19 +3121,20 @@ module.exports = \`
   type Query {
     individuals(search: searchIndividualInput, order: [ orderIndividualInput ], pagination: paginationInput ): [individual]
     readOneIndividual(id: ID!): individual
-    countIndividuals(search: searchIndividualInput): Int
-    vueTableIndividual : VueTableIndividual
-    csvTableTemplateIndividual: [String]
+    countIndividuals(search: searchIndividualInput ): Int
+    vueTableIndividual : VueTableIndividual    csvTableTemplateIndividual: [String]
   }
 
     type Mutation {
-    addIndividual( name: String, addTranscript_counts:[ID] ): individual!
-    updateIndividual(id: ID!, name: String, addTranscript_counts:[ID], removeTranscript_counts:[ID]): individual!
-    deleteIndividual(id: ID!): String!
-    bulkAddIndividualXlsx: [individual]
-    bulkAddIndividualCsv: [individual]
-}
-  \`;
+      addIndividual( name: String , addTranscript_counts:[ID] ): individual!
+    updateIndividual(id: ID!, name: String , addTranscript_counts:[ID], removeTranscript_counts:[ID] ): individual!
+  
+
+  deleteIndividual(id: ID!): String!
+  bulkAddIndividualXlsx: [individual]
+  bulkAddIndividualCsv: [individual] }
+
+\`;
 `
 
 module.exports.specie_resolvers = `
@@ -3292,33 +3377,57 @@ module.exports = {
 
 module.exports.book_schema = `
 module.exports = \`
-  type Book  {
-      id: ID
-      title: String
-      genre: String
-      publisherId: Int
-        publisher: Publisher
-        peopleFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
+  type Book{
+    """
+    @original-field
+    """
+    id: ID
+
+    """
+    @original-field
+    """
+    title: String
+
+    """
+    @original-field
+    """
+    genre: String
+
+    """
+    @original-field
+    """
+    publisherId: Int
+
+    publisher: Publisher
+    
+    """
+    @search-request
+    """
+    peopleFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
+
+    """
+    @count-request
+    """
     countFilteredPeople(search: searchPersonInput) : Int
   }
 
-type VueTableBook{
-  data : [Book]
-  total: Int
-  per_page: Int
-  current_page: Int
-  last_page: Int
-  prev_page_url: String
-  next_page_url: String
-  from: Int
-  to: Int
-}
+  type VueTableBook{
+    data : [Book]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
 
   enum BookField {
-    id
-    title
-    genre
-    publisherId
+    id 
+    title  
+    genre  
+    publisherId  
   }
 
   input searchBookInput {
@@ -3337,18 +3446,19 @@ type VueTableBook{
     books(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput ): [Book]
     readOneBook(id: ID!): Book
     countBooks(search: searchBookInput ): Int
-    vueTableBook : VueTableBook
-    csvTableTemplateBook: [String]
+    vueTableBook : VueTableBook    csvTableTemplateBook: [String]
   }
 
     type Mutation {
-    addBook( title: String, genre: String, publisherId: Int, addPeople:[ID]   ): Book!
-    updateBook(id: ID!, title: String, genre: String, publisherId: Int, addPeople:[ID], removePeople:[ID]  ): Book!
-    deleteBook(id: ID!): String!
-    bulkAddBookXlsx: [Book]
-    bulkAddBookCsv: [Book]
-}
-  \`;
+      addBook( title: String, genre: String, publisherId: Int , addPeople:[ID] ): Book!
+    updateBook(id: ID!, title: String, genre: String, publisherId: Int , addPeople:[ID], removePeople:[ID] ): Book!
+  
+
+  deleteBook(id: ID!): String!
+  bulkAddBookXlsx: [Book]
+  bulkAddBookCsv: [Book] }
+
+\`;
 `
 
 module.exports.book_resolver_table = `
@@ -3815,14 +3925,46 @@ module.exports = {
 
 module.exports.person_schema = `
 module.exports = \`
-  type Person  {
+  type Person{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     firstName: String
+
+    """
+    @original-field
+    """
     lastName: String
+
+    """
+    @original-field
+    """
     email: String
-      dogsFilter(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput): [Dog]
+
+      
+    """
+    @search-request
+    """
+    dogsFilter(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput): [Dog]
+
+    """
+    @count-request
+    """
     countFilteredDogs(search: searchDogInput) : Int
-  booksFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [Book]
+  
+    """
+    @search-request
+    """
+    booksFilter(search: searchBookInput, order: [ orderBookInput ], pagination: paginationInput): [Book]
+
+    """
+    @count-request
+    """
     countFilteredBooks(search: searchBookInput) : Int
   }
 
@@ -3839,10 +3981,10 @@ module.exports = \`
   }
 
   enum PersonField {
-    id
-    firstName
-    lastName
-    email
+    id 
+    firstName  
+    lastName  
+    email  
   }
 
   input searchPersonInput {
@@ -3861,18 +4003,19 @@ module.exports = \`
     people(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput ): [Person]
     readOnePerson(id: ID!): Person
     countPeople(search: searchPersonInput ): Int
-    vueTablePerson : VueTablePerson
-    csvTableTemplatePerson: [String]
+    vueTablePerson : VueTablePerson    csvTableTemplatePerson: [String]
   }
 
     type Mutation {
-    addPerson( firstName: String, lastName: String, email: String, addDogs:[ID], addBooks:[ID]): Person!
-    updatePerson(id: ID!, firstName: String, lastName: String, email: String, addDogs:[ID], removeDogs:[ID], addBooks:[ID], removeBooks:[ID]): Person!
-    deletePerson(id: ID!): String!
-    bulkAddPersonXlsx: [Person]
-    bulkAddPersonCsv: [Person]
-}
-  \`;
+      addPerson( firstName: String, lastName: String, email: String , addDogs:[ID], addBooks:[ID] ): Person!
+    updatePerson(id: ID!, firstName: String, lastName: String, email: String , addDogs:[ID], removeDogs:[ID] , addBooks:[ID], removeBooks:[ID] ): Person!
+  
+
+  deletePerson(id: ID!): String!
+  bulkAddPersonXlsx: [Person]
+  bulkAddPersonCsv: [Person] }
+
+\`;
 `
 
 module.exports.dog_resolvers =`
@@ -4409,11 +4552,23 @@ module.exports = {
 `
 module.exports.schema_webservice_aminoAcid = `
 module.exports = \`
-  type aminoAcidSequence  {
+  type aminoAcidSequence{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     accession: String
+
+    """
+    @original-field
+    """
     sequence: String
-  }
+
+      }
 
   type VueTableAminoAcidSequence{
     data : [aminoAcidSequence]
@@ -4428,9 +4583,9 @@ module.exports = \`
   }
 
   enum aminoAcidSequenceField {
-    id
-    accession
-    sequence
+    id 
+    accession  
+    sequence  
   }
 
   input searchAminoAcidSequenceInput {
@@ -4449,19 +4604,19 @@ module.exports = \`
     aminoAcidSequences(search: searchAminoAcidSequenceInput, order: [ orderAminoAcidSequenceInput ], pagination: paginationInput ): [aminoAcidSequence]
     readOneAminoAcidSequence(id: ID!): aminoAcidSequence
     countAminoAcidSequences(search: searchAminoAcidSequenceInput ): Int
-    vueTableAminoAcidSequence : VueTableAminoAcidSequence
-    csvTableTemplateAminoAcidSequence: [String]
+    vueTableAminoAcidSequence : VueTableAminoAcidSequence    csvTableTemplateAminoAcidSequence: [String]
   }
 
-  type Mutation {
-    addAminoAcidSequence(  accession: String, sequence: String): aminoAcidSequence!
+    type Mutation {
+      addAminoAcidSequence( accession: String, sequence: String): aminoAcidSequence!
     updateAminoAcidSequence(id: ID!, accession: String, sequence: String): aminoAcidSequence!
-    deleteAminoAcidSequence(id: ID!): String!
-    bulkAddAminoAcidSequenceXlsx: [aminoAcidSequence]
-    bulkAddAminoAcidSequenceCsv: [aminoAcidSequence]
-  }
+  
 
-  \`;
+  deleteAminoAcidSequence(id: ID!): String!
+  bulkAddAminoAcidSequenceXlsx: [aminoAcidSequence]
+  bulkAddAminoAcidSequenceCsv: [aminoAcidSequence] }
+
+\`;
 `
 
 module.exports.model_webservice_aminoAcid = `
@@ -4646,10 +4801,26 @@ module.exports = {
 
 module.exports.individual_schema_camelcase = `
 module.exports = \`
-  type inDiVIdual  {
+  type inDiVIdual{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     name: String
-      transcriptCountsFilter(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput): [transcriptCount]
+
+      
+    """
+    @search-request
+    """
+    transcriptCountsFilter(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput): [transcriptCount]
+
+    """
+    @count-request
+    """
     countFilteredTranscriptCounts(search: searchTranscriptCountInput) : Int
   }
 
@@ -4666,8 +4837,8 @@ module.exports = \`
   }
 
   enum inDiVIdualField {
-    id
-    name
+    id 
+    name  
   }
 
   input searchInDiVIdualInput {
@@ -4686,18 +4857,19 @@ module.exports = \`
     inDiVIduals(search: searchInDiVIdualInput, order: [ orderInDiVIdualInput ], pagination: paginationInput ): [inDiVIdual]
     readOneInDiVIdual(id: ID!): inDiVIdual
     countInDiVIduals(search: searchInDiVIdualInput ): Int
-    vueTableInDiVIdual : VueTableInDiVIdual
-    csvTableTemplateInDiVIdual: [String]
+    vueTableInDiVIdual : VueTableInDiVIdual    csvTableTemplateInDiVIdual: [String]
   }
 
     type Mutation {
-    addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
+      addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
     updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscriptCounts:[ID] ): inDiVIdual!
-    deleteInDiVIdual(id: ID!): String!
-    bulkAddInDiVIdualXlsx: [inDiVIdual]
-    bulkAddInDiVIdualCsv: [inDiVIdual]
-}
-  \`;
+  
+
+  deleteInDiVIdual(id: ID!): String!
+  bulkAddInDiVIdualXlsx: [inDiVIdual]
+  bulkAddInDiVIdualCsv: [inDiVIdual] }
+
+\`;
 `
 
 module.exports.individual_model_camelcase = `
@@ -5189,12 +5361,32 @@ module.exports = {
 
 module.exports.transcriptCount_schema_camelcase  =`
 module.exports = \`
-  type transcriptCount  {
+  type transcriptCount{
+    """
+    @original-field
+    """
     id: ID
+
+    """
+    @original-field
+    """
     gene: String
+
+    """
+    @original-field
+    """
     variable: String
+
+    """
+    @original-field
+    """
     count: Float
+
+    """
+    @original-field
+    """
     tissue_or_condition: String
+
     inDiVIdual: inDiVIdual
     }
 
@@ -5211,11 +5403,11 @@ module.exports = \`
   }
 
   enum transcriptCountField {
-    id
-    gene
-    variable
-    count
-    tissue_or_condition
+    id 
+    gene  
+    variable  
+    count  
+    tissue_or_condition  
   }
 
   input searchTranscriptCountInput {
@@ -5234,18 +5426,19 @@ module.exports = \`
     transcriptCounts(search: searchTranscriptCountInput, order: [ orderTranscriptCountInput ], pagination: paginationInput ): [transcriptCount]
     readOneTranscriptCount(id: ID!): transcriptCount
     countTranscriptCounts(search: searchTranscriptCountInput ): Int
-    vueTableTranscriptCount : VueTableTranscriptCount
-    csvTableTemplateTranscriptCount: [String]
+    vueTableTranscriptCount : VueTableTranscriptCount    csvTableTemplateTranscriptCount: [String]
   }
 
     type Mutation {
-    addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
+      addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
     updateTranscriptCount(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcriptCount!
-    deleteTranscriptCount(id: ID!): String!
-    bulkAddTranscriptCountXlsx: [transcriptCount]
-    bulkAddTranscriptCountCsv: [transcriptCount]
-}
-  \`;
+  
+
+  deleteTranscriptCount(id: ID!): String!
+  bulkAddTranscriptCountXlsx: [transcriptCount]
+  bulkAddTranscriptCountCsv: [transcriptCount] }
+
+\`;
 `
 
 module.exports.transcriptCount_resolvers_camelcase = `
@@ -6012,60 +6205,73 @@ module.exports = {
 
 module.exports.dog_owner_schema = `
 module.exports = \`
-type Dog  {
-  id: ID
-  name: String
-  breed: String
-  owner: Person
+  type Dog{
+    """
+    @original-field
+    """
+    id: ID
+
+    """
+    @original-field
+    """
+    name: String
+
+    """
+    @original-field
+    """
+    breed: String
+
+    owner: Person
   keeper: Researcher
+    }
+
+  type VueTableDog{
+    data : [Dog]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
   }
 
-type VueTableDog{
-  data : [Dog]
-  total: Int
-  per_page: Int
-  current_page: Int
-  last_page: Int
-  prev_page_url: String
-  next_page_url: String
-  from: Int
-  to: Int
-}
+  enum DogField {
+    id 
+    name  
+    breed  
+  }
 
-enum DogField {
-  id
-  name
-  breed
-}
+  input searchDogInput {
+    field: DogField
+    value: typeValue
+    operator: Operator
+    search: [searchDogInput]
+  }
 
-input searchDogInput {
-  field: DogField
-  value: typeValue
-  operator: Operator
-  search: [searchDogInput]
-}
+  input orderDogInput{
+    field: DogField
+    order: Order
+  }
 
-input orderDogInput{
-  field: DogField
-  order: Order
-}
+  type Query {
+    dogs(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput ): [Dog]
+    readOneDog(id: ID!): Dog
+    countDogs(search: searchDogInput ): Int
+    vueTableDog : VueTableDog    csvTableTemplateDog: [String]
+  }
 
-type Query {
-  dogs(search: searchDogInput, order: [ orderDogInput ], pagination: paginationInput ): [Dog]
-  readOneDog(id: ID!): Dog
-  countDogs(search: searchDogInput ): Int
-  vueTableDog : VueTableDog
-  csvTableTemplateDog: [String]
-}
+    type Mutation {
+      addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
+    updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
+  
 
-  type Mutation {
-  addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
-  updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
   deleteDog(id: ID!): String!
   bulkAddDogXlsx: [Dog]
-  bulkAddDogCsv: [Dog]
-}
-  \`;
+  bulkAddDogCsv: [Dog] }
+
+\`;
 `
 
 module.exports.dog_owner_model = `
@@ -6680,62 +6886,87 @@ module.exports = {
 
 module.exports.academicTeam_schema =`
 module.exports = \`
-type academicTeam  {
-  id: ID
-  name: String
-  department: String
-  subject: String
+  type academicTeam{
+    """
+    @original-field
+    """
+    id: ID
+
+    """
+    @original-field
+    """
+    name: String
+
+    """
+    @original-field
+    """
+    department: String
+
+    """
+    @original-field
+    """
+    subject: String
+
+      
+    """
+    @search-request
+    """
     membersFilter(search: searchResearcherInput, order: [ orderResearcherInput ], pagination: paginationInput): [Researcher]
-  countFilteredMembers(search: searchResearcherInput) : Int
-}
 
-type VueTableAcademicTeam{
-  data : [academicTeam]
-  total: Int
-  per_page: Int
-  current_page: Int
-  last_page: Int
-  prev_page_url: String
-  next_page_url: String
-  from: Int
-  to: Int
-}
+    """
+    @count-request
+    """
+    countFilteredMembers(search: searchResearcherInput) : Int
+  }
 
-enum academicTeamField {
-  id
-  name
-  department
-  subject
-}
+  type VueTableAcademicTeam{
+    data : [academicTeam]
+    total: Int
+    per_page: Int
+    current_page: Int
+    last_page: Int
+    prev_page_url: String
+    next_page_url: String
+    from: Int
+    to: Int
+  }
 
-input searchAcademicTeamInput {
-  field: academicTeamField
-  value: typeValue
-  operator: Operator
-  search: [searchAcademicTeamInput]
-}
+  enum academicTeamField {
+    id 
+    name  
+    department  
+    subject  
+  }
 
-input orderAcademicTeamInput{
-  field: academicTeamField
-  order: Order
-}
+  input searchAcademicTeamInput {
+    field: academicTeamField
+    value: typeValue
+    operator: Operator
+    search: [searchAcademicTeamInput]
+  }
 
-type Query {
-  academicTeams(search: searchAcademicTeamInput, order: [ orderAcademicTeamInput ], pagination: paginationInput ): [academicTeam]
-  readOneAcademicTeam(id: ID!): academicTeam
-  countAcademicTeams(search: searchAcademicTeamInput ): Int
-  vueTableAcademicTeam : VueTableAcademicTeam
-  csvTableTemplateAcademicTeam: [String]
-}
+  input orderAcademicTeamInput{
+    field: academicTeamField
+    order: Order
+  }
 
-  type Mutation {
-  addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
-  updateAcademicTeam(id: ID!, name: String, department: String, subject: String , addMembers:[ID], removeMembers:[ID] ): academicTeam!
+  type Query {
+    academicTeams(search: searchAcademicTeamInput, order: [ orderAcademicTeamInput ], pagination: paginationInput ): [academicTeam]
+    readOneAcademicTeam(id: ID!): academicTeam
+    countAcademicTeams(search: searchAcademicTeamInput ): Int
+    vueTableAcademicTeam : VueTableAcademicTeam    csvTableTemplateAcademicTeam: [String]
+  }
+
+    type Mutation {
+      addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
+    updateAcademicTeam(id: ID!, name: String, department: String, subject: String , addMembers:[ID], removeMembers:[ID] ): academicTeam!
+  
+
   deleteAcademicTeam(id: ID!): String!
   bulkAddAcademicTeamXlsx: [academicTeam]
-  bulkAddAcademicTeamCsv: [academicTeam]
-}
-  \`;
+  bulkAddAcademicTeamCsv: [academicTeam] }
+
+\`;
 `
 
 module.exports.academicTeam_model = `
