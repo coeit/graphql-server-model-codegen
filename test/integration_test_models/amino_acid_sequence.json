@@ -7,7 +7,7 @@
   },
   "associations": {
     "transcript_counts": {
-      "type" : "hasOne",
+      "type" : "hasMany",
       "target" : "transcript_count",
       "targetKey" : "aminoacidsequence_id",
       "targetStorageType" : "sql"
