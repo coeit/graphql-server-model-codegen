@@ -2,6 +2,10 @@
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = <%- definition -%>;
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -10,7 +14,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes){
-  var <%- name -%> = sequelize.define('<%- nameLc -%>',{
+  let <%- name -%> = sequelize.define('<%- nameLc -%>',{
 
     <% let keys = Object.keys(attributes) -%>
     <%for (let i=0; i< keys.length; i++) {-%>
@@ -28,9 +32,6 @@ module.exports = function(sequelize, DataTypes){
   } <%}-%>
   );
 
-
-
-
   <%- name -%>.associate = function(models){
 
     <% for(var key in associations){ -%>
@@ -47,6 +48,8 @@ module.exports = function(sequelize, DataTypes){
       <%}-%>
     <% } -%>
   };
+
+  Object.defineProperty(<%- name -%>, 'definition', {get: function() {return definition;} });
 
   return <%- name -%>;
 };

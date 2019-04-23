@@ -1,4 +1,47 @@
 module.exports.model_book = `
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'book',
+    storageType: 'webservice',
+    attributes: {
+        title: 'String',
+        subject: 'String',
+        Price: 'Float',
+        publisher_id: 'Int'
+    },
+    associations: {
+        publisher: {
+            type: 'belongsTo',
+            target: 'publi_sher',
+            targetKey: 'publisher_id',
+            targetStorageType: 'webservice',
+            name: 'publisher',
+            name_lc: 'publisher',
+            name_cp: 'Publisher',
+            target_lc: 'publi_sher',
+            target_lc_pl: 'publi_shers',
+            target_pl: 'publi_shers',
+            target_cp: 'Publi_sher',
+            target_cp_pl: 'Publi_shers'
+        },
+        authors: {
+            type: 'belongsToMany',
+            target: 'Person',
+            targetKey: 'person_id',
+            sourceKey: 'book_id',
+            targetStorageType: 'webservice',
+            name: 'authors',
+            name_lc: 'authors',
+            name_cp: 'Authors',
+            target_lc: 'person',
+            target_lc_pl: 'people',
+            target_pl: 'People',
+            target_cp: 'Person',
+            target_cp_pl: 'People'
+        }
+    }
+};
+
 module.exports = class book {
 
     /**
@@ -6,6 +49,7 @@ module.exports = class book {
      *
      * @param  {obejct} input    Data for the new instances. Input for each field of the model.
      */
+
     constructor({
         id,
         title,
@@ -19,7 +63,11 @@ module.exports = class book {
         this.Price = Price;
         this.publisher_id = publisher_id;
     }
-}
+
+    static get definition() {
+        return definition;
+    }
+};
 `
 
 module.exports.schema_book = `
@@ -322,6 +370,46 @@ module.exports = {
 `
 
 module.exports.model_publisher = `
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'publi_sher',
+    storageType: 'webservice',
+    attributes: {
+        name: 'String',
+        phone: 'String'
+    },
+    associations: {
+        publications: {
+            type: 'hasMany',
+            target: 'book',
+            targetKey: 'publisher_id',
+            targetStorageType: 'webservice',
+            name: 'publications',
+            name_lc: 'publications',
+            name_cp: 'Publications',
+            target_lc: 'book',
+            target_lc_pl: 'books',
+            target_pl: 'books',
+            target_cp: 'Book',
+            target_cp_pl: 'Books'
+        },
+        director: {
+            type: 'hasOne',
+            target: 'Person',
+            targetKey: 'companyId',
+            targetStorageType: 'webservice',
+            name: 'director',
+            name_lc: 'director',
+            name_cp: 'Director',
+            target_lc: 'person',
+            target_lc_pl: 'people',
+            target_pl: 'People',
+            target_cp: 'Person',
+            target_cp_pl: 'People'
+        }
+    }
+};
+
 module.exports = class publi_sher {
 
     /**
@@ -329,6 +417,7 @@ module.exports = class publi_sher {
      *
      * @param  {obejct} input    Data for the new instances. Input for each field of the model.
      */
+
     constructor({
         id,
         name,
@@ -338,7 +427,11 @@ module.exports = class publi_sher {
         this.name = name;
         this.phone = phone;
     }
-}
+
+    static get definition() {
+        return definition;
+    }
+};
 `
 
 module.exports.schema_publisher = `
@@ -639,13 +732,57 @@ module.exports = {
 `
 
 module.exports.model_person = `
-module.exports = class person{
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Person',
+    storageType: 'webservice',
+    attributes: {
+        firstName: 'String',
+        lastName: 'String',
+        Age: 'Int',
+        companyId: 'Int'
+    },
+    associations: {
+        works: {
+            type: 'belongsToMany',
+            target: 'book',
+            targetKey: 'book_id',
+            sourceKey: 'person_id',
+            targetStorageType: 'webservice',
+            name: 'works',
+            name_lc: 'works',
+            name_cp: 'Works',
+            target_lc: 'book',
+            target_lc_pl: 'books',
+            target_pl: 'books',
+            target_cp: 'Book',
+            target_cp_pl: 'Books'
+        },
+        company: {
+            type: 'belongsTo',
+            target: 'publi_sher',
+            targetKey: 'companyId',
+            targetStorageType: 'webservice',
+            name: 'company',
+            name_lc: 'company',
+            name_cp: 'Company',
+            target_lc: 'publi_sher',
+            target_lc_pl: 'publi_shers',
+            target_pl: 'publi_shers',
+            target_cp: 'Publi_sher',
+            target_cp_pl: 'Publi_shers'
+        }
+    }
+};
+
+module.exports = class person {
 
     /**
      * constructor - Creates an instance of the model stored in webservice
      *
      * @param  {obejct} input    Data for the new instances. Input for each field of the model.
      */
+
     constructor({
         id,
         firstName,
@@ -659,7 +796,11 @@ module.exports = class person{
         this.Age = Age;
         this.companyId = companyId;
     }
-}
+
+    static get definition() {
+        return definition;
+    }
+};
 `
 
 module.exports.schema_person = `

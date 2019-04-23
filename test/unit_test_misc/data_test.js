@@ -539,6 +539,32 @@ module.exports.individualModel = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'individual',
+    storageType: 'SQL',
+    attributes: {
+        name: 'String'
+    },
+    associations: {
+        transcript_counts: {
+            type: 'hasMany',
+            target: 'transcript_count',
+            targetKey: 'individual_id',
+            targetStorageType: 'sql',
+            name: 'transcript_counts',
+            name_lc: 'transcript_counts',
+            name_cp: 'Transcript_counts',
+            target_lc: 'transcript_count',
+            target_lc_pl: 'transcript_counts',
+            target_pl: 'transcript_counts',
+            target_cp: 'Transcript_count',
+            target_cp_pl: 'Transcript_counts'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -547,19 +573,28 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var individual = sequelize.define('individual', {
+    let individual = sequelize.define('individual', {
 
         name: {
             type: Sequelize.STRING
         }
+
+
     });
 
     individual.associate = function(models) {
+
         individual.hasMany(models.transcript_count, {
             as: 'transcript_counts',
             foreignKey: 'individual_id'
         });
     };
+
+    Object.defineProperty(individual, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return individual;
 };
@@ -1013,6 +1048,19 @@ module.exports.transcript_count_no_assoc_model = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'transcript_count',
+    storageType: 'SQL',
+    attributes: {
+        gene: 'String',
+        variable: 'String',
+        count: 'Float',
+        tissue_or_condition: 'String'
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -1021,7 +1069,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var transcript_count = sequelize.define('transcript_count', {
+    let transcript_count = sequelize.define('transcript_count', {
 
         gene: {
             type: Sequelize.STRING
@@ -1035,17 +1083,38 @@ module.exports = function(sequelize, DataTypes) {
         tissue_or_condition: {
             type: Sequelize.STRING
         }
+
+
     });
 
-    transcript_count.associate = function(models) {};
+    transcript_count.associate = function(models) {
+
+    };
+
+    Object.defineProperty(transcript_count, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return transcript_count;
 };
 `
+
 module.exports.individual_no_assoc_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'individual',
+    storageType: 'SQL',
+    attributes: {
+        name: 'String'
+    }
+};
+
 
 /**
  * module - Creates a sequelize model
@@ -1055,14 +1124,24 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var individual = sequelize.define('individual', {
+    let individual = sequelize.define('individual', {
 
         name: {
             type: Sequelize.STRING
         }
+
+
     });
 
-    individual.associate = function(models) {};
+    individual.associate = function(models) {
+
+    };
+
+    Object.defineProperty(individual, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return individual;
 };
@@ -4473,6 +4552,50 @@ module.exports.researcher_model = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Researcher',
+    storageType: 'SQL',
+    attributes: {
+        firstName: 'String',
+        lastName: 'String',
+        email: 'String'
+    },
+    associations: {
+        projects: {
+            type: 'belongsToMany',
+            target: 'Project',
+            targetKey: 'projectId',
+            sourceKey: 'researcherId',
+            keysIn: 'project_to_researcher',
+            targetStorageType: 'sql',
+            name: 'projects',
+            name_lc: 'projects',
+            name_cp: 'Projects',
+            target_lc: 'project',
+            target_lc_pl: 'projects',
+            target_pl: 'Projects',
+            target_cp: 'Project',
+            target_cp_pl: 'Projects'
+        },
+        dog: {
+            type: 'hasOne',
+            target: 'Dog',
+            targetKey: 'researcherId',
+            targetStorageType: 'sql',
+            name: 'dog',
+            name_lc: 'dog',
+            name_cp: 'Dog',
+            target_lc: 'dog',
+            target_lc_pl: 'dogs',
+            target_pl: 'Dogs',
+            target_cp: 'Dog',
+            target_cp_pl: 'Dogs'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -4481,7 +4604,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var Researcher = sequelize.define('researcher', {
+    let Researcher = sequelize.define('researcher', {
 
         firstName: {
             type: Sequelize.STRING
@@ -4492,9 +4615,12 @@ module.exports = function(sequelize, DataTypes) {
         email: {
             type: Sequelize.STRING
         }
+
+
     });
 
     Researcher.associate = function(models) {
+
         Researcher.hasOne(models.dog, {
             as: 'dog',
             foreignKey: 'researcherId'
@@ -4506,6 +4632,12 @@ module.exports = function(sequelize, DataTypes) {
             onDelete: 'CASCADE'
         });
     };
+
+    Object.defineProperty(Researcher, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return Researcher;
 };
@@ -4620,6 +4752,16 @@ module.exports = \`
 `
 
 module.exports.model_webservice_aminoAcid = `
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'aminoAcidSequence',
+    storageType: 'webservice',
+    attributes: {
+        accession: 'String',
+        sequence: 'String'
+    }
+};
+
 module.exports = class aminoAcidSequence {
 
     /**
@@ -4627,6 +4769,7 @@ module.exports = class aminoAcidSequence {
      *
      * @param  {obejct} input    Data for the new instances. Input for each field of the model.
      */
+
     constructor({
         id,
         accession,
@@ -4636,8 +4779,11 @@ module.exports = class aminoAcidSequence {
         this.accession = accession;
         this.sequence = sequence;
     }
-}
 
+    static get definition() {
+        return definition;
+    }
+};
 `
 
 module.exports.resolvers_webservice_aminoAcid = `
@@ -4877,6 +5023,34 @@ module.exports.individual_model_camelcase = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'inDiVIdual',
+    storageType: 'SQL',
+    attributes: {
+        name: 'String'
+    },
+    associations: {
+        transcriptCounts: {
+            type: 'hasMany',
+            target: 'transcriptCount',
+            targetKey: 'individual_id',
+            targetStorageType: 'sql',
+            label: 'gene',
+            sublabel: 'variable',
+            name: 'transcriptCounts',
+            name_lc: 'transcriptCounts',
+            name_cp: 'TranscriptCounts',
+            target_lc: 'transcriptCount',
+            target_lc_pl: 'transcriptCounts',
+            target_pl: 'transcriptCounts',
+            target_cp: 'TranscriptCount',
+            target_cp_pl: 'TranscriptCounts'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -4885,19 +5059,28 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var inDiVIdual = sequelize.define('inDiVIdual', {
+    let inDiVIdual = sequelize.define('inDiVIdual', {
 
         name: {
             type: Sequelize.STRING
         }
+
+
     });
 
     inDiVIdual.associate = function(models) {
+
         inDiVIdual.hasMany(models.transcriptCount, {
             as: 'transcriptCounts',
             foreignKey: 'individual_id'
         });
     };
+
+    Object.defineProperty(inDiVIdual, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return inDiVIdual;
 };
@@ -6279,6 +6462,50 @@ module.exports.dog_owner_model = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Dog',
+    storageType: 'Sql',
+    attributes: {
+        name: 'String',
+        breed: 'String'
+    },
+    associations: {
+        owner: {
+            type: 'belongsTo',
+            target: 'Person',
+            targetKey: 'owner_id_test',
+            targetStorageType: 'sql',
+            label: 'firstName',
+            sublabel: 'lastName',
+            name: 'owner',
+            name_lc: 'owner',
+            name_cp: 'Owner',
+            target_lc: 'person',
+            target_lc_pl: 'people',
+            target_pl: 'People',
+            target_cp: 'Person',
+            target_cp_pl: 'People'
+        },
+        keeper: {
+            type: 'belongsTo',
+            target: 'Researcher',
+            targetKey: 'keeperId',
+            targetStorageType: 'sql',
+            label: 'firstName',
+            name: 'keeper',
+            name_lc: 'keeper',
+            name_cp: 'Keeper',
+            target_lc: 'researcher',
+            target_lc_pl: 'researchers',
+            target_pl: 'Researchers',
+            target_cp: 'Researcher',
+            target_cp_pl: 'Researchers'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -6287,7 +6514,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var Dog = sequelize.define('dog', {
+    let Dog = sequelize.define('dog', {
 
         name: {
             type: Sequelize.STRING
@@ -6295,9 +6522,12 @@ module.exports = function(sequelize, DataTypes) {
         breed: {
             type: Sequelize.STRING
         }
+
+
     });
 
     Dog.associate = function(models) {
+
         Dog.belongsTo(models.person, {
             as: 'owner',
             foreignKey: 'owner_id_test'
@@ -6308,15 +6538,71 @@ module.exports = function(sequelize, DataTypes) {
         });
     };
 
+    Object.defineProperty(Dog, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
+
     return Dog;
 };
-
 `
 
 module.exports.person_indices_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Person',
+    storageType: 'SQL',
+    attributes: {
+        firstName: 'String',
+        lastName: 'String',
+        email: 'String',
+        phone: 'String'
+    },
+    associations: {
+        dogs: {
+            type: 'hasMany',
+            target: 'Dog',
+            targetKey: 'personId',
+            targetStorageType: 'sql',
+            label: 'name',
+            name: 'dogs',
+            name_lc: 'dogs',
+            name_cp: 'Dogs',
+            target_lc: 'dog',
+            target_lc_pl: 'dogs',
+            target_pl: 'Dogs',
+            target_cp: 'Dog',
+            target_cp_pl: 'Dogs'
+        },
+        books: {
+            type: 'belongsToMany',
+            target: 'Book',
+            targetKey: 'bookId',
+            sourceKey: 'personId',
+            keysIn: 'books_to_people',
+            targetStorageType: 'sql',
+            label: 'title',
+            name: 'books',
+            name_lc: 'books',
+            name_cp: 'Books',
+            target_lc: 'book',
+            target_lc_pl: 'books',
+            target_pl: 'Books',
+            target_cp: 'Book',
+            target_cp_pl: 'Books'
+        }
+    },
+    indices: [
+        'email',
+        'phone'
+    ]
+};
+
 
 /**
  * module - Creates a sequelize model
@@ -6326,7 +6612,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var Person = sequelize.define('person', {
+    let Person = sequelize.define('person', {
 
         firstName: {
             type: Sequelize.STRING
@@ -6338,13 +6624,16 @@ module.exports = function(sequelize, DataTypes) {
             type: Sequelize.STRING
         },
         phone: {
-          type: Sequelize.STRING
+            type: Sequelize.STRING
         }
-    },{
-      indexes: ['email', 'phone']
+
+
+    }, {
+        indexes: ['email', 'phone']
     });
 
     Person.associate = function(models) {
+
         Person.hasMany(models.dog, {
             as: 'dogs',
             foreignKey: 'personId'
@@ -6357,9 +6646,14 @@ module.exports = function(sequelize, DataTypes) {
         });
     };
 
+    Object.defineProperty(Person, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
+
     return Person;
 };
-
 `
 
 module.exports.person_indices_migration = `
@@ -6974,6 +7268,36 @@ module.exports.academicTeam_model = `
 
 const Sequelize = require('sequelize');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'academicTeam',
+    storageType: 'SQL',
+    attributes: {
+        name: 'String',
+        department: 'String',
+        subject: 'String'
+    },
+    associations: {
+        members: {
+            type: 'hasMany',
+            target: 'Researcher',
+            targetKey: 'academicTeamId',
+            targetStorageType: 'sql',
+            label: 'firstName',
+            sublabel: 'lastName',
+            name: 'members',
+            name_lc: 'members',
+            name_cp: 'Members',
+            target_lc: 'researcher',
+            target_lc_pl: 'researchers',
+            target_pl: 'Researchers',
+            target_cp: 'Researcher',
+            target_cp_pl: 'Researchers'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -6982,7 +7306,7 @@ const Sequelize = require('sequelize');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var academicTeam = sequelize.define('academicTeam', {
+    let academicTeam = sequelize.define('academicTeam', {
 
         name: {
             type: Sequelize.STRING
@@ -6993,14 +7317,23 @@ module.exports = function(sequelize, DataTypes) {
         subject: {
             type: Sequelize.STRING
         }
+
+
     });
 
     academicTeam.associate = function(models) {
+
         academicTeam.hasMany(models.researcher, {
             as: 'members',
             foreignKey: 'academicTeamId'
         });
     };
+
+    Object.defineProperty(academicTeam, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return academicTeam;
 };

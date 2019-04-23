@@ -4,6 +4,7 @@ const models = require('./unit_test_misc/data_models');
 const funks = require('../funks');
 const models_webservice = require('./unit_test_misc/data_models_webservice');
 const test_webservice = require('./unit_test_misc/data_test_webservice');
+const requireFromString = require('require-from-string');
 
 describe('Lower-case models', function(){
 
@@ -469,5 +470,35 @@ describe('All webservice models', function(){
     let test_model = test_webservice.model_publisher.replace(/\s/g, '');
     expect(g_model).to.be.equal(test_model);
   })
+
+});
+
+describe('Model definition', function(){
+
+  it('Access local model definition property', async function(){
+    let opts = funks.getOptions(models.individual);
+    let generated_model =await funks.generateJs('create-models', opts);
+
+    // replace real Sequelize import with a plain object
+    let str = "const Sequelize = require('sequelize');";
+    generated_model = generated_model.replace(str, 'let Sequelize = {}; Sequelize.STRING = "";');
+
+    // pass fake connection into the module and get the model defined
+    let fake_sequelize = {};
+    fake_sequelize.define = function(a, b){ return b; };
+    let model = requireFromString(generated_model)(fake_sequelize);
+
+    // check any existing property of the 'individual' definition
+    expect(model.definition.associations.transcript_counts.type === "hasMany");
+  });
+
+  it('Access web-service model definition property', async function(){
+    let opts = funks.getOptions(models_webservice.publisher);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let model = requireFromString(generated_model);
+
+    // check any existing property of the 'publisher' definition
+    expect(model.definition.associations.publications.target === 'book');
+  });
 
 });

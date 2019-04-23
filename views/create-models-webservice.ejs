@@ -1,3 +1,6 @@
+// An exact copy of the the model definition that comes from the .json file
+const definition = <%- definition -%>;
+
 module.exports = class <%- nameLc -%>{
 
   /**
@@ -5,10 +8,15 @@ module.exports = class <%- nameLc -%>{
    *
    * @param  {obejct} input    Data for the new instances. Input for each field of the model.
    */
+
   constructor({id <%for(var key in attributes){-%>,<%=key-%><%}-%>}){
       this.id = id;
        <%for(var key in attributes){-%>
          this.<%=key-%> =<%=key-%>;
         <%}-%>
   }
-}
+
+  static get definition(){
+    return definition;
+  }
+};

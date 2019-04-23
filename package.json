@@ -20,13 +20,15 @@
     "ejs": "^2.5.8",
     "inflection": "^1.12.0",
     "js-beautify": "^1.7.5",
-    "sync-request": "^6.0.0"
+    "sync-request": "^6.0.0",
+    "stringify-object": "^3.3.0"
   },
   "devDependencies": {
     "axios": "^0.18.0",
     "chai": "^4.1.2",
     "jsonwebtoken": "^8.5.0",
     "mocha": "^5.1.0",
-    "delay": "^4.1.0"
+    "delay": "^4.1.0",
+    "require-from-string": "^2.0.2"
   }
 }

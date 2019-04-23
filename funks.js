@@ -1,10 +1,10 @@
-var fs = require('fs');
-const path = require('path');
+let fs = require('fs');
 const ejs = require('ejs');
 const inflection = require('inflection');
 const jsb = require('js-beautify').js_beautify;
 const {promisify} = require('util');
 const ejsRenderFile = promisify( ejs.renderFile );
+const stringify_obj = require('stringify-object');
 
 
 /**
@@ -15,7 +15,7 @@ const ejsRenderFile = promisify( ejs.renderFile );
 associations_type = {
   "many" : ['hasMany', 'belongsToMany'],
   "one" : ['hasOne', 'belongsTo']
-}
+};
 
 
 /**
@@ -28,7 +28,7 @@ parseFile = function(jFile){
   let data=fs.readFileSync(jFile, 'utf8');
   let words=JSON.parse(data);
   return words;
-}
+};
 
 
 /**
@@ -43,7 +43,7 @@ isEmptyObject = function(obj){
             return false;
     }
     return true;
-}
+};
 
 
 /**
@@ -59,7 +59,7 @@ uncapitalizeString = function(word){
   }else{
     return word.slice(0,1).toLowerCase() + word.slice(1,length);
   }
-}
+};
 
 
 /**
@@ -75,7 +75,7 @@ capitalizeString = function(word){
   }else{
     return word.slice(0,1).toUpperCase() + word.slice(1,length);
   }
-}
+};
 
 /**
  * generateJs - Generate the Javascript code (GraphQL-schema/resolvers/Sequelize-model) using EJS templates
@@ -87,10 +87,10 @@ capitalizeString = function(word){
 module.exports.generateJs = async function(templateName, options) {
   let renderedStr = await ejsRenderFile(__dirname + '/views/' +
     templateName +
-    '.ejs', options, {})
-  let prettyStr = jsb(renderedStr)
+    '.ejs', options, {});
+  let prettyStr = jsb(renderedStr);
   return prettyStr;
-}
+};
 
 
 /**
@@ -159,7 +159,7 @@ attributesArrayString = function(attributes){
   }
 
   return array_attributes;
-}
+};
 
 
 
@@ -203,7 +203,7 @@ writeSchemaCommons = function(dir_write){
     if (err)
       return console.log(err);
     });
-}
+};
 
 
 /**
@@ -257,7 +257,7 @@ writeIndexModelsCommons = function(dir_write){
     if (err)
       return console.log(err);
     });
-}
+};
 
 
 /**
@@ -289,22 +289,23 @@ module.exports.getOptions = function(dataModel){
   //console.log(dataModel.associations);
 
   let opts = {
-    name : dataModel.model,
-    nameCp: capitalizeString(dataModel.model),
-    storageType : dataModel.storageType.toLowerCase(),
-    table: inflection.pluralize(uncapitalizeString(dataModel.model)),
-    nameLc: uncapitalizeString(dataModel.model),
-    namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
-    namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
-    attributes: dataModel.attributes,
-    attributesStr: attributesToString(dataModel.attributes),
-    attributesJoiStr: attributesToJoiString(dataModel.attributes),
-    associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
-    arrayAttributeString: attributesArrayString(dataModel.attributes),
-    indices: dataModel.indices
-  }
+      name : dataModel.model,
+      nameCp: capitalizeString(dataModel.model),
+      storageType : dataModel.storageType.toLowerCase(),
+      table: inflection.pluralize(uncapitalizeString(dataModel.model)),
+      nameLc: uncapitalizeString(dataModel.model),
+      namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
+      namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
+      attributes: dataModel.attributes,
+      attributesStr: attributesToString(dataModel.attributes),
+      attributesJoiStr: attributesToJoiString(dataModel.attributes),
+      associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
+      arrayAttributeString: attributesArrayString(dataModel.attributes),
+      indices: dataModel.indices,
+      definition : stringify_obj(dataModel)
+  };
   return opts;
-}
+};
 
 
   /**
@@ -328,7 +329,7 @@ module.exports.getOptions = function(dataModel){
       "hasOne" : [],
       "hasMany" : [],
       "belongsToMany" : []
-    }
+    };
 
     if(associations!==undefined){
       Object.entries(associations).forEach(([name, association]) => {
@@ -432,7 +433,7 @@ generateSection = async function(section, opts, dir_write ){
       return console.log(err);
     }
   });
-}
+};
 
 
 /**
@@ -448,7 +449,7 @@ createNameMigration = function(dir_write, model_name){
    date = date.toISOString().slice(0,19).replace(/[^0-9]/g, "");
   //return dir_write + '/migrations/' + date + '-create-'+model_name +'.js';
   return dir_write + '/migrations/' + date + '-'+model_name +'.js';
-}
+};
 
 
 /**
@@ -556,4 +557,4 @@ module.exports.generateCode = function(json_dir, dir_write){
   });
 
   writeCommons(dir_write);
-}
+};
