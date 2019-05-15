@@ -42,11 +42,11 @@ module.exports = \`
   }
 
   enum transcript_countField {
-    id 
-    gene  
-    variable  
-    count  
-    tissue_or_condition  
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
   }
 
   input searchTranscript_countInput {
@@ -71,7 +71,7 @@ module.exports = \`
     type Mutation {
       addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcript_count!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcript_count!
-  
+
 
   deleteTranscript_count(id: ID!): String!
   bulkAddTranscript_countXlsx: [transcript_count]
@@ -538,6 +538,7 @@ module.exports.individualModel = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -576,7 +577,7 @@ module.exports = function(sequelize, DataTypes) {
     let individual = sequelize.define('individual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -643,11 +644,11 @@ module.exports = \`
   }
 
   enum transcript_countField {
-    id 
-    gene  
-    variable  
-    count  
-    tissue_or_condition  
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
   }
 
   input searchTranscript_countInput {
@@ -672,7 +673,7 @@ module.exports = \`
     type Mutation {
       addTranscript_count( gene: String, variable: String, count: Float, tissue_or_condition: String  ): transcript_count!
     updateTranscript_count(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String ): transcript_count!
-  
+
 
   deleteTranscript_count(id: ID!): String!
   bulkAddTranscript_countXlsx: [transcript_count]
@@ -1047,6 +1048,7 @@ module.exports.transcript_count_no_assoc_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -1072,16 +1074,16 @@ module.exports = function(sequelize, DataTypes) {
     let transcript_count = sequelize.define('transcript_count', {
 
         gene: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         variable: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         count: {
-            type: Sequelize.FLOAT
+            type: Sequelize[ dict['Float'] ]
         },
         tissue_or_condition: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -1105,6 +1107,7 @@ module.exports.individual_no_assoc_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -1127,7 +1130,7 @@ module.exports = function(sequelize, DataTypes) {
     let individual = sequelize.define('individual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -1149,6 +1152,8 @@ module.exports = function(sequelize, DataTypes) {
 
 module.exports.transcript_count_no_assoc_migration = `
 'use strict';
+
+const dict = require('../utils/graphql-sequelize-types');
 
 /**
  * @module - Migrations to create and to undo a table correpondant to a sequelize model.
@@ -1180,16 +1185,16 @@ module.exports = {
             },
 
             gene: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             },
             variable: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             },
             count: {
-                type: Sequelize.FLOAT
+                type: Sequelize[ dict['Float'] ]
             },
             tissue_or_condition: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             }
 
         });
@@ -2609,7 +2614,7 @@ module.exports = \`
     email: String
 
     dog: Dog
-    
+
     """
     @search-request
     """
@@ -2634,10 +2639,10 @@ module.exports = \`
   }
 
   enum ResearcherField {
-    id 
-    firstName  
-    lastName  
-    email  
+    id
+    firstName
+    lastName
+    email
   }
 
   input searchResearcherInput {
@@ -2662,7 +2667,7 @@ module.exports = \`
     type Mutation {
       addResearcher( firstName: String, lastName: String, email: String , addProjects:[ID] ): Researcher!
     updateResearcher(id: ID!, firstName: String, lastName: String, email: String , addProjects:[ID], removeProjects:[ID] ): Researcher!
-  
+
 
   deleteResearcher(id: ID!): String!
   bulkAddResearcherXlsx: [Researcher]
@@ -3156,7 +3161,7 @@ module.exports = \`
     """
     name: String
 
-      
+
     """
     @search-request
     """
@@ -3181,8 +3186,8 @@ module.exports = \`
   }
 
   enum individualField {
-    id 
-    name  
+    id
+    name
   }
 
   input searchIndividualInput {
@@ -3207,7 +3212,7 @@ module.exports = \`
     type Mutation {
       addIndividual( name: String , addTranscript_counts:[ID] ): individual!
     updateIndividual(id: ID!, name: String , addTranscript_counts:[ID], removeTranscript_counts:[ID] ): individual!
-  
+
 
   deleteIndividual(id: ID!): String!
   bulkAddIndividualXlsx: [individual]
@@ -3478,7 +3483,7 @@ module.exports = \`
     publisherId: Int
 
     publisher: Publisher
-    
+
     """
     @search-request
     """
@@ -3503,10 +3508,10 @@ module.exports = \`
   }
 
   enum BookField {
-    id 
-    title  
-    genre  
-    publisherId  
+    id
+    title
+    genre
+    publisherId
   }
 
   input searchBookInput {
@@ -3531,7 +3536,7 @@ module.exports = \`
     type Mutation {
       addBook( title: String, genre: String, publisherId: Int , addPeople:[ID] ): Book!
     updateBook(id: ID!, title: String, genre: String, publisherId: Int , addPeople:[ID], removePeople:[ID] ): Book!
-  
+
 
   deleteBook(id: ID!): String!
   bulkAddBookXlsx: [Book]
@@ -4025,7 +4030,7 @@ module.exports = \`
     """
     email: String
 
-      
+
     """
     @search-request
     """
@@ -4035,7 +4040,7 @@ module.exports = \`
     @count-request
     """
     countFilteredDogs(search: searchDogInput) : Int
-  
+
     """
     @search-request
     """
@@ -4060,10 +4065,10 @@ module.exports = \`
   }
 
   enum PersonField {
-    id 
-    firstName  
-    lastName  
-    email  
+    id
+    firstName
+    lastName
+    email
   }
 
   input searchPersonInput {
@@ -4088,7 +4093,7 @@ module.exports = \`
     type Mutation {
       addPerson( firstName: String, lastName: String, email: String , addDogs:[ID], addBooks:[ID] ): Person!
     updatePerson(id: ID!, firstName: String, lastName: String, email: String , addDogs:[ID], removeDogs:[ID] , addBooks:[ID], removeBooks:[ID] ): Person!
-  
+
 
   deletePerson(id: ID!): String!
   bulkAddPersonXlsx: [Person]
@@ -4551,6 +4556,8 @@ module.exports.researcher_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
+
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -4607,13 +4614,13 @@ module.exports = function(sequelize, DataTypes) {
     let Researcher = sequelize.define('researcher', {
 
         firstName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         lastName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         email: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -4715,9 +4722,9 @@ module.exports = \`
   }
 
   enum aminoAcidSequenceField {
-    id 
-    accession  
-    sequence  
+    id
+    accession
+    sequence
   }
 
   input searchAminoAcidSequenceInput {
@@ -4742,7 +4749,7 @@ module.exports = \`
     type Mutation {
       addAminoAcidSequence( accession: String, sequence: String): aminoAcidSequence!
     updateAminoAcidSequence(id: ID!, accession: String, sequence: String): aminoAcidSequence!
-  
+
 
   deleteAminoAcidSequence(id: ID!): String!
   bulkAddAminoAcidSequenceXlsx: [aminoAcidSequence]
@@ -4958,7 +4965,7 @@ module.exports = \`
     """
     name: String
 
-      
+
     """
     @search-request
     """
@@ -4983,8 +4990,8 @@ module.exports = \`
   }
 
   enum inDiVIdualField {
-    id 
-    name  
+    id
+    name
   }
 
   input searchInDiVIdualInput {
@@ -5009,7 +5016,7 @@ module.exports = \`
     type Mutation {
       addInDiVIdual( name: String , addTranscriptCounts:[ID] ): inDiVIdual!
     updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscriptCounts:[ID] ): inDiVIdual!
-  
+
 
   deleteInDiVIdual(id: ID!): String!
   bulkAddInDiVIdualXlsx: [inDiVIdual]
@@ -5022,6 +5029,7 @@ module.exports.individual_model_camelcase = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -5062,7 +5070,7 @@ module.exports = function(sequelize, DataTypes) {
     let inDiVIdual = sequelize.define('inDiVIdual', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -5586,11 +5594,11 @@ module.exports = \`
   }
 
   enum transcriptCountField {
-    id 
-    gene  
-    variable  
-    count  
-    tissue_or_condition  
+    id
+    gene
+    variable
+    count
+    tissue_or_condition
   }
 
   input searchTranscriptCountInput {
@@ -5615,7 +5623,7 @@ module.exports = \`
     type Mutation {
       addTranscriptCount( gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int   ): transcriptCount!
     updateTranscriptCount(id: ID!, gene: String, variable: String, count: Float, tissue_or_condition: String, individual_id: Int  ): transcriptCount!
-  
+
 
   deleteTranscriptCount(id: ID!): String!
   bulkAddTranscriptCountXlsx: [transcriptCount]
@@ -6421,9 +6429,9 @@ module.exports = \`
   }
 
   enum DogField {
-    id 
-    name  
-    breed  
+    id
+    name
+    breed
   }
 
   input searchDogInput {
@@ -6448,7 +6456,7 @@ module.exports = \`
     type Mutation {
       addDog( name: String, breed: String, owner_id_test: Int, keeperId: Int   ): Dog!
     updateDog(id: ID!, name: String, breed: String, owner_id_test: Int, keeperId: Int  ): Dog!
-  
+
 
   deleteDog(id: ID!): String!
   bulkAddDogXlsx: [Dog]
@@ -6461,6 +6469,7 @@ module.exports.dog_owner_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -6517,10 +6526,10 @@ module.exports = function(sequelize, DataTypes) {
     let Dog = sequelize.define('dog', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         breed: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -6552,6 +6561,7 @@ module.exports.person_indices_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -6615,16 +6625,16 @@ module.exports = function(sequelize, DataTypes) {
     let Person = sequelize.define('person', {
 
         firstName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         lastName: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         email: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         phone: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
@@ -6659,6 +6669,8 @@ module.exports = function(sequelize, DataTypes) {
 module.exports.person_indices_migration = `
 'use strict';
 
+const dict = require('../utils/graphql-sequelize-types');
+
 /**
  * @module - Migrations to create and to undo a table correpondant to a sequelize model.
  */
@@ -6689,16 +6701,16 @@ module.exports = {
             },
 
             firstName: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             },
             lastName: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             },
             email: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             },
             phone: {
-                type: Sequelize.STRING
+                type: Sequelize[ dict['String'] ]
             }
 
         }).then(()=>{
@@ -7201,7 +7213,7 @@ module.exports = \`
     """
     subject: String
 
-      
+
     """
     @search-request
     """
@@ -7226,10 +7238,10 @@ module.exports = \`
   }
 
   enum academicTeamField {
-    id 
-    name  
-    department  
-    subject  
+    id
+    name
+    department
+    subject
   }
 
   input searchAcademicTeamInput {
@@ -7254,7 +7266,7 @@ module.exports = \`
     type Mutation {
       addAcademicTeam( name: String, department: String, subject: String , addMembers:[ID] ): academicTeam!
     updateAcademicTeam(id: ID!, name: String, department: String, subject: String , addMembers:[ID], removeMembers:[ID] ): academicTeam!
-  
+
 
   deleteAcademicTeam(id: ID!): String!
   bulkAddAcademicTeamXlsx: [academicTeam]
@@ -7267,6 +7279,7 @@ module.exports.academicTeam_model = `
 'use strict';
 
 const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
@@ -7309,13 +7322,13 @@ module.exports = function(sequelize, DataTypes) {
     let academicTeam = sequelize.define('academicTeam', {
 
         name: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         department: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         },
         subject: {
-            type: Sequelize.STRING
+            type: Sequelize[ dict['String'] ]
         }
 
 
