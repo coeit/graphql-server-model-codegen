@@ -342,7 +342,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -858,7 +858,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -1402,7 +1402,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -1931,7 +1931,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -2397,7 +2397,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -2954,7 +2954,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -3812,7 +3812,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -4302,7 +4302,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -5357,7 +5357,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -5820,7 +5820,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -6207,7 +6207,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
@@ -6997,7 +6997,7 @@ module.exports = {
 
                 delim = context.request.body.delim;
                 cols = context.request.body.cols;
-                tmpFile = path.join(__dirname, uuidv4() + '.csv');
+                tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
 
                 context.request.files.csv_file.mv(tmpFile).then(() => {
 
