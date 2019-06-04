@@ -16,6 +16,7 @@ const {handleError} = require('../utils/errors');
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
+const os = require('os');
 
 <% associations_temp = associations["belongsToMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
