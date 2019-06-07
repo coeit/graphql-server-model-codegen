@@ -180,6 +180,11 @@ writeSchemaCommons = function(dir_write){
     eq
     between
     in
+    gt
+    gte
+    lt
+    lte
+    ne
   }
 
   enum Order{
