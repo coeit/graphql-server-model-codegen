@@ -100,11 +100,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
-
+const os = require('os');
 
 
 /**
@@ -703,15 +699,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
-
-
-
-
-
+const os = require('os');
 
 module.exports = {
 
@@ -1235,7 +1223,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 
 /**
@@ -1610,7 +1598,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 /**
  * person.prototype.booksFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -2151,7 +2139,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -2697,7 +2685,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 /**
  * researcher.prototype.projectsFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -3566,7 +3554,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 /**
  * book.prototype.peopleFilter - Check user authorization and return certain number, specified in pagination argument, of records
@@ -4123,7 +4111,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 
 /**
@@ -5115,11 +5103,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
-
+const os = require('os');
 
 
 /**
@@ -5653,7 +5637,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 
 /**
@@ -6028,7 +6012,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
+const os = require('os');
 
 
 /**
@@ -6755,12 +6739,7 @@ const {
 const email = require('../utils/email');
 const helpersAcl = require('../utils/helpers-acl');
 const validatorUtil = require('../utils/validatorUtil');
-
-
-
-
-
-
+const os = require('os');
 
 /**
  * academicTeam.prototype.membersFilter - Check user authorization and return certain number, specified in pagination argument, of records
