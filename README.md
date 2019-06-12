@@ -33,7 +33,7 @@ $ npm run test-integration -- -k gql_ncbi_sim_srv -k gql_science_db_graphql_serv
 
 And to generate the structure files:
 ```
-$ code-generator generate <input-json-files> <output-directory>
+$ code-generator -f <input-json-files> -o <output-directory>
 ```
 ```
 INPUT:
@@ -44,7 +44,7 @@ This command will create(if doesn't exist) four folders containing the generated
 
 * models ----> sequelize model
 * schemas ----> graphQL schema
-* resolvers ----> basic CRUD resolvers 
+* resolvers ----> basic CRUD resolvers
 * migrations ----> create and delete table migration file
 
 
@@ -52,7 +52,7 @@ This command will create(if doesn't exist) four folders containing the generated
 In the same directory of this repository run:
 
 ```
-$ code-generator generate ./example_json_files /your_path_directory
+$ code-generator -f ./example_json_files -o /your_path_directory
 ```
 If you want to complete the example with the [server](https://github.com/ScienceDb/graphql-server)
 make ```/your_path_directory``` the same directory where the server repository is stored.
@@ -60,6 +60,15 @@ make ```/your_path_directory``` the same directory where the server repository i
 NOTE: For displaying the explanation about usage we can run the help flag:
 ```
 $ code-generator -h
+```
+```
+Code generator for GraphQL server
+
+ Options:
+
+   -f, --jsonFiles <filesFolder>      Folder containing one json file for each model
+   -o, --outputDirectory <directory>  Directory where generated code will be written
+   -h, --help                         output usage information
 ```
 
 ## JSON files Spec
@@ -73,7 +82,7 @@ Name | Type | Description
 *name* | String | Name of the model (it is recommended uppercase for the initial character).
 *storageType* | String | Type of storage where the model is stored. So far can be one of __sql__ or __Webservice__
 *attributes* | Object | The key of each entry is the name of the attribute and the value should be the a string indicating the type of the attribute. See [table](types-spec) below for allowed types. Example: ```{ "attribute1" : "String", "attribute2: "Int" }```
-*associations* | Object | The key of each entry is the name of the association and the value should be an object describing the associations. See [Associations Spec](associations-spec) section below for the specifications of the associations. 
+*associations* | Object | The key of each entry is the name of the association and the value should be an object describing the associations. See [Associations Spec](associations-spec) section below for the specifications of the associations.
 
 EXAMPLES OF VALID JSON FILES
 
@@ -124,8 +133,8 @@ EXAMPLES OF VALID JSON FILES
 ### Types Spec
 The following types are allowed for the attributes field
 
- Type | 
-------- | 
+ Type |
+------- |
 String |
 Int |
 Float |
@@ -144,7 +153,7 @@ We will consider six possible type of associations depending on the Storage:
 6. cross_hasMany
 
 First four type of associations explain them selves and they are intended to be used when both, source and target models, are stored in SQL databases.
-Last two type of associations are intended to be used when at least one of the models involved is stored in a WebService. 
+Last two type of associations are intended to be used when at least one of the models involved is stored in a WebService.
 
 For all type of association, except for association  of type 4 (sql_belongsToMany), the necessary arguments would be:
 
@@ -164,7 +173,7 @@ name | Type | Description
 *sourceKey* | String | Key to identify the source id
 *keysIn* | String | Name of the cross table
 
-## NOTE: 
+## NOTE:
 THE SAME DATA MODELS DESCRIPTION(.json files) WILL BE USEFUL FOR GENERATING BOTH, THE BACKEND DESCRIBED HERE AND [THE FRONTEND OR GUI](https://github.com/ScienceDb/single-page-app-codegen).
 
 Fields *`label`* and *`sublabel`* in the specification are only needed by the GUI generator, but backend generator will only read required information, therefore extra fields such as *`label`* and *`sublabel`* will be ignored by the backend generator.
