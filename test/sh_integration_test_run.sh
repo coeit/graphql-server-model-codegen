@@ -23,7 +23,7 @@ bash -C "${PWD}/test/sh_integration_test_clear.sh" "$@"
 # Generate the code for the integration test models
 TARGET_DIR="./docker/integration_test_run"
 #TARGET_DIR="/home/morrigan/WebstormProjects/graphql-server/"
-node ./index.js generate ./test/integration_test_models ${TARGET_DIR}
+node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
 
 # Patch the resolver for web-server
 patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
