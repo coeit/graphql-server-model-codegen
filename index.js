@@ -9,17 +9,6 @@ program
   .option('-f, --jsonFiles <filesFolder>', 'Folder containing one json file for each model')
   .option('-o, --outputDirectory <directory>', 'Directory where generated code will be written')
   .parse(process.argv);
-// program
-//   .command('generate <json-files-folder> [dir_to_write]')
-//   .alias('g')
-//   .description('Generate code for each model described by each input json file in the \'json-files-folder\'')
-//   .action((json_dir, dir_write) => {
-//       //Generate full code : models, schemas, resolvers, migrations
-//       funks.generateCode(json_dir, dir_write);
-//
-//   });
-
-//program.parse(process.argv);
 
 
 if(!program.jsonFiles){
