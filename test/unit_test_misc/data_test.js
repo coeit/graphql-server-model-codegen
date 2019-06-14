@@ -1143,8 +1143,6 @@ module.exports.transcript_count_no_assoc_migration = `
 'use strict';
 const dict = require('../utils/graphql-sequelize-types');
 
-const dict = require('../utils/graphql-sequelize-types');
-
 /**
  * @module - Migrations to create and to undo a table correpondant to a sequelize model.
  */
@@ -7335,6 +7333,70 @@ module.exports.person_date_model = `
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Person',
+    storageType: 'SQL',
+    attributes: {
+        firstName: 'String',
+        lastName: 'String',
+        email: 'String',
+        birthday: 'Date'
+    },
+    associations: {
+        dogs: {
+            type: 'hasMany',
+            target: 'Dog',
+            targetKey: 'personId',
+            targetStorageType: 'sql',
+            label: 'name',
+            name: 'dogs',
+            name_lc: 'dogs',
+            name_cp: 'Dogs',
+            target_lc: 'dog',
+            target_lc_pl: 'dogs',
+            target_pl: 'Dogs',
+            target_cp: 'Dog',
+            target_cp_pl: 'Dogs'
+        },
+
+        patients: {
+          type: 'hasMany',
+          target: 'Dog',
+          targetKey: 'doctor_Id',
+          targetStorageType: 'sql',
+          label: 'name',
+          name: 'patients',
+          name_lc: 'patients',
+          name_cp: 'Patients',
+          target_lc: 'dog',
+          target_lc_pl: 'dogs',
+          target_pl: 'Dogs',
+          target_cp: 'Dog',
+          target_cp_pl: 'Dogs'
+        },
+
+        books: {
+            type: 'belongsToMany',
+            target: 'Book',
+            targetKey: 'book_Id',
+            sourceKey: 'person_Id',
+            keysIn: 'books_to_people',
+            targetStorageType: 'sql',
+            label: 'title',
+            name: 'books',
+            name_lc: 'books',
+            name_cp: 'Books',
+            target_lc: 'book',
+            target_lc_pl: 'books',
+            target_pl: 'Books',
+            target_cp: 'Book',
+            target_cp_pl: 'Books'
+        }
+    }
+};
+
+
 /**
  * module - Creates a sequelize model
  *
@@ -7343,7 +7405,7 @@ const dict = require('../utils/graphql-sequelize-types');
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
-    var Person = sequelize.define('person', {
+    let Person = sequelize.define('person', {
 
         firstName: {
             type: Sequelize[ dict['String'] ]
@@ -7375,6 +7437,12 @@ module.exports = function(sequelize, DataTypes) {
             onDelete: 'CASCADE'
         });
     };
+
+    Object.defineProperty(Person, 'definition', {
+        get: function() {
+            return definition;
+        }
+    });
 
     return Person;
 };
