@@ -522,4 +522,3 @@ describe('Implement date/time types', function(){
   });
 
 });
-

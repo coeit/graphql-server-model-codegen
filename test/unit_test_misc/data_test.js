@@ -561,7 +561,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -1051,7 +1050,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -1106,7 +1104,6 @@ const definition = {
         name: 'String'
     }
 };
-
 
 /**
  * module - Creates a sequelize model
@@ -4589,7 +4586,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -7396,7 +7392,6 @@ const definition = {
     }
 };
 
-
 /**
  * module - Creates a sequelize model
  *
@@ -7405,6 +7400,7 @@ const definition = {
  * @return {object}           Sequelize model with associations defined
  */
 module.exports = function(sequelize, DataTypes) {
+
     let Person = sequelize.define('person', {
 
         firstName: {
