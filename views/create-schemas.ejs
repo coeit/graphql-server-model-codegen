@@ -72,8 +72,8 @@ module.exports = `
 
     type Mutation {
   <% if(storageType === 'sql'){-%>
-    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID]<%}-%> ): <%- name %>!
-    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID], remove<%= associations.schema_attributes.many[key][2]%>:[ID] <%}-%>): <%- name %>!
+    add<%- nameCp -%>( <%- attributesStr -%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID]<%}-%> ): <%- name %>!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID], remove<%= associations.schema_attributes.many[key][2]%>:[ID] <%}-%>): <%- name %>!
   <%}else{-%>
     add<%- nameCp -%>( <%- attributesStr -%>): <%- name %>!
     update<%- nameCp -%>(id: ID!, <%- attributesStr -%>): <%- name %>!

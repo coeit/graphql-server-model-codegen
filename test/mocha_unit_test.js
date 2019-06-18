@@ -218,13 +218,13 @@ describe('Migrations extend table', function(){
     expect(g_migration).to.be.equal(test_migration);
   });
 
-  it('Migration add column - dogs', async function(){
-    let assoc = models.assoc_dogs_researcher;
-    let generated_migration =await funks.generateJs('create-association-migration', assoc);
-    let g_migration = generated_migration.replace(/\s/g, '');
-    let test_migration = test.add_column_dogs_migration.replace(/\s/g, '');
-    expect(g_migration).to.be.equal(test_migration);
-  });
+  // it('Migration add column - dogs', async function(){
+  //   let assoc = models.assoc_dogs_researcher;
+  //   let generated_migration =await funks.generateJs('create-association-migration', assoc);
+  //   let g_migration = generated_migration.replace(/\s/g, '');
+  //   let test_migration = test.add_column_dogs_migration.replace(/\s/g, '');
+  //   expect(g_migration).to.be.equal(test_migration);
+  // });
 
   it('Sequelize Model - researcher', async function(){
     let opts = funks.getOptions(models.researcher);

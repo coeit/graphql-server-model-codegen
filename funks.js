@@ -334,7 +334,7 @@ module.exports.getOptions = function(dataModel){
         "many" : {},
         "one" : {}
       },
-      "mutations_attributes" : {},
+      //"mutations_attributes" : {},
       "belongsTo" : [],
       "hasOne" : [],
       "hasMany" : [],
@@ -346,9 +346,9 @@ module.exports.getOptions = function(dataModel){
           association.targetStorageType = association.targetStorageType.toLowerCase();
           //let target_schema = association.target;
           let type = association.type;
-          if(type === "belongsTo" && storageType === 'sql' && association.targetStorageType === 'sql'){ //adds column and attribute to source model
-            associations_info.mutations_attributes[association.targetKey] = "Int";
-          }
+          // if(type === "belongsTo" && storageType === 'sql' && association.targetStorageType === 'sql'){ //adds column and attribute to source model
+          //   associations_info.mutations_attributes[association.targetKey] = "Int";
+          // }
 
           if(associations_type["many"].includes(association.type) )
           {
@@ -393,22 +393,22 @@ module.exports.getOptions = function(dataModel){
  */
 generateAssociationsMigrations =  function( opts, dir_write){
 
-    opts.associations.belongsTo.forEach( async (assoc) =>{
-        if(assoc.targetStorageType === 'sql'){
-          assoc["source"] = opts.table;
-          assoc["cross"] = false;
-          let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
-          let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
-          fs.writeFile( name_migration, generatedMigration, function(err){
-            if (err)
-            {
-              return console.log(err);
-            }else{
-              console.log(name_migration+" writen succesfully!");
-            }
-          });
-        }
-    });
+    // opts.associations.belongsTo.forEach( async (assoc) =>{
+    //     if(assoc.targetStorageType === 'sql'){
+    //       assoc["source"] = opts.table;
+    //       assoc["cross"] = false;
+    //       let generatedMigration = await module.exports.generateJs('create-association-migration',assoc);
+    //       let name_migration = createNameMigration(dir_write, 'z-column-'+assoc.targetKey+'-to-'+opts.table);
+    //       fs.writeFile( name_migration, generatedMigration, function(err){
+    //         if (err)
+    //         {
+    //           return console.log(err);
+    //         }else{
+    //           console.log(name_migration+" writen succesfully!");
+    //         }
+    //       });
+    //     }
+    // });
 
     opts.associations.belongsToMany.forEach( async (assoc) =>{
       if(assoc.targetStorageType === 'sql'){

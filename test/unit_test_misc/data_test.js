@@ -26,6 +26,11 @@ module.exports = \`
     """
     tissue_or_condition: String
 
+    """
+    @original-field
+    """
+    individual_id: Int
+
     individual: individual
     }
 
@@ -47,6 +52,7 @@ module.exports = \`
     variable
     count
     tissue_or_condition
+    individual_id
   }
 
   input searchTranscript_countInput {
@@ -5556,6 +5562,11 @@ module.exports = \`
     """
     tissue_or_condition: String
 
+    """
+    @original-field
+    """
+    individual_id: Int
+
     inDiVIdual: inDiVIdual
     }
 
@@ -5577,6 +5588,7 @@ module.exports = \`
     variable
     count
     tissue_or_condition
+    individual_id
   }
 
   input searchTranscriptCountInput {
@@ -6390,6 +6402,16 @@ module.exports = \`
     """
     breed: String
 
+    """
+    @original-field
+    """
+    owner_id_test: Int
+
+    """
+    @original-field
+    """
+    keeperId: Int
+
     owner: Person
   keeper: Researcher
     }
@@ -6410,6 +6432,8 @@ module.exports = \`
     id
     name
     breed
+    owner_id_test
+    keeperId
   }
 
   input searchDogInput {
@@ -6455,7 +6479,9 @@ const definition = {
     storageType: 'Sql',
     attributes: {
         name: 'String',
-        breed: 'String'
+        breed: 'String',
+        owner_id_test: 'Int',
+        keeperId: 'Int'
     },
     associations: {
         owner: {
@@ -6507,6 +6533,12 @@ module.exports = function(sequelize, DataTypes) {
         },
         breed: {
             type: Sequelize[ dict['String'] ]
+        },
+        owner_id_test: {
+            type: Sequelize[ dict['Int'] ]
+        },
+        keeperId: {
+            type: Sequelize[ dict['Int'] ]
         }
 
 

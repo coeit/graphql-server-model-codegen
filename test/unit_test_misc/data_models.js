@@ -5,7 +5,8 @@ module.exports.transcript_count = {
     "gene" : "String",
     "variable" : "String",
     "count" : "Float",
-    "tissue_or_condition": "String"
+    "tissue_or_condition": "String",
+    "individual_id": "Int"
   },
   "associations":{
     "individual":{
@@ -244,7 +245,8 @@ module.exports.transcriptCount_camelcase = {
     "gene" : "String",
     "variable" : "String",
     "count" : "Float",
-    "tissue_or_condition": "String"
+    "tissue_or_condition": "String",
+    "individual_id": "Int"
   },
   "associations":{
     "inDiVIdual":{
@@ -285,7 +287,9 @@ module.exports.dog_owner = {
   "storageType" : "Sql",
   "attributes" : {
     "name" : "String",
-    "breed" : "String"
+    "breed" : "String",
+    "owner_id_test": "Int",
+    "keeperId": "Int"
   },
 
   "associations" : {
