@@ -402,3 +402,33 @@ module.exports.person_date = {
 
   }
 }
+
+module.exports.book_authors = {
+  "model" : "Book",
+  "storageType" : "sql",
+  "attributes" : {
+    "title" : "String",
+    "genre" : "String",
+    "publisherId": "Int"
+  },
+  "associations":{
+
+      "Authors" : {
+          "type" : "belongsToMany",
+          "target" : "Person",
+          "targetKey" : "person_Id",
+          "sourceKey" : "book_Id",
+          "keysIn" : "books_to_people",
+          "targetStorageType" : "sql",
+          "label" : "firstName",
+          "sublabel" : "email"
+        },
+      "publisher" : {
+        "type" : "belongsTo",
+        "target" : "Publisher",
+        "targetKey" : "publisherId",
+        "targetStorageType" : "webservice",
+        "label" : "name"
+        }
+  }
+}

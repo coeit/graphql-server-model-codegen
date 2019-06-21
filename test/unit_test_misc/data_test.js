@@ -7596,3 +7596,106 @@ module.exports.logic_patch = function(dog) {
     return dog;
 };
 `
+
+module.exports.book_authors_model =`
+'use strict';
+
+const Sequelize = require('sequelize');
+const dict = require('../utils/graphql-sequelize-types');
+
+// An exact copy of the the model definition that comes from the .json file
+const definition = {
+    model: 'Book',
+    storageType: 'sql',
+    attributes: {
+        title: 'String',
+        genre : 'String',
+        publisherId: 'Int'
+    },
+    associations: {
+
+        Authors: {
+            type: 'belongsToMany',
+            target: 'Person',
+            targetKey: 'person_Id',
+            sourceKey: 'book_Id',
+            keysIn : 'books_to_people',
+            targetStorageType: 'sql',
+            label : 'firstName',
+            sublabel : 'email',
+            name: 'Authors',
+            name_lc: 'authors',
+            name_cp: 'Authors',
+            target_lc: 'person',
+            target_lc_pl: 'people',
+            target_pl: 'People',
+            target_cp: 'Person',
+            target_cp_pl: 'People'
+        },
+
+        publisher: {
+            type: 'belongsTo',
+            target: 'Publisher',
+            targetKey: 'publisherId',
+            targetStorageType: 'webservice',
+            label: 'name',
+            name: 'publisher',
+            name_lc: 'publisher',
+            name_cp: 'Publisher',
+            target_lc: 'publisher',
+            target_lc_pl: 'publishers',
+            target_pl: 'Publishers',
+            target_cp: 'Publisher',
+            target_cp_pl: 'Publishers'
+        }
+    }
+};
+
+
+
+/**
+ * module - Creates a sequelize model
+ *
+ * @param  {object} sequelize Sequelize instance.
+ * @param  {object} DataTypes Allowed sequelize data types.
+ * @return {object}           Sequelize model with associations defined
+ */
+
+ module.exports = class Book extends Sequelize.Model{
+
+   static init(sequelize, DataTypes){
+     return super.init(
+       {
+         title: {
+             type: Sequelize[ dict['String'] ]
+         },
+         genre: {
+             type: Sequelize[ dict['String'] ]
+         },
+         publisherId: {
+             type: Sequelize[dict['Int']]
+         }
+       },
+       {
+         modelName: "book",
+         tableName: "books",
+         sequelize
+       }
+     );
+   }
+
+   static associate(models){
+     Book.belongsToMany(models.person, {
+         as: 'Authors',
+         foreignKey: 'book_Id',
+         through: 'books_to_people',
+         onDelete: 'CASCADE'
+     });
+   }
+
+   static get definition(){
+     return definition;
+   }
+
+ }
+`

@@ -13,26 +13,31 @@ const definition = <%- definition -%>;
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes){
-  let <%- name -%> = sequelize.define('<%- nameLc -%>',{
 
-    <% let keys = Object.keys(attributes) -%>
-    <%for (let i=0; i< keys.length; i++) {-%>
-      <% let type_seq =  attributes[ keys[i] ] -%>
-      <%=  keys[i] %>: {
-          type: Sequelize[ dict['<%= type_seq %>'] ]
-      }
-      <%if(i !== (keys.length -1) ){ -%>,<%}-%>
-    <%}-%>
+module.exports = class <%- name -%> extends Sequelize.Model{
+
+  static init(sequelize, DataTypes){
+    return super.init({
+      <% let keys = Object.keys(attributes) -%>
+      <%for (let i=0; i< keys.length; i++) {-%>
+        <% let type_seq =  attributes[ keys[i] ] -%>
+        <%=  keys[i] %>: {
+            type: Sequelize[ dict['<%= type_seq %>'] ]
+        }
+        <%if(i !== (keys.length -1) ){ -%>,<%}-%>
+      <%}-%>
 
 
-  } <%if(indices !== undefined){let string_indices = indices.map(x => { return "'" + x + "'" }) -%>,{
-    indexes: [<%- string_indices.join() -%> ]
-  } <%}-%>
-  );
+    },{ <%if(indices !== undefined){let string_indices = indices.map(x => { return "'" + x + "'" }) -%>
+      indexes: [<%- string_indices.join() -%> ], <%}-%>
+      modelName: "<%- nameLc -%>",
+      tableName: "<%-namePl-%>",
+      sequelize
+     }
+    );
+  }
 
-  <%- name -%>.associate = function(models){
-
+  static associate(models){
     <% for(var key in associations){ -%>
       <%for(let i=0; i< associations[key].length; i++){-%>
         <%if(associations[key][i].targetStorageType === 'sql'){-%>
@@ -46,9 +51,10 @@ module.exports = function(sequelize, DataTypes){
         <%}-%>
       <%}-%>
     <% } -%>
-  };
+  }
 
-  Object.defineProperty(<%- name -%>, 'definition', {get: function() {return definition;} });
+  static get definition(){
+    return definition;
+  }
 
-  return <%- name -%>;
-};
+}

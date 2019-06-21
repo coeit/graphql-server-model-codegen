@@ -522,3 +522,15 @@ describe('Implement date/time types', function(){
   });
 
 });
+
+describe('Update sequelize model to class', function(){
+
+  it('Model - Book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = test.book_authors_model.replace(/\s/g, '');
+    expect(g_model).to.be.equal(test_model);
+  });
+
+});
