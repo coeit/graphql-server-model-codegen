@@ -574,32 +574,36 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let individual = sequelize.define('individual', {
+module.exports =  class individual extends Sequelize.Model {
+
+  static init(sequelize, DataTypes){
+    return super.init({
 
         name: {
             type: Sequelize[ dict['String'] ]
         }
 
 
+    },{
+      modelName: "individual",
+      tableName: "individuals",
+      sequelize
     });
+  }
 
-    individual.associate = function(models) {
+
+    static associate(models) {
 
         individual.hasMany(models.transcript_count, {
             as: 'transcript_counts',
             foreignKey: 'individual_id'
         });
-    };
+    }
 
-    Object.defineProperty(individual, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return individual;
-};
+  static get definition(){
+    return definition;
+  }
+}
 `
 
 module.exports.transcript_count_no_assoc_schema = `
@@ -1063,8 +1067,11 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let transcript_count = sequelize.define('transcript_count', {
+module.exports = class transcript_count extends Sequelize.Model{
+
+    static init(sequelize, DataTypes) {
+
+      return super.init({
 
         gene: {
             type: Sequelize[ dict['String'] ]
@@ -1078,22 +1085,20 @@ module.exports = function(sequelize, DataTypes) {
         tissue_or_condition: {
             type: Sequelize[ dict['String'] ]
         }
+      },{
+        modelName: "transcript_count",
+        tableName: "transcript_counts",
+        sequelize
+      });
+    }
+    static associate(models) {
 
+    }
 
-    });
-
-    transcript_count.associate = function(models) {
-
-    };
-
-    Object.defineProperty(transcript_count, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return transcript_count;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 
 module.exports.individual_no_assoc_model = `
@@ -1118,28 +1123,31 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let individual = sequelize.define('individual', {
+module.exports = class individual extends Sequelize.Model{
+
+    static init(sequelize, DataTypes) {
+      return super.init( {
 
         name: {
             type: Sequelize[ dict['String'] ]
         }
 
 
-    });
+      },{
+        modelName: "individual",
+        tableName: "individuals",
+        sequelize
+      });
+    }
 
-    individual.associate = function(models) {
+    static associate(models) {
 
-    };
+    }
 
-    Object.defineProperty(individual, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return individual;
-};
+      static get definition(){
+        return definition;
+      }
+}
 `
 
 module.exports.transcript_count_no_assoc_migration = `
@@ -4599,8 +4607,10 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let Researcher = sequelize.define('researcher', {
+module.exports = class Researcher extends Sequelize.Model{
+
+    static init(sequelize, DataTypes) {
+        return super.init( {
 
         firstName: {
             type: Sequelize[ dict['String'] ]
@@ -4611,11 +4621,14 @@ module.exports = function(sequelize, DataTypes) {
         email: {
             type: Sequelize[ dict['String'] ]
         }
+      },{
+        modelName: "researcher",
+        tableName: "researchers",
+        sequelize
+      });
+    }
 
-
-    });
-
-    Researcher.associate = function(models) {
+    static associate(models) {
 
         Researcher.hasOne(models.dog, {
             as: 'dog',
@@ -4627,16 +4640,12 @@ module.exports = function(sequelize, DataTypes) {
             through: 'project_to_researcher',
             onDelete: 'CASCADE'
         });
-    };
+    }
 
-    Object.defineProperty(Researcher, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return Researcher;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 module.exports.add_column_dogs_migration = `
 'use strict';
@@ -5054,32 +5063,35 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let inDiVIdual = sequelize.define('inDiVIdual', {
+module.exports = class inDiVIdual extends Sequelize.Model{
+
+  static init(sequelize, DataTypes) {
+    return super.init( {
 
         name: {
             type: Sequelize[ dict['String'] ]
         }
 
 
+    },{
+        modelName: "inDiVIdual",
+        tableName: "inDiVIduals",
+        sequelize
     });
+  }
 
-    inDiVIdual.associate = function(models) {
+    static associate(models) {
 
         inDiVIdual.hasMany(models.transcriptCount, {
             as: 'transcriptCounts',
             foreignKey: 'individual_id'
         });
-    };
+    }
 
-    Object.defineProperty(inDiVIdual, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return inDiVIdual;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 
 module.exports.individual_resolvers_camelcase = `
@@ -6525,8 +6537,10 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let Dog = sequelize.define('dog', {
+module.exports = class Dog extends Sequelize.Model{
+
+    static init(sequelize, DataTypes) {
+        return super.init({
 
         name: {
             type: Sequelize[ dict['String'] ]
@@ -6540,11 +6554,14 @@ module.exports = function(sequelize, DataTypes) {
         keeperId: {
             type: Sequelize[ dict['Int'] ]
         }
-
-
+    },{
+      modelName: "dog",
+      tableName: "dogs",
+      sequelize
     });
+  }
 
-    Dog.associate = function(models) {
+    static associate(models) {
 
         Dog.belongsTo(models.person, {
             as: 'owner',
@@ -6554,16 +6571,12 @@ module.exports = function(sequelize, DataTypes) {
             as: 'keeper',
             foreignKey: 'keeperId'
         });
-    };
+    }
 
-    Object.defineProperty(Dog, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return Dog;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 
 module.exports.person_indices_model = `
@@ -6629,8 +6642,10 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let Person = sequelize.define('person', {
+module.exports = class Person extends Sequelize.Model{
+
+  static init(sequelize, DataTypes) {
+    return super.init({
 
         firstName: {
             type: Sequelize[ dict['String'] ]
@@ -6647,10 +6662,14 @@ module.exports = function(sequelize, DataTypes) {
 
 
     }, {
-        indexes: ['email', 'phone']
+        indexes: ['email', 'phone'],
+        modelName: "person",
+        tableName: "people",
+        sequelize
     });
+  }
 
-    Person.associate = function(models) {
+    static associate(models) {
 
         Person.hasMany(models.dog, {
             as: 'dogs',
@@ -6662,16 +6681,12 @@ module.exports = function(sequelize, DataTypes) {
             through: 'books_to_people',
             onDelete: 'CASCADE'
         });
-    };
+    }
 
-    Object.defineProperty(Person, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return Person;
-};
+      static get definition(){
+        return definition;
+      }
+}
 `
 
 module.exports.person_indices_migration = `
@@ -7320,8 +7335,10 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
-    let academicTeam = sequelize.define('academicTeam', {
+module.exports = class academicTeam extends Sequelize.Model{
+
+    static init(sequelize, DataTypes) {
+      return super.init( {
 
         name: {
             type: Sequelize[ dict['String'] ]
@@ -7334,24 +7351,25 @@ module.exports = function(sequelize, DataTypes) {
         }
 
 
+    },{
+        modelName: "academicTeam",
+        tableName: "academicTeams",
+        sequelize
     });
+  }
 
-    academicTeam.associate = function(models) {
+    static associate(models) {
 
         academicTeam.hasMany(models.researcher, {
             as: 'members',
             foreignKey: 'academicTeamId'
         });
-    };
+    }
 
-    Object.defineProperty(academicTeam, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return academicTeam;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 
 module.exports.person_date_model = `
@@ -7431,9 +7449,11 @@ const definition = {
  * @param  {object} DataTypes Allowed sequelize data types.
  * @return {object}           Sequelize model with associations defined
  */
-module.exports = function(sequelize, DataTypes) {
+module.exports = class Person extends Sequelize.Model{
 
-    let Person = sequelize.define('person', {
+  static init(sequelize, DataTypes) {
+
+    return super.init({
 
         firstName: {
             type: Sequelize[ dict['String'] ]
@@ -7447,9 +7467,14 @@ module.exports = function(sequelize, DataTypes) {
         birthday: {
           type: Sequelize[ dict['Date'] ]
         }
+    },{
+        modelName: "person",
+        tableName: "people",
+        sequelize
     });
+  }
 
-    Person.associate = function(models) {
+    static associate(models) {
         Person.hasMany(models.dog, {
             as: 'dogs',
             foreignKey: 'personId'
@@ -7464,16 +7489,12 @@ module.exports = function(sequelize, DataTypes) {
             through: 'books_to_people',
             onDelete: 'CASCADE'
         });
-    };
+    }
 
-    Object.defineProperty(Person, 'definition', {
-        get: function() {
-            return definition;
-        }
-    });
-
-    return Person;
-};
+    static get definition(){
+      return definition;
+    }
+}
 `
 
 module.exports.person_date_migration = `
