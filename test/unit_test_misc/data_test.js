@@ -539,6 +539,7 @@ module.exports = {
 module.exports.individualModel = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -603,6 +604,18 @@ module.exports =  class individual extends Sequelize.Model {
   static get definition(){
     return definition;
   }
+
+  static base64Decode(cursor){
+    return Buffer.from(cursor, 'base64').toString('utf-8');
+  }
+
+  base64Enconde(){
+    let attributes = Object.keys(individual.definition.attributes);
+    attributes.push('id');
+    let data_values = _.pick(this, attributes);
+    return Buffer.from(JSON.stringify(data_values)).toString('base64');
+  }
+
 }
 `
 
@@ -1044,6 +1057,7 @@ module.exports = {
 module.exports.transcript_count_no_assoc_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -1098,12 +1112,24 @@ module.exports = class transcript_count extends Sequelize.Model{
     static get definition(){
       return definition;
     }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(transcript_count.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    }
 }
 `
 
 module.exports.individual_no_assoc_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -1146,6 +1172,17 @@ module.exports = class individual extends Sequelize.Model{
 
       static get definition(){
         return definition;
+      }
+
+      static base64Decode(cursor){
+        return Buffer.from(cursor, 'base64').toString('utf-8');
+      }
+
+      base64Enconde(){
+        let attributes = Object.keys(individual.definition.attributes);
+        attributes.push('id');
+        let data_values = _.pick(this, attributes);
+        return Buffer.from(JSON.stringify(data_values)).toString('base64');
       }
 }
 `
@@ -4554,6 +4591,7 @@ module.exports = {
 module.exports.researcher_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -4644,6 +4682,17 @@ module.exports = class Researcher extends Sequelize.Model{
 
     static get definition(){
       return definition;
+    }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(Researcher.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
     }
 }
 `
@@ -4757,6 +4806,8 @@ module.exports = \`
 `
 
 module.exports.model_webservice_aminoAcid = `
+const _ = require('lodash');
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'aminoAcidSequence',
@@ -4787,6 +4838,17 @@ module.exports = class aminoAcidSequence {
 
     static get definition() {
         return definition;
+    }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(aminoAcidSequence.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
     }
 };
 `
@@ -5026,6 +5088,7 @@ module.exports = \`
 module.exports.individual_model_camelcase = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -5090,6 +5153,17 @@ module.exports = class inDiVIdual extends Sequelize.Model{
 
     static get definition(){
       return definition;
+    }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(inDiVIdual.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
     }
 }
 `
@@ -6482,6 +6556,7 @@ module.exports = \`
 module.exports.dog_owner_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -6576,12 +6651,24 @@ module.exports = class Dog extends Sequelize.Model{
     static get definition(){
       return definition;
     }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(Dog.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    }
 }
 `
 
 module.exports.person_indices_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -6686,7 +6773,18 @@ module.exports = class Person extends Sequelize.Model{
       static get definition(){
         return definition;
       }
-}
+
+      static base64Decode(cursor){
+        return Buffer.from(cursor, 'base64').toString('utf-8');
+      }
+
+      base64Enconde(){
+        let attributes = Object.keys(Person.definition.attributes);
+        attributes.push('id');
+        let data_values = _.pick(this, attributes);
+        return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      }
+    }
 `
 
 module.exports.person_indices_migration = `
@@ -7296,6 +7394,7 @@ module.exports = \`
 module.exports.academicTeam_model = `
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -7369,13 +7468,24 @@ module.exports = class academicTeam extends Sequelize.Model{
     static get definition(){
       return definition;
     }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(academicTeam.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    }
 }
 `
 
 module.exports.person_date_model = `
 'use strict';
 
-
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -7493,6 +7603,17 @@ module.exports = class Person extends Sequelize.Model{
 
     static get definition(){
       return definition;
+    }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(Person.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
     }
 }
 `
@@ -7621,6 +7742,7 @@ module.exports.logic_patch = function(dog) {
 module.exports.book_authors_model =`
 'use strict';
 
+const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 
@@ -7716,6 +7838,17 @@ const definition = {
 
    static get definition(){
      return definition;
+   }
+
+   static base64Decode(cursor){
+     return Buffer.from(cursor, 'base64').toString('utf-8');
+   }
+
+   base64Enconde(){
+     let attributes = Object.keys(Book.definition.attributes);
+     attributes.push('id');
+     let data_values = _.pick(this, attributes);
+     return Buffer.from(JSON.stringify(data_values)).toString('base64');
    }
 
  }

@@ -1,7 +1,9 @@
+const _ = require('lodash');
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
 
-module.exports = class <%- nameLc -%>{
+module.exports = class <%- name -%>{
 
   /**
    * constructor - Creates an instance of the model stored in webservice
@@ -19,4 +21,17 @@ module.exports = class <%- nameLc -%>{
   static get definition(){
     return definition;
   }
+
+  static base64Decode(cursor){
+    return Buffer.from(cursor, 'base64').toString('utf-8');
+  }
+
+  base64Enconde(){
+    let attributes = Object.keys(<%- name -%>.definition.attributes);
+    attributes.push('id');
+    let data_values = _.pick(this, attributes);
+    return Buffer.from(JSON.stringify(data_values)).toString('base64');
+  }
+
+
 };

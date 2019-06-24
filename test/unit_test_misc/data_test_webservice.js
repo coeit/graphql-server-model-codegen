@@ -1,4 +1,7 @@
 module.exports.model_book = `
+
+const _ = require('lodash');
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'book',
@@ -67,6 +70,17 @@ module.exports = class book {
     static get definition() {
         return definition;
     }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(book.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    }
 };
 `
 
@@ -99,7 +113,7 @@ module.exports = \`
     publisher_id: Int
 
     publisher: publi_sher
-    
+
     """
     @search-request
     """
@@ -124,11 +138,11 @@ module.exports = \`
   }
 
   enum bookField {
-    id 
-    title  
-    subject  
-    Price  
-    publisher_id  
+    id
+    title
+    subject
+    Price
+    publisher_id
   }
 
   input searchBookInput {
@@ -153,7 +167,7 @@ module.exports = \`
     type Mutation {
       addBook( title: String, subject: String, Price: Float, publisher_id: Int): book!
     updateBook(id: ID!, title: String, subject: String, Price: Float, publisher_id: Int): book!
-  
+
 
   deleteBook(id: ID!): String!
   bulkAddBookXlsx: [book]
@@ -370,6 +384,8 @@ module.exports = {
 `
 
 module.exports.model_publisher = `
+const _ = require('lodash');
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'publi_sher',
@@ -431,6 +447,17 @@ module.exports = class publi_sher {
     static get definition() {
         return definition;
     }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(publi_sher.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    }
 };
 `
 
@@ -453,7 +480,7 @@ module.exports = \`
     phone: String
 
     director: Person
-    
+
     """
     @search-request
     """
@@ -478,9 +505,9 @@ module.exports = \`
   }
 
   enum publi_sherField {
-    id 
-    name  
-    phone  
+    id
+    name
+    phone
   }
 
   input searchPubli_sherInput {
@@ -505,7 +532,7 @@ module.exports = \`
     type Mutation {
       addPubli_sher( name: String, phone: String): publi_sher!
     updatePubli_sher(id: ID!, name: String, phone: String): publi_sher!
-  
+
 
   deletePubli_sher(id: ID!): String!
   bulkAddPubli_sherXlsx: [publi_sher]
@@ -732,6 +759,8 @@ module.exports = {
 `
 
 module.exports.model_person = `
+const _ = require('lodash');
+
 // An exact copy of the the model definition that comes from the .json file
 const definition = {
     model: 'Person',
@@ -775,7 +804,7 @@ const definition = {
     }
 };
 
-module.exports = class person {
+module.exports = class Person {
 
     /**
      * constructor - Creates an instance of the model stored in webservice
@@ -799,6 +828,17 @@ module.exports = class person {
 
     static get definition() {
         return definition;
+    }
+
+    static base64Decode(cursor){
+      return Buffer.from(cursor, 'base64').toString('utf-8');
+    }
+
+    base64Enconde(){
+      let attributes = Object.keys(Person.definition.attributes);
+      attributes.push('id');
+      let data_values = _.pick(this, attributes);
+      return Buffer.from(JSON.stringify(data_values)).toString('base64');
     }
 };
 `
@@ -832,7 +872,7 @@ module.exports = \`
     companyId: Int
 
     company: publi_sher
-    
+
     """
     @search-request
     """
@@ -857,11 +897,11 @@ module.exports = \`
   }
 
   enum PersonField {
-    id 
-    firstName  
-    lastName  
-    Age  
-    companyId  
+    id
+    firstName
+    lastName
+    Age
+    companyId
   }
 
   input searchPersonInput {
@@ -886,7 +926,7 @@ module.exports = \`
     type Mutation {
       addPerson( firstName: String, lastName: String, Age: Int, companyId: Int): Person!
     updatePerson(id: ID!, firstName: String, lastName: String, Age: Int, companyId: Int): Person!
-  
+
 
   deletePerson(id: ID!): String!
   bulkAddPersonXlsx: [Person]
