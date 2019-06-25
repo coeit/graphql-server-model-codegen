@@ -266,11 +266,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
-                return individual.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return individual.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -601,6 +597,14 @@ module.exports =  class individual extends Sequelize.Model {
         });
     }
 
+    static readById( id ){
+      return individual.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
   static get definition(){
     return definition;
   }
@@ -797,11 +801,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'individual', 'read').then(authorization => {
             if (authorization === true) {
-                return individual.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return individual.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -1113,6 +1113,14 @@ module.exports = class transcript_count extends Sequelize.Model{
 
     }
 
+    static readById( id ){
+      return transcript_count.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
     static get definition(){
       return definition;
     }
@@ -1178,6 +1186,14 @@ module.exports = class individual extends Sequelize.Model{
     static associate(models) {
 
     }
+
+    static readById( id ){
+      return individual.findOne({
+          where: {
+              id: id
+          }
+        });
+      }
 
       static get definition(){
         return definition;
@@ -1376,11 +1392,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'transcript_count', 'read').then(authorization => {
             if (authorization === true) {
-                return transcript_count.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return transcript_count.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -1899,11 +1911,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Person', 'read').then(authorization => {
             if (authorization === true) {
-                return person.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return person.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -2368,11 +2376,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
-                return book.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return book.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -2925,11 +2929,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Researcher', 'read').then(authorization => {
             if (authorization === true) {
-                return researcher.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return researcher.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -3390,10 +3390,7 @@ module.exports = {
     readOneSpecie: function({
         id
     }, context) {
-        /*
-        YOUR CODE GOES HERE
-        */
-        throw new Error('readOneSpecie is not implemented');
+              return specie.readById(id);
     },
 
     /**
@@ -3783,11 +3780,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Book', 'read').then(authorization => {
             if (authorization === true) {
-                return book.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return book.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -4276,11 +4269,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
-                return dog.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return dog.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -4693,6 +4682,14 @@ module.exports = class Researcher extends Sequelize.Model{
         });
     }
 
+    static readById( id ){
+      return Researcher.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
     static get definition(){
       return definition;
     }
@@ -4853,6 +4850,13 @@ module.exports = class aminoAcidSequence {
         this.sequence = sequence;
     }
 
+    static readById( id ){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('readOneAminoAcidSequence is not implemented');
+    }
+
     static get definition() {
         return definition;
     }
@@ -4912,10 +4916,7 @@ module.exports = {
     readOneAminoAcidSequence: function({
         id
     }, context) {
-        /*
-        YOUR CODE GOES HERE
-        */
-        throw new Error('readOneAminoAcidSequence is not implemented');
+      return aminoAcidSequence.readById(id);
     },
 
     /**
@@ -5172,6 +5173,14 @@ module.exports = class inDiVIdual extends Sequelize.Model{
         });
     }
 
+    static readById( id ){
+      return inDiVIdual.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
     static get definition(){
       return definition;
     }
@@ -5374,11 +5383,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'inDiVIdual', 'read').then(authorization => {
             if (authorization === true) {
-                return inDiVIdual.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+                return inDiVIdual.readById(id );
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -5846,11 +5851,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'transcriptCount', 'read').then(authorization => {
             if (authorization === true) {
-                return transcriptCount.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return transcriptCount.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -6233,11 +6234,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'Dog', 'read').then(authorization => {
             if (authorization === true) {
-                return dog.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return dog.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -6673,6 +6670,14 @@ module.exports = class Dog extends Sequelize.Model{
         });
     }
 
+    static readById( id ){
+      return Dog.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
     static get definition(){
       return definition;
     }
@@ -6796,6 +6801,14 @@ module.exports = class Person extends Sequelize.Model{
             through: 'books_to_people',
             onDelete: 'CASCADE'
         });
+    }
+
+    static readById( id ){
+      return Person.findOne({
+          where: {
+              id: id
+          }
+      });
     }
 
       static get definition(){
@@ -7067,11 +7080,7 @@ module.exports = {
     }, context) {
         return checkAuthorization(context, 'academicTeam', 'read').then(authorization => {
             if (authorization === true) {
-                return academicTeam.findOne({
-                    where: {
-                        id: id
-                    }
-                });
+              return academicTeam.readById(id);
             } else {
                 return new Error("You don't have authorization to perform this action");
             }
@@ -7497,6 +7506,14 @@ module.exports = class academicTeam extends Sequelize.Model{
         });
     }
 
+    static readById( id ){
+      return academicTeam.findOne({
+          where: {
+              id: id
+          }
+      });
+    }
+
     static get definition(){
       return definition;
     }
@@ -7635,6 +7652,14 @@ module.exports = class Person extends Sequelize.Model{
             through: 'books_to_people',
             onDelete: 'CASCADE'
         });
+    }
+
+    static readById( id ){
+      return Person.findOne({
+          where: {
+              id: id
+          }
+      });
     }
 
     static get definition(){
@@ -7873,6 +7898,14 @@ const definition = {
          foreignKey: 'book_Id',
          through: 'books_to_people',
          onDelete: 'CASCADE'
+     });
+   }
+
+   static readById( id ){
+     return Book.findOne({
+         where: {
+             id: id
+         }
      });
    }
 

@@ -148,10 +148,7 @@ module.exports = {
    * @return {object}         Record with id requested
    */
   readOne<%- nameCp -%>: function({id}, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('readOne<%- nameCp -%> is not implemented');
+    return <%-nameLc-%>.readById(id );
   },
 
   /**

@@ -53,6 +53,14 @@ module.exports = class <%- name -%> extends Sequelize.Model{
     <% } -%>
   }
 
+  static readById( id ){
+    return <%- name -%>.findOne({
+        where: {
+            id: id
+        }
+    });
+  }
+
   static get definition(){
     return definition;
   }
