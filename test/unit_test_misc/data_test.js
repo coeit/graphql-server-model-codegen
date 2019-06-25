@@ -610,10 +610,14 @@ module.exports =  class individual extends Sequelize.Model {
   }
 
   base64Enconde(){
+    return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+  }
+
+  stripAssociations(){
     let attributes = Object.keys(individual.definition.attributes);
     attributes.push('id');
     let data_values = _.pick(this, attributes);
-    return Buffer.from(JSON.stringify(data_values)).toString('base64');
+    return data_values;
   }
 
 }
@@ -1118,10 +1122,15 @@ module.exports = class transcript_count extends Sequelize.Model{
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(transcript_count.definition.attributes);
+
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -1179,10 +1188,14 @@ module.exports = class individual extends Sequelize.Model{
       }
 
       base64Enconde(){
+        return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+      }
+
+      stripAssociations(){
         let attributes = Object.keys(individual.definition.attributes);
         attributes.push('id');
         let data_values = _.pick(this, attributes);
-        return Buffer.from(JSON.stringify(data_values)).toString('base64');
+        return data_values;
       }
 }
 `
@@ -4689,10 +4702,14 @@ module.exports = class Researcher extends Sequelize.Model{
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(Researcher.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -4845,10 +4862,14 @@ module.exports = class aminoAcidSequence {
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(aminoAcidSequence.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 };
 `
@@ -5160,10 +5181,14 @@ module.exports = class inDiVIdual extends Sequelize.Model{
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(inDiVIdual.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -6655,12 +6680,15 @@ module.exports = class Dog extends Sequelize.Model{
     static base64Decode(cursor){
       return Buffer.from(cursor, 'base64').toString('utf-8');
     }
-
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(Dog.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -6779,10 +6807,14 @@ module.exports = class Person extends Sequelize.Model{
       }
 
       base64Enconde(){
+        return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+      }
+
+      stripAssociations(){
         let attributes = Object.keys(Person.definition.attributes);
         attributes.push('id');
         let data_values = _.pick(this, attributes);
-        return Buffer.from(JSON.stringify(data_values)).toString('base64');
+        return data_values;
       }
     }
 `
@@ -7474,10 +7506,14 @@ module.exports = class academicTeam extends Sequelize.Model{
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(academicTeam.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -7610,10 +7646,14 @@ module.exports = class Person extends Sequelize.Model{
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(Person.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 }
 `
@@ -7845,10 +7885,14 @@ const definition = {
    }
 
    base64Enconde(){
+     return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+   }
+
+   stripAssociations(){
      let attributes = Object.keys(Book.definition.attributes);
      attributes.push('id');
      let data_values = _.pick(this, attributes);
-     return Buffer.from(JSON.stringify(data_values)).toString('base64');
+     return data_values;
    }
 
  }

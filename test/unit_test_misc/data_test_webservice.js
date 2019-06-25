@@ -76,10 +76,14 @@ module.exports = class book {
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(book.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 };
 `
@@ -453,10 +457,14 @@ module.exports = class publi_sher {
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(publi_sher.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 };
 `
@@ -835,10 +843,14 @@ module.exports = class Person {
     }
 
     base64Enconde(){
+      return Buffer.from(JSON.stringify(this.stripAssociations())).toString('base64');
+    }
+
+    stripAssociations(){
       let attributes = Object.keys(Person.definition.attributes);
       attributes.push('id');
       let data_values = _.pick(this, attributes);
-      return Buffer.from(JSON.stringify(data_values)).toString('base64');
+      return data_values;
     }
 };
 `
