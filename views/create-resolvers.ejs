@@ -190,7 +190,7 @@ module.exports = {
           options['where'] = arg_sequelize;
         }
 
-        return <%- nameLc -%>.count(options).then( items => {
+        return <%- nameLc -%>.countRecords(search).then( items => {
           if(order !== undefined){
             options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
           }else if(pagination !== undefined){
@@ -436,14 +436,7 @@ module.exports = {
   count<%-namePlCp-%>: function({search}, context){
     return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
         if (authorization === true) {
-          let options = {};
-          if(search!== undefined){
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-          }
-
-          return <%- nameLc -%>.count(options);
+          return <%- nameLc -%>.countRecords(search);
         } else {
             return new Error("You don't have authorization to perform this action");
         }

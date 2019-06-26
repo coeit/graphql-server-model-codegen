@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
+const searchArg = require('../utils/search-argument');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
@@ -59,6 +60,16 @@ module.exports = class <%- name -%> extends Sequelize.Model{
             id: id
         }
     });
+  }
+
+  static countRecords(search){
+    let options = {};
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+    return super.count(options);
   }
 
   static get definition(){
