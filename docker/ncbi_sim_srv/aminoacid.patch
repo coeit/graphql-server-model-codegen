@@ -1,0 +1,31 @@
+--- aminoacidsequence.js	2019-06-25 14:02:25.375925050 -0500
++++ aminoacid_full.js	2019-06-26 08:28:30.749026176 -0500
+@@ -1,4 +1,6 @@
+ const _ = require('lodash');
++const request = require('sync-request');
++const baseUrl = 'http://gql_ncbi_sim_srv:3344/aminoAcidSequence/';
+ 
+ // An exact copy of the the model definition that comes from the .json file
+ const definition = {
+@@ -45,10 +47,10 @@
+     }
+ 
+     static readById(id) {
+-        /*
+-        YOUR CODE GOES HERE
+-        */
+-        throw new Error('readOneAminoacidsequence is not implemented');
++
++        let res = request('get', baseUrl + id);
++        if(res.statusCode !== 200) throw new Error(`Remote service response status code for ${id}: ${res.statusCode}`);
++        return new aminoacidsequence(JSON.parse(res.body.toString('utf8')));
+     }
+ 
+     static get definition() {
+@@ -71,4 +73,4 @@
+     }
+ 
+ 
+-};
+\ No hay ningún carácter de nueva línea al final del archivo
++};
