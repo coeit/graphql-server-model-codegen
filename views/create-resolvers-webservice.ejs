@@ -227,10 +227,7 @@ module.exports = {
    * @return {number}          Number of records that holds the conditions specified in the search argument
    */
   count<%- namePlCp -%>: function({search},context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('count<%- namePlCp -%> is not implemented');
+    return <%- nameLc -%>.countRecords(search);
   },
 
   /**
