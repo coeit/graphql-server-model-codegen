@@ -113,34 +113,50 @@ attributesToString = function(attributes){
 
 
 /**
- * attributesToJoiString - Convert object attributes to a Joi validation string separating by dots the key and value and by comma each attribute.
+ * attributesToJsonSchemaProperties - Convert object attributes to JSON-Schema
+ * properties. See http://json-schema.org
  *
  * @param  {object} attributes Object attributes to convert
- * @return {string}            Converted object into a single Joi string
+ * @return {object}            The generated JSON-Schema properties
  */
-attributesToJoiString = function(attributes){
-    let str_attributes="";
-    if(attributes==='undefined' || isEmptyObject(attributes)) return str_attributes;
+attributesToJsonSchemaProperties = function(attributes) {
+  let jsonSchemaProps = Object.assign({}, attributes)
 
-    for(key in attributes)
-    {
-        let joi_type = "Joi.";
-        if(attributes[key] === 'String'){
-            joi_type += 'string()';
-        }else if(attributes[key] === 'Int' || attributes[key] === 'Float'){
-            joi_type += 'number()';
-        }else if(attributes[key] === 'Boolean'){
-            joi_type += 'boolean()';
-        }else if(attributes[key] === 'Date' || attributes[key] === 'Time' || attributes[key] === 'DateTime' ){
-            joi_type += 'string()'
-        }else{
-            throw new Error(`Unsupported attribute type: ${attributes[key]}`);
-        }
-
-        str_attributes += key + ': ' + joi_type + ', '
+  for (key in jsonSchemaProps) {
+    if (jsonSchemaProps[key] === "String") {
+      jsonSchemaProps[key] = {
+        "type": "string"
+      }
+    } else if (jsonSchemaProps[key] === "Int") {
+      jsonSchemaProps[key] = {
+        "type": "integer"
+      }
+    } else if (jsonSchemaProps[key] === "Float") {
+      jsonSchemaProps[key] = {
+        "type": "number"
+      }
+    } else if (jsonSchemaProps[key] === "Boolean") {
+      jsonSchemaProps[key] = {
+        "type": "boolean"
+      }
+    } else if (jsonSchemaProps[key] === "Date") {
+      jsonSchemaProps[key] = {
+        "type": "date"
+      }
+    } else if (jsonSchemaProps[key] === "Time") {
+      jsonSchemaProps[key] = {
+        "type": "time"
+      }
+    } else if (jsonSchemaProps[key] === "DateTime") {
+      jsonSchemaProps[key] = {
+        "type": "date-time"
+      }
+    } else {
+      throw new Error(`Unsupported attribute type: ${jsonSchemaProps[key]}`);
     }
+  }
 
-    return str_attributes.slice(0,-2);
+  return jsonSchemaProps
 };
 
 
@@ -308,7 +324,7 @@ module.exports.getOptions = function(dataModel){
       namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
       attributes: dataModel.attributes,
       attributesStr: attributesToString(dataModel.attributes),
-      attributesJoiStr: attributesToJoiString(dataModel.attributes),
+      jsonSchemaProperties: attributesToJsonSchemaProperties(dataModel.attributes),
       associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
       arrayAttributeString: attributesArrayString(dataModel.attributes),
       indices: dataModel.indices,
