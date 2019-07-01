@@ -270,173 +270,158 @@ describe('Model naming cases ', function(){
   });
 
 });
-//
-// describe('Association name in resolver and queries', function(){
-//   it('Resolvers - Dog', async function(){
-//     let opts = funks.getOptions(models.dog_owner);
-//     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test.dog_owner_resolvers.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('GraphQL Schema - Dog', async function(){
-//     let opts = funks.getOptions(models.dog_owner);
-//     let generated_schema =await funks.generateJs('create-schemas', opts);
-//     let g_schema = generated_schema.replace(/\s/g, '');
-//     let test_schema = test.dog_owner_schema.replace(/\s/g, '');
-//     expect(g_schema).to.be.equal(test_schema);
-//   });
-//
-//   it('Model - Dog', async function(){
-//     let opts = funks.getOptions(models.dog_owner);
-//     let generated_model =await funks.generateJs('create-models', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test.dog_owner_model.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-//   it('Resolvers - academicTeam', async function(){
-//     let opts = funks.getOptions(models.academicTeam);
-//     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test.academicTeam_resolvers.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('GraphQL Schema - academicTeam', async function(){
-//     let opts = funks.getOptions(models.academicTeam);
-//     let generated_schema =await funks.generateJs('create-schemas', opts);
-//     let g_schema = generated_schema.replace(/\s/g, '');
-//     let test_schema = test.academicTeam_schema.replace(/\s/g, '');
-//     expect(g_schema).to.be.equal(test_schema);
-//   });
-//
-//   it('Model - academicTeam', async function(){
-//     let opts = funks.getOptions(models.academicTeam);
-//     let generated_model =await funks.generateJs('create-models', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test.academicTeam_model.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-//
-// });
-//
-// describe('Indices', function(){
-//
-//   it('Migration - Person', async function(){
-//     let opts = funks.getOptions(models.person_indices);
-//     let generated_resolvers =await funks.generateJs('create-migrations', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test.person_indices_migration.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('Model - Person', async function(){
-//     let opts = funks.getOptions(models.person_indices);
-//     let generated_model =await funks.generateJs('create-models', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test.person_indices_model.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-// });
-//
-// describe('Monkey patching templates', function(){
-//
-//     it('Validation - transcriptCount_indiv', async function(){
-//         let opts = funks.getOptions(models.transcriptCount_indiv);
-//         let generated_validation =await funks.generateJs('create-validations', opts);
-//         let g_resolvers = generated_validation.replace(/\s/g, '');
-//         let test_resolvers = test.transcriptCount_indiv_validation.replace(/\s/g, '');
-//         expect(g_resolvers).to.be.equal(test_resolvers);
-//     });
-//
-//     it('Patch - dog_owner', async function(){
-//         let opts = funks.getOptions(models.dog_owner);
-//         let generated_patch =await funks.generateJs('create-patches', opts);
-//         let g_model = generated_patch.replace(/\s/g, '');
-//         let test_model = test.dog_owner_patch.replace(/\s/g, '');
-//         expect(g_model).to.be.equal(test_model);
-//     });
-// });
-//
-// describe('All webservice models', function(){
-//
-//   it('GraphQL Schema - book', async function(){
-//     let opts = funks.getOptions(models_webservice.book);
-//     let generated_schema =await funks.generateJs('create-schemas', opts);
-//     let g_schema = generated_schema.replace(/\s/g, '');
-//     let test_schema = test_webservice.schema_book.replace(/\s/g, '');
-//     expect(g_schema).to.be.equal(test_schema);
-//   });
-//
-//   it('Resolvers - book', async function(){
-//     let opts = funks.getOptions(models_webservice.book);
-//     let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test_webservice.resolvers_book.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('Model - book', async function(){
-//     let opts = funks.getOptions(models_webservice.book);
-//     let generated_model =await funks.generateJs('create-models-webservice', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test_webservice.model_book.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-//   it('GraphQL Schema - person', async function(){
-//     let opts = funks.getOptions(models_webservice.person);
-//     let generated_schema =await funks.generateJs('create-schemas', opts);
-//     let g_schema = generated_schema.replace(/\s/g, '');
-//     let test_schema = test_webservice.schema_person.replace(/\s/g, '');
-//     expect(g_schema).to.be.equal(test_schema);
-//   });
-//
-//   it('Resolvers - person', async function(){
-//     let opts = funks.getOptions(models_webservice.person);
-//     let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test_webservice.resolvers_person.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('Model - person', async function(){
-//     let opts = funks.getOptions(models_webservice.person);
-//     let generated_model =await funks.generateJs('create-models-webservice', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test_webservice.model_person.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-//   it('GraphQL Schema - publisher', async function(){
-//     let opts = funks.getOptions(models_webservice.publisher);
-//     let generated_schema =await funks.generateJs('create-schemas', opts);
-//     let g_schema = generated_schema.replace(/\s/g, '');
-//     let test_schema = test_webservice.schema_publisher.replace(/\s/g, '');
-//     expect(g_schema).to.be.equal(test_schema);
-//   });
-//
-//   it('Resolvers - publisher', async function(){
-//     let opts = funks.getOptions(models_webservice.publisher);
-//     let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
-//     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-//     let test_resolvers = test_webservice.resolvers_publisher.replace(/\s/g, '');
-//     expect(g_resolvers).to.be.equal(test_resolvers);
-//   });
-//
-//   it('Model - publisher', async function(){
-//     let opts = funks.getOptions(models_webservice.publisher);
-//     let generated_model =await funks.generateJs('create-models-webservice', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test_webservice.model_publisher.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   })
-//
-// });
-//
+
+describe('Association naming', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/association-naming');
+
+  it('Resolvers - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = data_test.dog_owner_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.have.string(test_resolvers);
+  });
+
+  it('GraphQL Schema - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.dog_owner_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Model - Dog', async function(){
+    let opts = funks.getOptions(models.dog_owner);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.dog_owner_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+  it('Resolvers - academicTeam', async function(){
+    let opts = funks.getOptions(models.academicTeam);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = data_test.academicTeam_resolvers.replace(/\s/g, '');
+    expect(g_resolvers).to.have.string(test_resolvers);
+  });
+
+  it('GraphQL Schema - academicTeam', async function(){
+    let opts = funks.getOptions(models.academicTeam);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.academicTeam_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Model - academicTeam', async function(){
+    let opts = funks.getOptions(models.academicTeam);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.academicTeam_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+
+});
+
+describe('Indices', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/indices');
+
+  it('Migration - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_migration =await funks.generateJs('create-migrations', opts);
+    let g_migration = generated_migration.replace(/\s/g, '');
+    let test_migration = data_test.person_indices_migration.replace(/\s/g, '');
+    expect(g_migration).to.have.string(test_migration);
+  });
+
+  it('Model - Person', async function(){
+    let opts = funks.getOptions(models.person_indices);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.person_indices_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+});
+
+describe('Monkey patching templates', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/monkey-patching');
+
+    it('Validation - transcriptCount_indiv', async function(){
+        let opts = funks.getOptions(models.transcriptCount_indiv);
+        let generated_validation =await funks.generateJs('create-validations', opts);
+        let g_validation = generated_validation.replace(/\s/g, '');
+        let test_validation = data_test.transcriptCount_indiv_validation.replace(/\s/g, '');
+        expect(g_validation).to.have.string(test_validation);
+    });
+
+    it('Patch - dog_owner', async function(){
+        let opts = funks.getOptions(models.dog_owner);
+        let generated_patch =await funks.generateJs('create-patches', opts);
+        let g_patch = generated_patch.replace(/\s/g, '');
+        let test_patch = data_test.dog_owner_patch.replace(/\s/g, '');
+        expect(g_patch).to.have.string(test_patch);
+    });
+});
+
+describe('All webservice models', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/all-webservice');
+
+  it('GraphQL Schema - book', async function(){
+    let opts = funks.getOptions(models_webservice.book);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.schema_book.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Resolvers - book', async function(){
+    let opts = funks.getOptions(models_webservice.book);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = data_test.resolvers_book.replace(/\s/g, '');
+    expect(g_resolvers).to.have.string(test_resolvers);
+  });
+
+  it('Model - book', async function(){
+    let opts = funks.getOptions(models_webservice.book);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.model_book.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+  it('GraphQL Schema - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.schema_person.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Resolvers - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolvers = data_test.resolvers_person.replace(/\s/g, '');
+    expect(g_resolvers).to.have.string(test_resolvers);
+  });
+
+  it('Model - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.model_person.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+});
+
 // // describe('Model definition', function(){
 // //
 // //   it('Access local model definition property', async function(){
@@ -467,37 +452,66 @@ describe('Model naming cases ', function(){
 // //
 // // });
 //
-// describe('Implement date/time types', function(){
-//
-//   it('Model - Person', async function(){
-//     let opts = funks.getOptions(models.person_date);
-//     let generated_model =await funks.generateJs('create-models', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test.person_date_model.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-//   it('Migration - Person', async function(){
-//     let opts = funks.getOptions(models.person_date);
-//     let generated_migration =await funks.generateJs('create-migrations', opts);
-//     let g_migration = generated_migration.replace(/\s/g, '');
-//     let test_migration = test.person_date_migration.replace(/\s/g, '');
-//     expect(g_migration).to.be.equal(test_migration);
-//   });
-//
-// });
-//
-// describe('Update sequelize model to class', function(){
-//
-//   it('Model - Book', async function(){
-//     let opts = funks.getOptions(models.book_authors);
-//     let generated_model =await funks.generateJs('create-models', opts);
-//     let g_model = generated_model.replace(/\s/g, '');
-//     let test_model = test.book_authors_model.replace(/\s/g, '');
-//     expect(g_model).to.be.equal(test_model);
-//   });
-//
-// });
+describe('Implement date/time types', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/date-time');
+
+  it('Model - Person', async function(){
+    let opts = funks.getOptions(models.person_date);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.person_date_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+  it('Schema - Person', async function(){
+    let opts = funks.getOptions(models.person_date);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.person_date_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Migration - Person', async function(){
+    let opts = funks.getOptions(models.person_date);
+    let generated_migration =await funks.generateJs('create-migrations', opts);
+    let g_migration = generated_migration.replace(/\s/g, '');
+    let test_migration = data_test.person_date_migration.replace(/\s/g, '');
+    expect(g_migration).to.have.string(test_migration);
+  });
+
+});
+
+describe('Update sequelize model to class', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/sequelize-model-class');
+  it('Model init - Book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.book_model_init.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+  it('Model associations - Book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.book_model_associations.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+  it('Model read by id - Book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.book_model_read_by_id.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
+
+
+});
 
 
 describe('Model Layer', function(){
