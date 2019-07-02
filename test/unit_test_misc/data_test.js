@@ -286,7 +286,7 @@ module.exports = {
         return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', individual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', individual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -410,7 +410,7 @@ module.exports = {
 
                         if (individual_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', individual, individual_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', individual, individual_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -440,7 +440,7 @@ module.exports = {
         return checkAuthorization(context, 'individual', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', individual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -821,7 +821,7 @@ module.exports = {
         return checkAuthorization(context, 'individual', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', individual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', individual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -942,7 +942,7 @@ module.exports = {
 
                         if (individual_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', individual, individual_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', individual, individual_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -972,7 +972,7 @@ module.exports = {
         return checkAuthorization(context, 'individual', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', individual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', individual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -1412,7 +1412,7 @@ module.exports = {
         return checkAuthorization(context, 'transcript_count', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', transcript_count, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', transcript_count, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -1533,7 +1533,7 @@ module.exports = {
 
                         if (transcript_count_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', transcript_count, transcript_count_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', transcript_count, transcript_count_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -1563,7 +1563,7 @@ module.exports = {
         return checkAuthorization(context, 'transcript_count', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', transcript_count, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', transcript_count, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -1931,7 +1931,7 @@ module.exports = {
         return checkAuthorization(context, 'Person', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', person, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', person, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -2058,7 +2058,7 @@ module.exports = {
 
                         if (person_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', person, person_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', person, person_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -2088,7 +2088,7 @@ module.exports = {
         return checkAuthorization(context, 'Person', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', person, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', person, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -2396,7 +2396,7 @@ module.exports = {
         return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', book, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', book, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -2520,7 +2520,7 @@ module.exports = {
 
                         if (book_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', book, book_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', book, book_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -2550,7 +2550,7 @@ module.exports = {
         return checkAuthorization(context, 'Book', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', book, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', book, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -2949,7 +2949,7 @@ module.exports = {
         return checkAuthorization(context, 'Researcher', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', researcher, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', researcher, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -3073,7 +3073,7 @@ module.exports = {
 
                         if (researcher_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', researcher, researcher_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', researcher, researcher_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -3103,7 +3103,7 @@ module.exports = {
         return checkAuthorization(context, 'Researcher', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', researcher, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', researcher, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -3800,7 +3800,7 @@ module.exports = {
         return checkAuthorization(context, 'Book', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', book, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', book, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -3924,7 +3924,7 @@ module.exports = {
 
                         if (book_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', book, book_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', book, book_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -3954,7 +3954,7 @@ module.exports = {
         return checkAuthorization(context, 'Book', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', book, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', book, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -4289,7 +4289,7 @@ module.exports = {
         return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', dog, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', dog, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -4410,7 +4410,7 @@ module.exports = {
 
                         if (dog_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', dog, dog_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', dog, dog_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -4440,7 +4440,7 @@ module.exports = {
         return checkAuthorization(context, 'Dog', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', dog, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', dog, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -5403,7 +5403,7 @@ module.exports = {
         return checkAuthorization(context, 'inDiVIdual', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', inDiVIdual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', inDiVIdual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -5527,7 +5527,7 @@ module.exports = {
 
                         if (inDiVIdual_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', inDiVIdual, inDiVIdual_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', inDiVIdual, inDiVIdual_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -5557,7 +5557,7 @@ module.exports = {
         return checkAuthorization(context, 'inDiVIdual', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', inDiVIdual, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', inDiVIdual, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -5871,7 +5871,7 @@ module.exports = {
         return checkAuthorization(context, 'transcriptCount', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', transcriptCount, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', transcriptCount, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -5992,7 +5992,7 @@ module.exports = {
 
                         if (transcriptCount_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', transcriptCount, transcriptCount_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', transcriptCount, transcriptCount_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -6022,7 +6022,7 @@ module.exports = {
         return checkAuthorization(context, 'transcriptCount', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', transcriptCount, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', transcriptCount, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -6254,7 +6254,7 @@ module.exports = {
         return checkAuthorization(context, 'Dog', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', dog, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', dog, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -6375,7 +6375,7 @@ module.exports = {
 
                         if (dog_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', dog, dog_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', dog, dog_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -6405,7 +6405,7 @@ module.exports = {
         return checkAuthorization(context, 'Dog', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', dog, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', dog, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -7100,7 +7100,7 @@ module.exports = {
         return checkAuthorization(context, 'academicTeam', 'create').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', academicTeam, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', academicTeam, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -7224,7 +7224,7 @@ module.exports = {
 
                         if (academicTeam_sqlz === null) return new Error(\`Record with ID = \${id} not exist\`);
 
-                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', academicTeam, academicTeam_sqlz);
+                        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', academicTeam, academicTeam_sqlz);
                         if (!!err) {
                             return err;
                         } else {
@@ -7254,7 +7254,7 @@ module.exports = {
         return checkAuthorization(context, 'academicTeam', 'update').then(authorization => {
             if (authorization === true) {
 
-                let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', academicTeam, input);
+                let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', academicTeam, input);
                 if (!!err) {
                     return err;
                 } else {
@@ -7750,38 +7750,53 @@ module.exports = {
 
 module.exports.transcriptCount_indiv_validation =`
 // Delete this file, if you do not want or need any validations.
-const Joi = require('joi');
+const Ajv = require('ajv')
+const ajv = new Ajv
 
 // Dear user, edit the schema to adjust it to your model
 module.exports.validator_patch = function(transcriptCount) {
 
-    transcriptCount.prototype.validatorSchema = Joi.object().keys({
-        gene: Joi.string(),
-        variable: Joi.string(),
-        count: Joi.number(),
-        tissue_or_condition: Joi.string()
-    }).options({
-        allowUnknown: true
-    });
+    transcriptCount.prototype.validatorSchema = {
+      "$async": true,
+      "properties": {
+        "gene": {
+          "type": "string"
+        },
+        "variable": {
+          "type": "string"
+        },
+        "count": {
+          "type": "number"
+        },
+        "tissue_or_condition": {
+          "type": "string"
+        }
+      }
+    };
 
-    transcriptCount.prototype.validatorForCreate = function(record) {
+    transcriptCount.prototype.validator = ajv.compile(
+      transcriptCount.prototype.validatorSchema
+    );
 
-        return Joi.validate(record, transcriptCount.prototype.validatorSchema);
+    transcriptCount.prototype.validateForCreate = async function(record) {
+
+        return await transcriptCount.prototype.validator.validate(record);
 
     };
 
-    transcriptCount.prototype.validatorForUpdate = function(record) {
+    transcriptCount.prototype.validateForUpdate = async function(record) {
 
-        return Joi.validate(record, transcriptCount.prototype.validatorSchema);
+        return await transcriptCount.prototype.validator.validate(record);
 
     };
 
-    transcriptCount.prototype.validatorForDelete = function(model) {
+    transcriptCount.prototype.validateForDelete = async function(record) {
 
-        //TODO: on the input you have the model to be deleted, no generic Joi checks are available
+        //TODO: on the input you have the record to be deleted, no generic
+        // validation checks are available.
 
         return {
-            error: null
+          error: null
         };
 
     };
