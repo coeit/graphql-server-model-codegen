@@ -6,7 +6,7 @@ const models_webservice = require('./unit_test_misc/data_models_webservice');
 const test_webservice = require('./unit_test_misc/data_test_webservice');
 const requireFromString = require('require-from-string');
 
-const components_code = require('./unit_test_misc/components_code');
+//const components_code = require('./unit_test_misc/components_code');
 
 describe('Lower-case models', function(){
 
@@ -73,14 +73,14 @@ describe('Empty associations', function(){
 
 });
 
-describe('Limit for resolvers', function(){
-  let data_test = require('./unit_test_misc/test-describe/limit-for-resolvers');
-  it('Resolvers - book', async function(){
+describe('Limit for records', function(){
+  let data_test = require('./unit_test_misc/test-describe/limit-for-records');
+  it('Model - book', async function(){
     let opts = funks.getOptions(models.book);
-    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
-    let g_resolvers = generated_resolvers.replace(/\s/g, '');
-    let test_resolvers = data_test.book_resolver_limit.replace(/\s/g, '');
-    expect(g_resolvers,'Incorrect resolvers').to.have.string(test_resolvers);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.limit_records_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
   });
 });
 
@@ -516,28 +516,45 @@ describe('Update sequelize model to class', function(){
 
 describe('Model Layer', function(){
 
+  let data_test = require('./unit_test_misc/test-describe/model-layer');
   it('Count method in sequelize model - individual', async function(){
     let opts = funks.getOptions(models.individual);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
-    let count_sequelize_model_component = components_code.count_in_sequelize_model.replace(/\s/g, '');
-    expect(g_model, 'No count method found').to.have.string(count_sequelize_model_component);
+    let test_model = data_test.count_in_sequelize_model.replace(/\s/g, '');
+    expect(g_model, 'No count method found').to.have.string(test_model);
   });
 
   it('Model - publisher', async function(){
     let opts = funks.getOptions(models_webservice.publisher);
     let generated_model =await funks.generateJs('create-models-webservice', opts);
     let g_model = generated_model.replace(/\s/g, '');
-    let count_webservice_model_component = components_code.count_in_webservice_model.replace(/\s/g, '');
-    expect(g_model, 'No count method found').to.have.string(count_webservice_model_component);
+    let test_model = data_test.count_in_webservice_model.replace(/\s/g, '');
+    expect(g_model, 'No count method found').to.have.string(test_model);
   })
 
   it('Count resolver - dog', async function(){
     let opts = funks.getOptions(models.dog);
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
-    let count_resolver_component = components_code.count_in_resolvers.replace(/\s/g, '');
-    expect(g_resolvers, 'No count method found').to.have.string(count_resolver_component);
+    let test_resolver = data_test.count_in_resolvers.replace(/\s/g, '');
+    expect(g_resolvers, 'No count method found').to.have.string(test_resolver);
+  });
+
+  it('Model - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.read_all.replace(/\s/g, '');
+    expect(g_model, 'No count method found').to.have.string(test_model);
+  })
+
+  it('Count resolver - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.read_all_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No count method found').to.have.string(test_resolver);
   });
 
 });

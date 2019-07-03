@@ -4,6 +4,7 @@ const _ = require('lodash');
 const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 const searchArg = require('../utils/search-argument');
+const globals = require('../config/globals');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
@@ -71,6 +72,41 @@ module.exports = class <%- name -%> extends Sequelize.Model{
     }
     return super.count(options);
   }
+
+  static readAll(search, order, pagination){
+    let options = {};
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return super.count(options).then(items => {
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        } else if (pagination !== undefined) {
+            options['order'] = [
+                ["id", "ASC"]
+            ];
+        }
+
+        if (pagination !== undefined) {
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+        } else {
+            options['offset'] = 0;
+            options['limit'] = items;
+        }
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+        }
+        return super.findAll(options);
+    });
+  }
+
 
   static get definition(){
     return definition;
