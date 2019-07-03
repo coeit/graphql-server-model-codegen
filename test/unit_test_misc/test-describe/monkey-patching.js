@@ -15,7 +15,6 @@ transcriptCount.prototype.validatorSchema = {
            "type": "string"
          }
        }
- 
 `
 
 module.exports.dog_owner_patch = `
