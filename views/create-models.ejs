@@ -5,6 +5,7 @@ const Sequelize = require('sequelize');
 const dict = require('../utils/graphql-sequelize-types');
 const searchArg = require('../utils/search-argument');
 const globals = require('../config/globals');
+const validatorUtil = require('../utils/validatorUtil');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
@@ -107,6 +108,23 @@ module.exports = class <%- name -%> extends Sequelize.Model{
     });
   }
 
+  static addOne(input){
+    return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', this, input)
+        .then((valSuccess) => {
+            return super.create(input)
+                .then(item => {
+                  <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
+                  <%for(let i=0; i < associations_temp.length; i++){-%>
+                    <%if(associations_temp[i].targetStorageType === 'sql'){-%>
+                      if(input.add<%=associations_temp[i].name_cp-%>){super.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                    <%}-%>
+                    <%}-%>
+                    return item;
+                });
+        }).catch((err) => {
+            return err
+        })
+  }
 
   static get definition(){
     return definition;

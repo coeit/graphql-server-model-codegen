@@ -159,10 +159,7 @@ module.exports = {
    * @return {object}         New record created
    */
   add<%- nameCp -%>: function(input, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('add<%- nameCp -%> is not implemented');
+    return <%-nameLc-%>.addOne(input);
   },
 
   /**

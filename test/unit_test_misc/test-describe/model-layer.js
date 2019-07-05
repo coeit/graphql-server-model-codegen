@@ -106,3 +106,42 @@ dogs: function({
     })
 }
 `
+
+module.exports.add_one_model = `
+static addOne(input){
+  return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', this, input)
+      .then((valSuccess) => {
+          return super.create(input)
+              .then(item => {
+                  if (input.addAuthors) {
+                      super.setAuthors(input.addAuthors);
+                  }
+                  return item;
+              });
+      }).catch((err) => {
+          return err
+      })
+}
+`
+
+module.exports.add_one_resolver = `
+/**
+ * addBook - Check user authorization and creates a new record with data specified in the input argument
+ *
+ * @param  {object} input   Info of each field to create the new record
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {object}         New record created
+ */
+addBook: function(input, context) {
+    return checkAuthorization(context, 'Book', 'create').then(authorization => {
+        if (authorization === true) {
+
+          return book.addOne(input);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
+}
+`

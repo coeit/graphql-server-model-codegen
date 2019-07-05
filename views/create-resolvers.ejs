@@ -221,20 +221,7 @@ module.exports = {
   add<%- nameCp -%>: function(input, context){
     return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
       if (authorization === true) {
-
-        return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', <%- nameLc -%>, input)
-        .then((valSuccess) => {
-            return <%- nameLc -%>.create(input)
-                .then( <%- nameLc -%> =>{
-                <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
-                <%for(let i=0; i < associations_temp.length; i++){-%>
-                  <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                    if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-                  <%}-%>
-            <%}-%>
-            return <%- nameLc -%>;
-            });
-        }).catch( (err) => { return err })
+        return <%- nameLc -%>.addOne(input);
     } else {
         return new Error("You don't have authorization to perform this action");
     }

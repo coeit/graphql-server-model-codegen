@@ -4,14 +4,14 @@ updatePerson(id: ID!, firstName: String, lastName: String, email: String , addDo
 
 `
 
-module.exports.person_resolvers = `
-.then(person => {
+module.exports.person_model = `
+.then(item => {
     if (input.addDogs) {
-        person.setDogs(input.addDogs);
+        super.setDogs(input.addDogs);
     }
     if (input.addBooks) {
-        person.setBooks(input.addBooks);
+        super.setBooks(input.addBooks);
     }
-    return person;
+    return item;
 });
 `

@@ -163,12 +163,12 @@ describe('Associations in query and resolvers', function(){
     expect(g_schema,'Incorrect schema').to.have.string(test_schema);
   });
 
-  it('Resolvers - person', async function(){
+  it('Models - person', async function(){
     let opts = funks.getOptions(models.person);
-    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
-    let g_resolvers = generated_resolvers.replace(/\s/g, '');
-    let test_resolvers = data_test.person_resolvers.replace(/\s/g, '');
-    expect(g_resolvers,'Incorrect resolvers').to.have.string(test_resolvers);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.person_model.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
   });
 });
 
@@ -541,20 +541,36 @@ describe('Model Layer', function(){
     expect(g_resolvers, 'No count method found').to.have.string(test_resolver);
   });
 
-  it('Model - dog', async function(){
+  it('Read all model - dog', async function(){
     let opts = funks.getOptions(models.dog);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');
     let test_model = data_test.read_all.replace(/\s/g, '');
-    expect(g_model, 'No count method found').to.have.string(test_model);
+    expect(g_model, 'No read all method found').to.have.string(test_model);
   })
 
-  it('Count resolver - dog', async function(){
+  it('Read all resolver - dog', async function(){
     let opts = funks.getOptions(models.dog);
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolver = data_test.read_all_resolver.replace(/\s/g, '');
-    expect(g_resolvers, 'No count method found').to.have.string(test_resolver);
+    expect(g_resolvers, 'No read all method found').to.have.string(test_resolver);
+  });
+
+  it('Add one model - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.add_one_model.replace(/\s/g, '');
+    expect(g_model, 'No add one method found').to.have.string(test_model);
+  })
+
+  it('Add one resolver - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.add_one_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No add one method found').to.have.string(test_resolver);
   });
 
 });
