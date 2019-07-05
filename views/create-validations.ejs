@@ -16,13 +16,13 @@ module.exports.validator_patch = function(<%- nameLc -%>){
 
     <%- nameLc -%>.prototype.validateForCreate = async function(record) {
 
-        return await <%- nameLc -%>.prototype.validator.validate(record);
+        return await <%- nameLc -%>.prototype.validator(record);
 
     };
 
     <%- nameLc -%>.prototype.validateForUpdate = async function(record) {
 
-        return await <%- nameLc -%>.prototype.validator.validate(record);
+        return await <%- nameLc -%>.prototype.validator(record);
 
     };
 

@@ -24,6 +24,7 @@ describe(
 
     it('02. Individual add', function() {
         let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "First") { id } }');
+
         let resBody = JSON.parse(res.body.toString('utf8'));
 
         expect(res.statusCode).to.equal(200);
@@ -405,90 +406,90 @@ describe( 'Batch Upload', function() {
 });
 
 
-describe(
-    'Generic Joi Validation tests',
-    function() {
-
-        it('01. Validate on add', function () {
-
-            let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "@#$%^&") { name } }');
-            let resBody = JSON.parse(res.body.toString('utf8'));
-
-            expect(res.statusCode).to.equal(500);
-            expect(resBody).to.have.property('errors');
-
-        });
-
-        it('02. Validate on update', function () {
-
-            // Add correct record
-            let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "ToBeUpdated") { id } }');
-            let resBody = JSON.parse(res.body.toString('utf8'));
-
-            expect(res.statusCode).to.equal(200);
-
-            // Try to update to incorrect
-            res = itHelpers.request_graph_ql_post(`mutation { updateIndividual(id: ${resBody.data.addIndividual.id}, name: "#$%^&*") {id name} }`);
-            resBody = JSON.parse(res.body.toString('utf8'));
-
-            expect(res.statusCode).to.equal(500);
-            expect(resBody).to.have.property('errors');
-        });
-
-        it('03. Validate on delete', function () {
-
-            // Add a record with a special name that can't be deleted
-            let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "Undeletable") { id } }');
-            let resBody = JSON.parse(res.body.toString('utf8'));
-            expect(res.statusCode).to.equal(200);
-
-            // Try to delete an item with a special name that can't be deleted (see individual_validate_joi.patch for details)
-            res = itHelpers.request_graph_ql_post(`mutation { deleteIndividual (id: ${resBody.data.addIndividual.id}) }`);
-            resBody = JSON.parse(res.body.toString('utf8'));
-
-            expect(res.statusCode).to.equal(500);
-            expect(resBody).to.have.property('errors');
-
-        });
-
-
-        it('04. Validate SCV individual batch upload', async function () {
-            let csvPath = path.join(__dirname, 'integration_test_misc', 'individual_invalid.csv');
-
-            // count records before upload
-            let cnt1 = await itHelpers.count_all_records('countIndividuals');
-
-            // batch_upload_csv start new background, it returns a response without
-            // an error independently if there are validation errors during batch add or not.
-            // These errors will be sent to the user's e-mail.
-            let success = await itHelpers.batch_upload_csv(csvPath, 'mutation {bulkAddIndividualCsv{ id}}');
-            expect(success).equal(true);
-            await delay(500);
-
-            // count records before upload
-            let cnt2 = await itHelpers.count_all_records('countIndividuals');
-            expect(cnt2 - cnt1).to.equal(0);
-        });
-
-        it('05. CSV with explicit Null values', async function () {
-            let csvPath = path.join(__dirname, 'integration_test_misc', 'transcript_count_nulls.csv');
-
-            // count records before upload
-            let cnt1 = await itHelpers.count_all_records('countTranscript_counts');
-
-            // batch_upload_csv start new background, it returns a response without
-            // an error independently if there are validation errors during batch add or not.
-            // These errors will be sent to the user's e-mail.
-            let success = await itHelpers.batch_upload_csv(csvPath, 'mutation { bulkAddTranscript_countCsv {id}}');
-            expect(success).equal(true);
-            await delay(500);
-
-            // count records before upload
-            let cnt2 = await itHelpers.count_all_records('countTranscript_counts');
-            expect(cnt2 - cnt1).to.equal(1);
-        });
-
-    });
+// describe(
+//     'Generic Joi Validation tests',
+//     function() {
+//
+//         it('01. Validate on add', function () {
+//
+//             let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "@#$%^&") { name } }');
+//             let resBody = JSON.parse(res.body.toString('utf8'));
+//
+//             expect(res.statusCode).to.equal(500);
+//             expect(resBody).to.have.property('errors');
+//
+//         });
+//
+//         it('02. Validate on update', function () {
+//
+//             // Add correct record
+//             let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "ToBeUpdated") { id } }');
+//             let resBody = JSON.parse(res.body.toString('utf8'));
+//
+//             expect(res.statusCode).to.equal(200);
+//
+//             // Try to update to incorrect
+//             res = itHelpers.request_graph_ql_post(`mutation { updateIndividual(id: ${resBody.data.addIndividual.id}, name: "#$%^&*") {id name} }`);
+//             resBody = JSON.parse(res.body.toString('utf8'));
+//
+//             expect(res.statusCode).to.equal(500);
+//             expect(resBody).to.have.property('errors');
+//         });
+//
+//         it('03. Validate on delete', function () {
+//
+//             // Add a record with a special name that can't be deleted
+//             let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "Undeletable") { id } }');
+//             let resBody = JSON.parse(res.body.toString('utf8'));
+//             expect(res.statusCode).to.equal(200);
+//
+//             // Try to delete an item with a special name that can't be deleted (see individual_validate_joi.patch for details)
+//             res = itHelpers.request_graph_ql_post(`mutation { deleteIndividual (id: ${resBody.data.addIndividual.id}) }`);
+//             resBody = JSON.parse(res.body.toString('utf8'));
+//
+//             expect(res.statusCode).to.equal(500);
+//             expect(resBody).to.have.property('errors');
+//
+//         });
+//
+//
+//         it('04. Validate SCV individual batch upload', async function () {
+//             let csvPath = path.join(__dirname, 'integration_test_misc', 'individual_invalid.csv');
+//
+//             // count records before upload
+//             let cnt1 = await itHelpers.count_all_records('countIndividuals');
+//
+//             // batch_upload_csv start new background, it returns a response without
+//             // an error independently if there are validation errors during batch add or not.
+//             // These errors will be sent to the user's e-mail.
+//             let success = await itHelpers.batch_upload_csv(csvPath, 'mutation {bulkAddIndividualCsv{ id}}');
+//             expect(success).equal(true);
+//             await delay(500);
+//
+//             // count records before upload
+//             let cnt2 = await itHelpers.count_all_records('countIndividuals');
+//             expect(cnt2 - cnt1).to.equal(0);
+//         });
+//
+//         it('05. CSV with explicit Null values', async function () {
+//             let csvPath = path.join(__dirname, 'integration_test_misc', 'transcript_count_nulls.csv');
+//
+//             // count records before upload
+//             let cnt1 = await itHelpers.count_all_records('countTranscript_counts');
+//
+//             // batch_upload_csv start new background, it returns a response without
+//             // an error independently if there are validation errors during batch add or not.
+//             // These errors will be sent to the user's e-mail.
+//             let success = await itHelpers.batch_upload_csv(csvPath, 'mutation { bulkAddTranscript_countCsv {id}}');
+//             expect(success).equal(true);
+//             await delay(500);
+//
+//             // count records before upload
+//             let cnt2 = await itHelpers.count_all_records('countTranscript_counts');
+//             expect(cnt2 - cnt1).to.equal(1);
+//         });
+//
+//     });
 
 
 describe(
