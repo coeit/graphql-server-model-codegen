@@ -207,10 +207,7 @@ module.exports = {
    * @return {object}         Updated record
    */
   update<%- nameCp-%>: function(input, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('update<%- nameCp-%> is not implemented');
+    return <%-nameLc-%>.updateOne(input);
   },
 
   /**

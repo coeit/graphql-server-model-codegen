@@ -146,6 +146,25 @@ module.exports = class <%- name -%> extends Sequelize.Model{
 
   }
 
+  static updateOne(input){
+    return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', this, input)
+        .then((valSuccess) => {
+            return super.findByPk(input.id)
+                .then(item => {
+                  <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
+                  <%for(let i=0; i < associations_temp.length; i++){-%>
+                    <%if(associations_temp[i].targetStorageType === 'sql'){-%>
+                      if(input.add<%=associations_temp[i].name_cp-%>){super.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                      if(input.remove<%=associations_temp[i].name_cp-%>){super.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
+                    <%}-%>
+                  <%}-%>
+                    return item.update(input);
+                });
+        }).catch((err) => {
+            return err
+        })
+  }
+
   static get definition(){
     return definition;
   }

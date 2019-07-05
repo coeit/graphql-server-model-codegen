@@ -345,22 +345,7 @@ module.exports = {
     return checkAuthorization(context, '<%- name -%>', 'update').then( authorization =>{
       if (authorization === true) {
 
-            return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', <%-  nameLc  -%>, input)
-            .then((valSuccess) => {
-                return <%- nameLc -%>
-                    .findByPk(input.id)
-                    .then( <%- nameLc -%> => {
-                    <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
-                    <%for(let i=0; i < associations_temp.length; i++){-%>
-                      <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                        if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-                        if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
-                      <%}-%>
-                    <%}-%>
-                    return <%- nameLc -%>.update(input);
-                    });
-            }).catch( (err) => { return err })
-
+          return <%- nameLc -%>.updateOne(input);
         } else {
             return new Error("You don't have authorization to perform this action");
         }

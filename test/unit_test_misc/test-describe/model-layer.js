@@ -189,3 +189,44 @@ deleteBook: function({
     })
 }
 `
+module.exports.update_one_model = `
+static updateOne(input){
+      
+  return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', this, input)
+      .then((valSuccess) => {
+          return super.findByPk(input.id)
+              .then(item => {
+                  if (input.addAuthors) {
+                      super.addAuthors(input.addAuthors);
+                  }
+                  if (input.removeAuthors) {
+                      super.removeAuthors(input.removeAuthors);
+                  }
+                  return item.update(input);
+              });
+      }).catch((err) => {
+          return err
+      })
+}
+`
+
+module.exports.update_one_resolver = `
+/**
+ * updateBook - Check user authorization and update the record specified in the input argument
+ *
+ * @param  {object} input   record to update and new info to update
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {object}         Updated record
+ */
+updateBook: function(input, context) {
+    return checkAuthorization(context, 'Book', 'update').then(authorization => {
+        if (authorization === true) {
+          return book.updateOne(input);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
+}
+`
