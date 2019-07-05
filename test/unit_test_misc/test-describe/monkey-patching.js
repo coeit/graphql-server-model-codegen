@@ -1,12 +1,20 @@
 module.exports.transcriptCount_indiv_validation = `
-transcriptCount.prototype.validatorSchema = Joi.object().keys({
-    gene: Joi.string(),
-    variable: Joi.string(),
-    count: Joi.number(),
-    tissue_or_condition: Joi.string()
-}).options({
-    allowUnknown: true
-});
+transcriptCount.prototype.validatorSchema = {
+       "$async": true,
+       "properties": {
+         "gene": {
+           "type": "string"
+         },
+         "variable": {
+           "type": "string"
+         },
+         "count": {
+           "type": "number"
+         },
+         "tissue_or_condition": {
+           "type": "string"
+         }
+       }
 `
 
 module.exports.dog_owner_patch = `
