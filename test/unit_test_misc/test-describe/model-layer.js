@@ -145,3 +145,47 @@ addBook: function(input, context) {
     })
 }
 `
+
+module.exports.delete_one_model = `
+static deleteOne(id){
+  return super.findByPk(id)
+      .then(item => {
+
+          if (item === null) return new Error(\`Record with ID = \${id} not exist\`);
+
+          return validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', this, item)
+              .then((valSuccess) => {
+                  return item
+                      .destroy()
+                      .then(() => {
+                          return 'Item successfully deleted';
+                      });
+              }).catch((err) => {
+                  return err
+              })
+      });
+
+}
+`
+module.exports.delete_one_resolver = `
+/**
+ * deleteBook - Check user authorization and delete a record with the specified id in the id argument.
+ *
+ * @param  {number} {id}    Id of the record to delete
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {string}         Message indicating if deletion was successfull.
+ */
+deleteBook: function({
+    id
+}, context) {
+    return checkAuthorization(context, 'Book', 'delete').then(authorization => {
+        if (authorization === true) {
+          return book.deleteOne(id);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
+}
+`

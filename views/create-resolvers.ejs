@@ -325,19 +325,7 @@ module.exports = {
   delete<%- nameCp -%>: function({id}, context){
     return checkAuthorization(context, '<%- name -%>', 'delete').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>
-        .findByPk(id)
-        .then( <%- nameLc -%>_sqlz =>{
-
-            if(<%- nameLc -%>_sqlz === null) return new Error(`Record with ID = ${id} not exist`);
-
-            return validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz)
-            .then((valSuccess) => {
-                return <%- nameLc -%>_sqlz
-                .destroy()
-                .then(()=>{return 'Item successfully deleted';});
-            }).catch( (err) => { return err })
-          });
+      return <%- nameLc -%>.deleteOne(id);
         } else {
             return new Error("You don't have authorization to perform this action");
         }

@@ -196,10 +196,7 @@ module.exports = {
    * @return {string}         Message indicating if deletion was successfull.
    */
   delete<%- nameCp -%>: function({id}, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('delete<%- nameCp -%> is not implemented');
+    return <%-nameLc-%>.deleteOne(id);
   },
 
   /**

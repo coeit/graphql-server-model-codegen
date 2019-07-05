@@ -126,6 +126,26 @@ module.exports = class <%- name -%> extends Sequelize.Model{
         })
   }
 
+  static deleteOne(id){
+    return super.findByPk(id)
+        .then(item => {
+
+            if (item === null) return new Error(`Record with ID = ${id} not exist`);
+
+            return validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', this, item)
+                .then((valSuccess) => {
+                    return item
+                        .destroy()
+                        .then(() => {
+                            return 'Item successfully deleted';
+                        });
+                }).catch((err) => {
+                    return err
+                })
+        });
+
+  }
+
   static get definition(){
     return definition;
   }
