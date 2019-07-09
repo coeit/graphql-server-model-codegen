@@ -191,7 +191,7 @@ deleteBook: function({
 `
 module.exports.update_one_model = `
 static updateOne(input){
-      
+
   return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', this, input)
       .then((valSuccess) => {
           return super.findByPk(input.id)
@@ -229,4 +229,78 @@ updateBook: function(input, context) {
         handleError(error);
     })
 }
+`
+
+module.exports.bulk_add_model = `
+static bulkAddCsv(context){
+
+    let delim = context.request.body.delim;
+    let cols = context.request.body.cols;
+    let tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
+
+    context.request.files.csv_file.mv(tmpFile).then(() => {
+
+        fileTools.parseCsvStream(tmpFile, this, delim, cols).then((addedZipFilePath) => {
+            try {
+                console.log(\`Sending \${addedZipFilePath} to the user.\`);
+
+                let attach = [];
+                attach.push({
+                    filename: path.basename("added_data.zip"),
+                    path: addedZipFilePath
+                });
+
+                email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                    'ScienceDB batch add',
+                    'Your data has been successfully added to the database.',
+                    attach).then(function(info) {
+                    fileTools.deleteIfExists(addedZipFilePath);
+                    console.log(info);
+                }).catch(function(err) {
+                    fileTools.deleteIfExists(addedZipFilePath);
+                    console.log(err);
+                });
+
+            } catch (error) {
+                console.log(error.message);
+            }
+
+            fs.unlinkSync(tmpFile);
+        }).catch((error) => {
+            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
+                'ScienceDB batch add', \`\${error.message}\`).then(function(info) {
+                console.log(info);
+            }).catch(function(err) {
+                console.log(err);
+            });
+
+            fs.unlinkSync(tmpFile);
+        });
+
+    }).catch((error) => {
+        return new Error(error);
+    });
+}
+`
+
+module.exports.bulk_add_resolver = `
+
+    /**
+     * bulkAddBookCsv - Load csv file of records
+     *
+     * @param  {string} _       First parameter is not used
+     * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+     */
+    bulkAddBookCsv: function(_, context) {
+        return checkAuthorization(context, 'Book', 'create').then(authorization => {
+            if (authorization === true) {
+              return book.bulkAddCsv(context);
+
+            } else {
+                return new Error("You don't have authorization to perform this action");
+            }
+        }).catch(error => {
+            return error;
+        })
+    }
 `

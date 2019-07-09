@@ -605,4 +605,22 @@ describe('Model Layer', function(){
     expect(g_resolvers, 'No add one method found').to.have.string(test_resolver);
   });
 
+
+  it('Bulk Add model - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.bulk_add_model.replace(/\s/g, '');
+    expect(g_model, 'No add one method found').to.have.string(test_model);
+  })
+
+  it('Bulk Add resolver - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.bulk_add_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No add one method found').to.have.string(test_resolver);
+  });
+
+
 });

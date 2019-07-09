@@ -182,10 +182,7 @@ module.exports = {
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    */
   bulkAdd<%- nameCp -%>Csv: function(_, context) {
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('bulkAdd<%- nameCp -%>Csv is not implemented');
+    return <%-nameLc-%>.bulkAddCsv(context);
   },
 
   /**
