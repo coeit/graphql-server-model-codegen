@@ -240,9 +240,6 @@ module.exports = {
    * @return {Array}         Strings, one for header and one columns types
    */
   csvTableTemplate<%- nameCp-%>: function(_, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('csvTableTemplate<%- nameCp-%> is not implemented');
+    return <%-nameLc-%>.csvTableTemplate();
   }
 }

@@ -304,3 +304,31 @@ module.exports.bulk_add_resolver = `
         })
     }
 `
+module.exports.table_template_model = `
+static csvTableTemplate(){
+  return helper.csvTableTemplate(individual);
+}
+`
+
+module.exports.table_template_resolver = `
+/**
+ * csvTableTemplateIndividual - Returns table's template
+ *
+ * @param  {string} _       First parameter is not used
+ * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {Array}         Strings, one for header and one columns types
+ */
+csvTableTemplateIndividual: function(_, context) {
+    return checkAuthorization(context, 'individual', 'read').then(authorization => {
+        if (authorization === true) {
+            return individual.csvTableTemplate();
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
+}
+
+}
+`

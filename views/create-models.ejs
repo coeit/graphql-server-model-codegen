@@ -12,7 +12,7 @@ const email = require('../utils/email');
 const path = require('path');
 const os = require('os');
 const uuidv4 = require('uuidv4');
-
+const helper = require('../utils/helper');
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
 
@@ -219,6 +219,10 @@ module.exports = class <%- name -%> extends Sequelize.Model{
       }).catch((error) => {
           return new Error(error);
       });
+  }
+
+  static csvTableTemplate(){
+    return helper.csvTableTemplate(<%- name -%>);
   }
 
   static get definition(){

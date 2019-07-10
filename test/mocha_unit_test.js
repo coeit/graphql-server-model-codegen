@@ -623,4 +623,21 @@ describe('Model Layer', function(){
   });
 
 
+  it('Table template model - individual', async function(){
+    let opts = funks.getOptions(models.individual);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.table_template_model.replace(/\s/g, '');
+    expect(g_model, 'No add one method found').to.have.string(test_model);
+  })
+
+  it('Table template resolver - individual', async function(){
+    let opts = funks.getOptions(models.individual);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.table_template_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No add one method found').to.have.string(test_resolver);
+  });
+
+
 });
