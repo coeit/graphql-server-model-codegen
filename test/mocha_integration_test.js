@@ -546,6 +546,7 @@ describe(
                 params = JSON.stringify(params);
                 res = await itHelpers.request_join_post(params);
             }catch(err){
+                console.log(err.response);
                 console.log(err.response.data);
                 throw err;
             }

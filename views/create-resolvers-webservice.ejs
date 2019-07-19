@@ -89,12 +89,12 @@ const resolvers = require('./index');
   /**
    * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
    *
-   * @param  {string} _       First parameter is not used
+   * @param  {object} search       Search argument to match the associated record
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>},context);
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function({search}, context){
+    return this.<%=associations_temp[i].name%>Impl(search);
   }
 <%}-%>
 
@@ -134,10 +134,7 @@ module.exports = {
    * @return {array}             Array of records holding conditions specified by search, order and pagination argument
    */
   <%- namePl -%>: function({search,order,pagination}, context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('<%- namePl -%> is not implemented');
+    return <%-nameLc-%>.readAll(search, order, pagination);
   },
 
   /**

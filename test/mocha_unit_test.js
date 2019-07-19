@@ -641,3 +641,26 @@ describe('Model Layer', function(){
 
 
 });
+
+
+
+describe('Decouple association from resolvers', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/decouple-associations');
+
+  it('BelongsTo implementation in model - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.belongsTo_model.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
+  it('BelongsTo implementation in resolver - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.belongsTo_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No method found').to.have.string(test_resolver);
+  });
+});

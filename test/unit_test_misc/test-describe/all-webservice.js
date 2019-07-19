@@ -65,14 +65,12 @@ module.exports.resolvers_book = `
 /**
  * book.prototype.publisher - Return associated record
  *
- * @param  {string} _       First parameter is not used
+ * @param  {object} search       Search argument to match the associated record
  * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {type}         Associated record
  */
-book.prototype.publisher = function(_, context) {
-    return resolvers.readOnePubli_sher({
-        "id": this.publisher_id
-    }, context);
+book.prototype.publisher = function({search}, context) {
+    return this.publisherImpl( search);
 }
 
 `

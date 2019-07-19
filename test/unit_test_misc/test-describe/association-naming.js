@@ -2,14 +2,12 @@ module.exports.dog_owner_resolvers = `
 /**
  * dog.prototype.owner - Return associated record
  *
- * @param  {string} _       First parameter is not used
+ * @param  {object} search       Search argument to match the associated record
  * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
  * @return {type}         Associated record
  */
-dog.prototype.owner = function(_, context) {
-    return resolvers.readOnePerson({
-        "id": this.owner_id_test
-    }, context);
+dog.prototype.owner = function({search }, context) {
+    return this.ownerImpl(search);
 }
 `
 

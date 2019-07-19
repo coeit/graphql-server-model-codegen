@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const path = require('path');
+const models = require(path.join(__dirname, '..', 'models_index.js'));
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
@@ -75,6 +77,21 @@ module.exports = class <%- name -%>{
       */
       throw new Error('csvTableTemplate<%- nameCp-%> is not implemented');
     }
+
+    <%let associations_one = associations["belongsTo"]-%>
+    <% for(let i=0; i < associations_one.length; i++){ -%>
+
+    <%=associations_one[i].name%>Impl (search){
+        if(search === undefined){
+          return models.<%=associations_one[i].target_lc%>.readById(this.<%=associations_one[i].targetKey%>);
+        }else{
+          /*
+          YOUR CODE GOES HERE
+          */
+          throw new Error('<%=associations_one[i].name%>Impl is not implemented in the model');
+        }
+      }
+    <%}-%>
 
   static get definition(){
     return definition;

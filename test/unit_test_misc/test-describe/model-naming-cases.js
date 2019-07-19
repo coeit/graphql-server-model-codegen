@@ -14,10 +14,7 @@ module.exports.resolvers_webservice_aminoAcid = `
       order,
       pagination
   }, context) {
-      /*
-      YOUR CODE GOES HERE
-      */
-      throw new Error('aminoAcidSequences is not implemented');
+    return aminoAcidSequence.readAll(search, order, pagination);
   }
 `
 
