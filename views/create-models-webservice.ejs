@@ -93,6 +93,22 @@ module.exports = class <%- name -%>{
       }
     <%}-%>
 
+    <%associations_one = associations["hasOne"]-%>
+    <% for(let i=0; i < associations_one.length; i++){ -%>
+
+    <%=associations_one[i].name%>Impl (search){
+        if(search === undefined){
+          return models.<%=associations_one[i].target_lc%>.readById(this.<%=associations_one[i].targetKey%>);
+        }else{
+          /*
+          YOUR CODE GOES HERE
+          */
+          throw new Error('<%=associations_one[i].name%>Impl is not implemented in the model');
+        }
+      }
+    <%}-%>
+
+
   static get definition(){
     return definition;
   }

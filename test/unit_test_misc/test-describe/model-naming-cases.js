@@ -126,7 +126,7 @@ type transcriptCount{
   """
   individual_id: Int
 
-  inDiVIdual: inDiVIdual
+  inDiVIdual(search: searchInDiVIdualInput): inDiVIdual
   }
 `
 

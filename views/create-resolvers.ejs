@@ -101,17 +101,12 @@ const os = require('os');
   /**
    * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
-   * @param  {string} _       First parameter is not used
+   * @param  {object} search       Search argument to match the associated record
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.<%=associations_one[i].target_lc_pl%>({"search":{"field" : "<%=associations_one[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
-    .then((res)=>{
-      return res[0];
-    }).catch( error => {
-        handleError( error);
-    });
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function({search}, context){
+    return this.<%=associations_one[i].name%>Impl(search);
   }
 <%}-%>
 

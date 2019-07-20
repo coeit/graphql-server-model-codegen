@@ -12,7 +12,7 @@ dog.prototype.owner = function({search }, context) {
 `
 
 module.exports.dog_owner_schema = `
-    owner: Person
+    owner(search: searchPersonInput): Person
 `
 
 module.exports.dog_owner_model = `

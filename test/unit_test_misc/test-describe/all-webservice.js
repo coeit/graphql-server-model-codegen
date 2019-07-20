@@ -25,7 +25,7 @@ type book{
   """
   publisher_id: Int
 
-  publisher: publi_sher
+  publisher(search: searchPubli_sherInput): publi_sher
 
   """
   @search-request

@@ -663,4 +663,38 @@ describe('Decouple association from resolvers', function(){
     let test_resolver = data_test.belongsTo_resolver.replace(/\s/g, '');
     expect(g_resolvers, 'No method found').to.have.string(test_resolver);
   });
+
+  it('HasOne implementation in model - researcher', async function(){
+    let opts = funks.getOptions(models.researcher);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.hasOne_model.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
+  it('HasOne implementation in resolver - researcher', async function(){
+    let opts = funks.getOptions(models.researcher);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.hasOne_resolver.replace(/\s/g, '');
+    expect(g_resolvers, 'No method found').to.have.string(test_resolver);
+  });
+
+  it('BelongsTo implementation in schema - dog', async function(){
+    let opts = funks.getOptions(models.dog);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.belongsTo_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('HasOne implementation in schema - researcher', async function(){
+    let opts = funks.getOptions(models.researcher);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.hasOne_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+
 });

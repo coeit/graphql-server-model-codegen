@@ -372,7 +372,7 @@ module.exports.getOptions = function(dataModel){
             associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
           }else if(associations_type["one"].includes(association.type))
           {
-            associations_info.schema_attributes["one"][name] = association.target;
+            associations_info.schema_attributes["one"][name] = [association.target, capitalizeString(association.target) ];
           }else{
             console.log("Association type "+ association.type + " not supported.");
             return;
