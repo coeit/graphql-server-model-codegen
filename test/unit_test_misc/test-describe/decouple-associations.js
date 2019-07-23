@@ -92,3 +92,58 @@ module.exports.hasOne_schema = `
   dog(search: searchDogInput): Dog
 
 `
+
+module.exports.hasMany_model = `
+transcript_countsFilterImpl({
+    search,
+    order,
+    pagination
+}){
+
+  if (search === undefined) {
+      return models.transcript_count.readAll( {
+              "field": "individual_id",
+              "value": {
+                  "value": this.id
+              },
+              "operator": "eq"
+          },
+          order,
+          pagination);
+  } else {
+      return models.transcript_count.readAll({
+              "operator": "and",
+              "search": [{
+                  "field": "individual_id",
+                  "value": {
+                      "value": this.id
+                  },
+                  "operator": "eq"
+              }, search]
+          },
+          order,
+          pagination)
+  }
+}
+`
+
+module.exports.hasMany_resolver = `
+/**
+ * individual.prototype.transcript_countsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+individual.prototype.transcript_countsFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+  return this.transcript_countsFilterImpl({search, order, pagination});
+}
+`

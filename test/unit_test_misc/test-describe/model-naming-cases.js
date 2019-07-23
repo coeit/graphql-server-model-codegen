@@ -48,34 +48,7 @@ inDiVIdual.prototype.transcriptCountsFilter = function({
     order,
     pagination
 }, context) {
-    if (search === undefined) {
-        return resolvers.transcriptCounts({
-            "search": {
-                "field": "individual_id",
-                "value": {
-                    "value": this.id
-                },
-                "operator": "eq"
-            },
-            order,
-            pagination
-        }, context);
-    } else {
-        return resolvers.transcriptCounts({
-            "search": {
-                "operator": "and",
-                "search": [{
-                    "field": "individual_id",
-                    "value": {
-                        "value": this.id
-                    },
-                    "operator": "eq"
-                }, search]
-            },
-            order,
-            pagination
-        }, context)
-    }
+  return this.transcriptCountsFilterImpl({search, order, pagination});
 }
 `
 

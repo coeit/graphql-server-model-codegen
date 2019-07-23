@@ -55,12 +55,7 @@ const resolvers = require('./index');
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
   <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order, pagination}, context){
-    if(search === undefined)
-    {
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
-    }else{
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
-    }
+    return this.<%=associations_temp[i].name_lc%>FilterImpl({search,order, pagination});
 
   }
 

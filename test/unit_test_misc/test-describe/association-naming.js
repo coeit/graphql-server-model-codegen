@@ -39,34 +39,7 @@ academicTeam.prototype.membersFilter = function({
     order,
     pagination
 }, context) {
-    if (search === undefined) {
-        return resolvers.researchers({
-            "search": {
-                "field": "academicTeamId",
-                "value": {
-                    "value": this.id
-                },
-                "operator": "eq"
-            },
-            order,
-            pagination
-        }, context);
-    } else {
-        return resolvers.researchers({
-            "search": {
-                "operator": "and",
-                "search": [{
-                    "field": "academicTeamId",
-                    "value": {
-                        "value": this.id
-                    },
-                    "operator": "eq"
-                }, search]
-            },
-            order,
-            pagination
-        }, context)
-    }
+  return this.membersFilterImpl({search,order,pagination});
 }
 `
 
