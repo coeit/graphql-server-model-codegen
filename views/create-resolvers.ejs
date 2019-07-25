@@ -138,12 +138,7 @@ const os = require('os');
    */
   <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
 
-    if(search === undefined)
-    {
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
-    }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
-    }
+    return this.countFiltered<%=associations_temp[i].name_cp%>Impl ({search});
   }
 
 <%}-%>

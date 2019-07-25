@@ -147,3 +147,44 @@ individual.prototype.transcript_countsFilter = function({
   return this.transcript_countsFilterImpl({search, order, pagination});
 }
 `
+module.exports.countAssociated_model = `
+countFilteredTranscript_countsImpl({search}){
+  if (search === undefined) {
+      return models.transcript_count.countRecords( {
+              "field": "individual_id",
+              "value": {
+                  "value": this.id
+              },
+              "operator": "eq"
+          });
+  } else {
+      return models.transcript_count.countRecords({
+              "operator": "and",
+              "search": [{
+                  "field": "individual_id",
+                  "value": {
+                      "value": this.id
+                  },
+                  "operator": "eq"
+              }, search]
+          })
+  }
+
+}
+`
+
+module.exports.countAssociated_resolver = `
+/**
+ * individual.prototype.countFilteredTranscript_counts - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+individual.prototype.countFilteredTranscript_counts = function({
+    search
+}, context) {
+
+return this.countFilteredTranscript_countsImpl({search});
+}
+`

@@ -120,6 +120,17 @@ module.exports = class <%- name -%>{
             return models.<%=associations_temp[i].target_lc%>.readAll({"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination )
           }
         }
+
+        countFiltered<%=associations_temp[i].name_cp%>Impl ({search}){
+
+          if(search === undefined)
+          {
+            return models.<%=associations_temp[i].target_lc%>.countRecords({"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} );
+          }else{
+            return models.<%=associations_temp[i].target_lc%>.countRecords({"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] })
+          }
+
+        }
       <%}-%>
 
 
