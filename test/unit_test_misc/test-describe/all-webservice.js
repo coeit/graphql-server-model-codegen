@@ -89,7 +89,6 @@ type Query {
 
 
 deletePerson(id: ID!): String!
-bulkAddPersonXlsx: [Person]
 bulkAddPersonCsv: [Person] }
 
 `

@@ -125,7 +125,7 @@ describe('Count functionality', function(){
 
   it('Resolvers - specie', async function(){
     let opts = funks.getOptions(models.specie);
-    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolvers = data_test.specie_resolvers.replace(/\s/g, '');
     expect(g_resolvers,'Incorrect resolvers').to.have.string(test_resolvers);
@@ -207,7 +207,7 @@ describe('Model naming cases ', function(){
   let data_test = require('./unit_test_misc/test-describe/model-naming-cases');
   it('Resolvers - aminoAcidSequence', async function(){
     let opts = funks.getOptions(models.aminoAcidSequence);
-    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolvers = data_test.resolvers_webservice_aminoAcid.replace(/\s/g, '');
       expect(g_resolvers).to.have.string(test_resolvers);
@@ -382,7 +382,7 @@ describe('All webservice models', function(){
 
   it('Resolvers - book', async function(){
     let opts = funks.getOptions(models_webservice.book);
-    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolvers = data_test.resolvers_book.replace(/\s/g, '');
     expect(g_resolvers).to.have.string(test_resolvers);
@@ -406,7 +406,7 @@ describe('All webservice models', function(){
 
   it('Resolvers - person', async function(){
     let opts = funks.getOptions(models_webservice.person);
-    let generated_resolvers =await funks.generateJs('create-resolvers-webservice', opts);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
     let g_resolvers = generated_resolvers.replace(/\s/g, '');
     let test_resolvers = data_test.resolvers_person.replace(/\s/g, '');
     expect(g_resolvers).to.have.string(test_resolvers);

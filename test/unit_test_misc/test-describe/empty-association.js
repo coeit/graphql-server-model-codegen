@@ -12,27 +12,10 @@ type Query {
 
 
 deleteTranscript_count(id: ID!): String!
-bulkAddTranscript_countXlsx: [transcript_count]
 bulkAddTranscript_countCsv: [transcript_count] }
 `
 
 module.exports.individual_no_assoc_resolvers = `
-const path = require('path');
-const individual = require(path.join(__dirname, '..', 'models_index.js')).individual;
-const searchArg = require('../utils/search-argument');
-const fileTools = require('../utils/file-tools');
-const helper = require('../utils/helper');
-const globals = require('../config/globals');
-const checkAuthorization = require('../utils/check-authorization');
-const fs = require('fs');
-const uuidv4 = require('uuidv4');
-const resolvers = require('./index');
-const {
-    handleError
-} = require('../utils/errors');
-const email = require('../utils/email');
-const helpersAcl = require('../utils/helpers-acl');
-const validatorUtil = require('../utils/validatorUtil');
 const os = require('os');
 
 module.exports = {

@@ -22,7 +22,7 @@ static countRecords(search){
 
 module.exports.count_in_resolvers = `
 /**
- * countDogs - Count number of records that holds the conditions specified in the search argument
+ * countDogs - Counts number of records that holds the conditions specified in the search argument
  *
  * @param  {object} {search} Search argument for filtering records
  * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.

@@ -568,7 +568,7 @@ module.exports.generateCode = function(json_dir, dir_write){
 
 
           file_name = dir_write + '/resolvers/' + opts.nameLc + '.js';
-          generateSection("resolvers-webservice",opts,file_name).then( ()=>{
+          generateSection("resolvers",opts,file_name).then( ()=>{
             console.log(file_name + ' written successfully!(from webservice)');
           });
 

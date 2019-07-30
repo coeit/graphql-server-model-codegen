@@ -1,6 +1,6 @@
 module.exports.resolvers_webservice_aminoAcid = `
 /**
- * aminoAcidSequences - Returns certain number, specified in pagination argument, of records that
+ * aminoAcidSequences - Check user authorization and return certain number, specified in pagination argument, of records that
  * holds the condition of search argument, all of them sorted as specified by the order argument.
  *
  * @param  {object} search     Search argument for filtering records
@@ -14,7 +14,15 @@ module.exports.resolvers_webservice_aminoAcid = `
       order,
       pagination
   }, context) {
-    return aminoAcidSequence.readAll(search, order, pagination);
+    return checkAuthorization(context, 'aminoAcidSequence', 'read').then( authorization =>{
+        if (authorization === true) {
+          return aminoAcidSequence.readAll(search, order, pagination);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+      }).catch( error =>{
+            handleError( error);
+      })
   }
 `
 
@@ -59,7 +67,6 @@ updateInDiVIdual(id: ID!, name: String , addTranscriptCounts:[ID], removeTranscr
 
 
 deleteInDiVIdual(id: ID!): String!
-bulkAddInDiVIdualXlsx: [inDiVIdual]
 bulkAddInDiVIdualCsv: [inDiVIdual] }
 `
 
