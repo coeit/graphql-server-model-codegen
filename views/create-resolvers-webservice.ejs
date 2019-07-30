@@ -19,10 +19,7 @@ const resolvers = require('./index');
 
    <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order, pagination}, context){
 
-     /*
-     YOUR CODE GOES HERE
-     */
-     throw new Error('<%=associations_temp[i].name_lc%>Filter is not implemented');
+     return this.<%=associations_temp[i].name_lc%>FilterImpl({search, order, pagination});
    }
 
    /**
@@ -33,10 +30,7 @@ const resolvers = require('./index');
     * @return {type}          Number of associated records that holds the conditions specified in the search argument
     */
    <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
-     /*
-     YOUR CODE GOES HERE
-     */
-     throw new Error('countFiltered<%=associations_temp[i].name_cp%> is not implemented');
+     return this.countFiltered<%=associations_temp[i].name_cp%>Impl({search});
    }
 
 <%}-%>

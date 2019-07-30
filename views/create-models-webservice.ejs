@@ -134,6 +134,25 @@ module.exports = class <%- name -%>{
       <%}-%>
 
 
+      <% associations_temp = associations["belongsToMany"]-%>
+      <% for(let i=0; i < associations_temp.length; i++){ -%>
+
+        <%=associations_temp[i].name%>FilterImpl ({search,order,pagination}){
+          /*
+          YOUR CODE GOES HERE
+          */
+          throw new Error('<%=associations_temp[i].name%>FilterImpl is not implemented in the model');
+
+        }
+
+        countFiltered<%=associations_temp[i].name_cp%>Impl({search}){
+          /*
+          YOUR CODE GOES HERE
+          */
+          throw new Error('countFiltered<%=associations_temp[i].name_cp%>Impl is not implemented in the model');
+        }
+      <%}-%>
+
   static get definition(){
     return definition;
   }

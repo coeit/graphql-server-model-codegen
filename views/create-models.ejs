@@ -312,6 +312,61 @@ module.exports = class <%- name -%> extends Sequelize.Model{
     }
   <%}-%>
 
+
+  <% associations_temp = associations["belongsToMany"]-%>
+  <% for(let i=0; i < associations_temp.length; i++){ -%>
+
+    <%=associations_temp[i].name%>FilterImpl ({search,order,pagination}){
+
+    <%if(associations_temp[i].targetStorageType === 'sql'){-%>
+        let options = {};
+
+        if(search!== undefined){
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+        }
+
+        return this.count<%- associations_temp[i].name_cp%>(options).then( items => {
+          if(order !== undefined){
+            options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
+          }else if(pagination !== undefined){
+            options['order'] = [ ["id", "ASC"] ];
+          }
+          if(pagination !== undefined){
+            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+          }else{
+            options['offset'] = 0;
+            options['limit'] = items;
+          }
+          if(globals.LIMIT_RECORDS < options['limit']){
+            throw new Error(`Request of total <%=associations_temp[i].name_lc%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+          }
+          return this.get<%- associations_temp[i].name_cp%>(options);
+        });
+      <%}else{%>
+        throw new Error('  <%=associations_temp[i].name%>FilterImpl is not implemented in the model');
+      <%}-%>
+    }
+
+    countFiltered<%=associations_temp[i].name_cp%>Impl({search}){
+
+      <%if(associations_temp[i].targetStorageType === 'sql'){-%>
+          let options = {};
+          if(search!== undefined){
+            let arg = new searchArg(search);
+            let arg_sequelize = arg.toSequelize();
+            options['where'] = arg_sequelize;
+          }
+          return this.count<%- associations_temp[i].name_cp%>(options);
+      <%}else{%>
+        throw new Error('countFiltered<%=associations_temp[i].name_cp%>Impl is not implemented in the model');
+      <%}-%>
+    }
+  <%}-%>
+
+
   static get definition(){
     return definition;
   }

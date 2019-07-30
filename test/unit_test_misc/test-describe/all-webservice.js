@@ -109,10 +109,7 @@ person.prototype.worksFilter = function({
     pagination
 }, context) {
 
-  /*
-  YOUR CODE GOES HERE
-  */
-  throw new Error('worksFilter is not implemented');
+  return this.worksFilterImpl({search, order, pagination});
 
 }
 

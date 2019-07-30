@@ -188,3 +188,97 @@ individual.prototype.countFilteredTranscript_counts = function({
 return this.countFilteredTranscript_countsImpl({search});
 }
 `
+
+module.exports.belongsToMany_model = `
+AuthorsFilterImpl({
+      search,
+      order,
+      pagination
+  }) {
+      let options = {};
+
+      if (search !== undefined) {
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+      }
+
+      return this.countAuthors(options).then(items => {
+          if (order !== undefined) {
+              options['order'] = order.map((orderItem) => {
+                  return [orderItem.field, orderItem.order];
+              });
+          } else if (pagination !== undefined) {
+              options['order'] = [
+                  ["id", "ASC"]
+              ];
+          }
+
+          if (pagination !== undefined) {
+              options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
+              options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
+          } else {
+              options['offset'] = 0;
+              options['limit'] = items;
+          }
+
+          if (globals.LIMIT_RECORDS < options['limit']) {
+              throw new Error(\`Request of total authorsFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+          }
+          return this.getAuthors(options);
+      });
+  }
+
+
+  countFilteredAuthorsImpl({
+      search
+  }) {
+
+      let options = {};
+
+      if (search !== undefined) {
+          let arg = new searchArg(search);
+          let arg_sequelize = arg.toSequelize();
+          options['where'] = arg_sequelize;
+      }
+
+      return this.countAuthors(options);
+  }
+`
+
+module.exports.belongsToMany_resolver = `
+/**
+ * book.prototype.AuthorsFilter - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Offset and limit to get the records from and to respectively
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+ */
+book.prototype.AuthorsFilter = function({
+    search,
+    order,
+    pagination
+}, context) {
+
+  return this.AuthorsFilterImpl({search, order, pagination});
+}
+
+/**
+ * book.prototype.countFilteredAuthors - Count number of associated records that holds the conditions specified in the search argument
+ *
+ * @param  {object} {search} description
+ * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {type}          Number of associated records that holds the conditions specified in the search argument
+ */
+book.prototype.countFilteredAuthors = function({
+    search
+}, context) {
+
+ return this.countFilteredAuthorsImpl({search});
+}
+
+`
