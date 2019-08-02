@@ -744,7 +744,18 @@ describe('Decouple association from resolvers', function(){
     let test_resolver = data_test.belongsToMany_resolver.replace(/\s/g, '');
     expect(g_resolvers, 'No method found').to.have.string(test_resolver);
   });
+});
 
 
+describe('Description for attributes', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/description-attributes');
+  it('Description in schema - person', async function(){
+    let opts = funks.getOptions(models.person_description);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.person_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
 
 });

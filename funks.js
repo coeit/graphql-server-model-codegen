@@ -182,6 +182,54 @@ attributesArrayString = function(attributes){
 
 
 /**
+ * getOnlyTypeAttributes - Creates an object which keys are the attributes and the value its type
+ *
+ * @param  {object} attributes Object containing the attributes to parse
+ * @return {object}            Object simplified, all values are strings indicating the attribute's type.
+ */
+getOnlyTypeAttributes = function(attributes){
+  let only_type = {};
+
+    for(key in attributes){
+
+      if(attributes[key] && typeof attributes[key]==='object' && attributes[key].constructor === Object ){
+        only_type[ key ] = attributes[key].type;
+      }else if(typeof attributes[key] === 'string' || attributes[key] instanceof String){
+        only_type[key] =  attributes[key];
+      }
+
+    }
+
+    return only_type;
+}
+
+
+
+/**
+ * getOnlyDescriptionAttributes - Creates an object which keys are the attributes and the value its description
+ *
+ * @param  {type} attributes Object containing the attributes to parse
+ * @return {type}            Object simplified, all values are strings indicating the attribute's description.
+ */
+getOnlyDescriptionAttributes = function(attributes){
+  let only_description = {};
+
+    for(key in attributes){
+
+      if(attributes[key] && typeof attributes[key]==='object' && attributes[key].constructor === Object ){
+        only_description[ key ] = attributes[key].description;
+      }else if(typeof attributes[key] === 'string' || attributes[key] instanceof String){
+        only_description[key] = "";
+      }
+
+    }
+
+    return only_description;
+}
+
+
+
+/**
  * writeSchemaCommons - Writes a 'commons.js' file into the given directory. This file contains
  * general parts of the graphql schema that are common for all models.
  *
@@ -322,13 +370,18 @@ module.exports.getOptions = function(dataModel){
       nameLc: uncapitalizeString(dataModel.model),
       namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
       namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
-      attributes: dataModel.attributes,
-      attributesStr: attributesToString(dataModel.attributes),
-      jsonSchemaProperties: attributesToJsonSchemaProperties(dataModel.attributes),
+      //attributes: dataModel.attributes,
+      attributes: getOnlyTypeAttributes(dataModel.attributes),
+      //attributesStr: attributesToString(dataModel.attributes),
+      attributesStr: attributesToString( getOnlyTypeAttributes(dataModel.attributes)),
+      //jsonSchemaProperties: attributesToJsonSchemaProperties(dataModel.attributes),
+      jsonSchemaProperties: attributesToJsonSchemaProperties(getOnlyTypeAttributes(dataModel.attributes)),
       associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
-      arrayAttributeString: attributesArrayString(dataModel.attributes),
+      //arrayAttributeString: attributesArrayString(dataModel.attributes),
+      arrayAttributeString: attributesArrayString( getOnlyTypeAttributes(dataModel.attributes) ),
       indices: dataModel.indices,
-      definition : stringify_obj(dataModel)
+      definition : stringify_obj(dataModel),
+      attributesDescription: getOnlyDescriptionAttributes(dataModel.attributes)
   };
   return opts;
 };

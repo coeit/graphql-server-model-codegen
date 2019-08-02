@@ -432,3 +432,37 @@ module.exports.book_authors = {
         }
   }
 }
+
+
+module.exports.person_description = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : {
+        "type": "String",
+        "description": "Indicates the given name for the person"
+    },
+    "lastName" : {
+        "type": "String",
+        "description": "Indicates the family name for the person"
+    },
+    "email" : "String"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql"
+    },
+
+    "books":{
+      "type" : "belongsToMany",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql"
+    }
+  }
+}
