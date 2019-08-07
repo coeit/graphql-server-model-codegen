@@ -217,7 +217,7 @@ getOnlyDescriptionAttributes = function(attributes){
     for(key in attributes){
 
       if(attributes[key] && typeof attributes[key]==='object' && attributes[key].constructor === Object ){
-        only_description[ key ] = attributes[key].description;
+        only_description[ key ] = attributes[key].description || "";
       }else if(typeof attributes[key] === 'string' || attributes[key] instanceof String){
         only_description[key] = "";
       }

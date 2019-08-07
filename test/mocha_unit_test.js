@@ -758,4 +758,12 @@ describe('Description for attributes', function(){
     expect(g_schema,'Incorrect schema').to.have.string(test_schema);
   });
 
+  it('Optional description in object type - person', async function(){
+    let opts = funks.getOptions(models.person_description_optional);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.person_schema_description_optional.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
 });

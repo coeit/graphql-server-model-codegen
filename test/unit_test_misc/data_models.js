@@ -466,3 +466,36 @@ module.exports.person_description = {
     }
   }
 }
+
+
+module.exports.person_description_optional = {
+  "model" : "Person",
+  "storageType" : "SQL",
+  "attributes" : {
+    "firstName" : {
+        "type": "String"
+    },
+    "lastName" : {
+        "type": "String",
+        "description": "Indicates the family name for the person"
+    },
+    "email" : "String"
+  },
+  "associations":{
+    "dogs":{
+      "type" : "hasMany",
+      "target" : "Dog",
+      "targetKey" : "personId",
+      "targetStorageType" : "sql"
+    },
+
+    "books":{
+      "type" : "belongsToMany",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "sql"
+    }
+  }
+}
