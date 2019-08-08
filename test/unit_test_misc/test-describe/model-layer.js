@@ -114,7 +114,7 @@ static addOne(input){
           return super.create(input)
               .then(item => {
                   if (input.addAuthors) {
-                      super.setAuthors(input.addAuthors);
+                      item.setAuthors(input.addAuthors);
                   }
                   return item;
               });
@@ -197,10 +197,10 @@ static updateOne(input){
           return super.findByPk(input.id)
               .then(item => {
                   if (input.addAuthors) {
-                      super.addAuthors(input.addAuthors);
+                      item.addAuthors(input.addAuthors);
                   }
                   if (input.removeAuthors) {
-                      super.removeAuthors(input.removeAuthors);
+                      item.removeAuthors(input.removeAuthors);
                   }
                   return item.update(input);
               });

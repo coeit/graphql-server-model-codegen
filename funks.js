@@ -605,7 +605,7 @@ module.exports.generateCode = function(json_dir, dir_write){
             }
 
         });
-        generateAssociationsMigrations(opts, dir_write);
+        //generateAssociationsMigrations(opts, dir_write);
       }else if(opts.storageType === 'webservice'){
           let file_name = "";
           file_name = dir_write + '/schemas/' + opts.nameLc + '.js';

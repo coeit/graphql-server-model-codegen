@@ -7,10 +7,10 @@ updatePerson(id: ID!, firstName: String, lastName: String, email: String , addDo
 module.exports.person_model = `
 .then(item => {
     if (input.addDogs) {
-        super.setDogs(input.addDogs);
+        item.setDogs(input.addDogs);
     }
     if (input.addBooks) {
-        super.setBooks(input.addBooks);
+        item.setBooks(input.addBooks);
     }
     return item;
 });

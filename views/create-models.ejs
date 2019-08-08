@@ -123,7 +123,7 @@ module.exports = class <%- name -%> extends Sequelize.Model{
                   <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
                   <%for(let i=0; i < associations_temp.length; i++){-%>
                     <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                      if(input.add<%=associations_temp[i].name_cp-%>){super.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                      if(input.add<%=associations_temp[i].name_cp-%>){item.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
                     <%}-%>
                     <%}-%>
                     return item;
@@ -161,8 +161,8 @@ module.exports = class <%- name -%> extends Sequelize.Model{
                   <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
                   <%for(let i=0; i < associations_temp.length; i++){-%>
                     <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                      if(input.add<%=associations_temp[i].name_cp-%>){super.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-                      if(input.remove<%=associations_temp[i].name_cp-%>){super.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
+                      if(input.add<%=associations_temp[i].name_cp-%>){item.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
+                      if(input.remove<%=associations_temp[i].name_cp-%>){item.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
                     <%}-%>
                   <%}-%>
                     return item.update(input);
