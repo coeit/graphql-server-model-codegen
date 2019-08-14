@@ -633,3 +633,32 @@ describe(
         });
 
     });
+
+
+  describe(
+        'Date types test',
+        function() {
+          it('01. Create and retrieve instance with date type', function() {
+
+              // Create Plant to subjected to RNA-Seq analysis from which the transcript_counts result
+              let res = itHelpers.request_graph_ql_post('mutation { addSequencingExperiment(name: "Experiment 1" start_date: "2007-12-03" end_date: "2010-12-03") {id name  start_date} }');
+              let resBody = JSON.parse(res.body.toString('utf8'));
+              expect(res.statusCode).to.equal(200);
+              expect(resBody.data.addSequencingExperiment.start_date).equal("2007-12-03");
+              let experimentId = resBody.data.addSequencingExperiment.id;
+
+              // Create TranscriptCount with above Plant assigned as Individual
+              res = itHelpers.request_graph_ql_post(`{ readOneSequencingExperiment(id: ${experimentId}){ start_date end_date  } }`);
+              let tcResBody = JSON.parse(res.body.toString('utf8'));
+              expect(res.statusCode).to.equal(200);
+              expect(tcResBody).to.deep.equal({
+                  data: {
+                    readOneSequencingExperiment: {
+                      start_date: "2007-12-03",
+                      end_date: "2010-12-03"
+
+                    }
+                  }
+              })
+          });
+  });
