@@ -372,12 +372,14 @@ describe('Indices', function(){
 
 describe('Monkey patching templates', function(){
 
-    it('Validation - transcriptCount_indiv', async function(){
-        let opts = funks.getOptions(models.transcriptCount_indiv);
-        let generated_validation =await funks.generateJs('create-validations', opts);
-        let g_resolvers = generated_validation.replace(/\s/g, '');
-        let test_resolvers = test.transcriptCount_indiv_validation.replace(/\s/g, '');
-        expect(g_resolvers).to.be.equal(test_resolvers);
+    it('Validation - transcriptCount_indiv', async function() {
+      let opts = funks.getOptions(models.transcriptCount_indiv);
+      let generated_validation = await funks.generateJs(
+        'create-validations', opts);
+      let g_validation = generated_validation.replace(/\s/g, '');
+      let test_validation = test.transcriptCount_indiv_validation.replace(
+        /\s/g, '');
+      expect(g_validation).to.be.equal(test_validation);
     });
 
     it('Patch - dog_owner', async function(){

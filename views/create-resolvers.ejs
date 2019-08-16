@@ -248,7 +248,7 @@ module.exports = {
     return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
       if (authorization === true) {
 
-        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', <%- nameLc -%>, input);
+        let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', <%- nameLc -%>, input);
         if (!!err) {
             return err;
         } else {
@@ -372,7 +372,7 @@ module.exports = {
 
             if(<%- nameLc -%>_sqlz === null) return new Error(`Record with ID = ${id} not exist`);
 
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz);
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz);
             if (!!err) {
                 return err;
             } else {
@@ -400,7 +400,7 @@ module.exports = {
     return checkAuthorization(context, '<%- name -%>', 'update').then( authorization =>{
       if (authorization === true) {
 
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', <%-  nameLc  -%>, input);
+            let err = validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', <%-  nameLc  -%>, input);
             if (!!err) {
                 return err;
             } else {
