@@ -8,32 +8,32 @@ module.exports.validator_patch = function(<%- nameLc -%>){
     <%- nameLc -%>.prototype.validatorSchema = {
       "$async": true,
       "properties": <%- JSON.stringify(jsonSchemaProperties) -%>
-    };
+    }
 
-    <%- nameLc -%>.prototype.validator = ajv.compile(
+    <%- nameLc -%>.prototype.asyncValidate = ajv.compile(
       <%- nameLc -%>.prototype.validatorSchema
-    );
+    )
 
     <%- nameLc -%>.prototype.validateForCreate = async function(record) {
 
-        return await <%- nameLc -%>.prototype.validator.validate(record);
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
 
-    };
+    }
 
     <%- nameLc -%>.prototype.validateForUpdate = async function(record) {
 
-        return await <%- nameLc -%>.prototype.validator.validate(record);
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
 
-    };
+    }
 
     <%- nameLc -%>.prototype.validateForDelete = async function(record) {
 
         //TODO: on the input you have the record to be deleted, no generic
         // validation checks are available.
 
-        return {error: null};
+        return {error: null}
 
-    };
+    }
 
-    return <%- nameLc -%>;
-};
+    return <%- nameLc -%>
+}
