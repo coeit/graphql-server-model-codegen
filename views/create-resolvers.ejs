@@ -248,10 +248,8 @@ module.exports = {
     return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
       if (authorization === true) {
 
-        let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForCreate', <%- nameLc -%>, input);
-        if (!!err) {
-            return err;
-        } else {
+        return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', <%- nameLc -%>, input)
+        .then((valSuccess) => {
             return <%- nameLc -%>.create(input)
                 .then( <%- nameLc -%> =>{
                 <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
@@ -262,7 +260,7 @@ module.exports = {
             <%}-%>
             return <%- nameLc -%>;
             });
-        }
+        }).catch( (err) => { return err })
     } else {
         return new Error("You don't have authorization to perform this action");
     }
@@ -372,14 +370,12 @@ module.exports = {
 
             if(<%- nameLc -%>_sqlz === null) return new Error(`Record with ID = ${id} not exist`);
 
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz);
-            if (!!err) {
-                return err;
-            } else {
+            return validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz)
+            .then((valSuccess) => {
                 return <%- nameLc -%>_sqlz
                 .destroy()
                 .then(()=>{return 'Item successfully deleted';});
-            }
+            }).catch( (err) => { return err })
           });
         } else {
             return new Error("You don't have authorization to perform this action");
@@ -400,10 +396,8 @@ module.exports = {
     return checkAuthorization(context, '<%- name -%>', 'update').then( authorization =>{
       if (authorization === true) {
 
-            let err = validatorUtil.ifHasValidatorFunctionInvoke('validatorForUpdate', <%-  nameLc  -%>, input);
-            if (!!err) {
-                return err;
-            } else {
+            return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', <%-  nameLc  -%>, input)
+            .then((valSuccess) => {
                 return <%- nameLc -%>
                     .findByPk(input.id)
                     .then( <%- nameLc -%> => {
@@ -416,7 +410,7 @@ module.exports = {
                     <%}-%>
                     return <%- nameLc -%>.update(input);
                     });
-            }
+            }).catch( (err) => { return err })
 
         } else {
             return new Error("You don't have authorization to perform this action");

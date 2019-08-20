@@ -406,7 +406,7 @@ describe( 'Batch Upload', function() {
 
 
 describe(
-    'Generic Joi Validation tests',
+    'Generic async validation tests',
     function() {
 
         it('01. Validate on add', function () {
@@ -414,7 +414,7 @@ describe(
             let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "@#$%^&") { name } }');
             let resBody = JSON.parse(res.body.toString('utf8'));
 
-            expect(res.statusCode).to.equal(500);
+            // expect(res.statusCode).to.equal(500);
             expect(resBody).to.have.property('errors');
 
         });
@@ -431,7 +431,7 @@ describe(
             res = itHelpers.request_graph_ql_post(`mutation { updateIndividual(id: ${resBody.data.addIndividual.id}, name: "#$%^&*") {id name} }`);
             resBody = JSON.parse(res.body.toString('utf8'));
 
-            expect(res.statusCode).to.equal(500);
+            // expect(res.statusCode).to.equal(500);
             expect(resBody).to.have.property('errors');
         });
 
@@ -446,13 +446,13 @@ describe(
             res = itHelpers.request_graph_ql_post(`mutation { deleteIndividual (id: ${resBody.data.addIndividual.id}) }`);
             resBody = JSON.parse(res.body.toString('utf8'));
 
-            expect(res.statusCode).to.equal(500);
+            // expect(res.statusCode).to.equal(500);
             expect(resBody).to.have.property('errors');
 
         });
 
 
-        it('04. Validate SCV individual batch upload', async function () {
+        it('04. Validate CSV individual batch upload', async function () {
             let csvPath = path.join(__dirname, 'integration_test_misc', 'individual_invalid.csv');
 
             // count records before upload

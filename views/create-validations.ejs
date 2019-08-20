@@ -1,32 +1,40 @@
 // Delete this file, if you do not want or need any validations.
-const Joi = require('joi');
+const validatorUtil = require('../utils/validatorUtil')
+const Ajv = require('ajv')
+const ajv = validatorUtil.addDateTimeAjvKeywords(new Ajv)
 
 // Dear user, edit the schema to adjust it to your model
 module.exports.validator_patch = function(<%- nameLc -%>){
 
-    <%- nameLc -%>.prototype.validatorSchema = Joi.object().keys({
-        <%- attributesJoiStr -%>
-    }).options({ allowUnknown: true });
+    <%- nameLc -%>.prototype.validatorSchema = {
+      "$async": true,
+      "properties": <%- JSON.stringify(jsonSchemaProperties) -%>
+    }
 
-    <%- nameLc -%>.prototype.validatorForCreate = function(record) {
+    <%- nameLc -%>.prototype.asyncValidate = ajv.compile(
+      <%- nameLc -%>.prototype.validatorSchema
+    )
 
-        return Joi.validate(record, <%- nameLc -%>.prototype.validatorSchema);
+    <%- nameLc -%>.prototype.validateForCreate = async function(record) {
 
-    };
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
 
-    <%- nameLc -%>.prototype.validatorForUpdate = function(record) {
+    }
 
-        return Joi.validate(record, <%- nameLc -%>.prototype.validatorSchema);
+    <%- nameLc -%>.prototype.validateForUpdate = async function(record) {
 
-    };
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
 
-    <%- nameLc -%>.prototype.validatorForDelete = function(model) {
+    }
 
-        //TODO: on the input you have the model to be deleted, no generic Joi checks are available
+    <%- nameLc -%>.prototype.validateForDelete = async function(record) {
 
-        return {error: null};
+        //TODO: on the input you have the record to be deleted, no generic
+        // validation checks are available.
 
-    };
+        return {error: null}
 
-    return <%- nameLc -%>;
-};
+    }
+
+    return <%- nameLc -%>
+}
