@@ -1,15 +1,15 @@
---- aminoacidsequence.js	2019-04-20 18:46:29.000000000 -0500
-+++ aminoacidsequence_patch.js	2019-04-21 15:10:42.714230161 -0500
+--- ./resolvers/aminoacidsequence.js    2019-08-19 22:32:05.239131591 +0000
++++ ./resolvers/aminoacidsequence.js    2019-08-19 22:33:53.879534759 +0000
 @@ -1,6 +1,8 @@
  const aminoacidsequence = require('../models-webservice/aminoacidsequence');
  const searchArg = require('../utils/search-argument');
  const resolvers = require('./index');
 +const request = require('sync-request');
 +const baseUrl = 'http://gql_ncbi_sim_srv:3344/aminoAcidSequence/';
- 
- 
- 
-@@ -113,10 +115,25 @@
+
+
+
+@@ -113,10 +115,24 @@
          order,
          pagination
      }, context) {
@@ -17,7 +17,6 @@
 -        YOUR CODE GOES HERE
 -        */
 -        throw new Error('aminoacidsequences is not implemented');
-+
 +        let ids = [69905, 10644, 63165];
 +        let unfiltered = [];
 +
@@ -37,9 +36,9 @@
 +
 +        return unfiltered;
      },
- 
+
      /**
-@@ -129,10 +146,9 @@
+@@ -129,10 +145,9 @@
      readOneAminoacidsequence: function({
          id
      }, context) {
@@ -51,12 +50,5 @@
 +        if(res.statusCode !== 200) throw new Error(`Remote service response status code for ${id}: ${res.statusCode}`);
 +        return new aminoacidsequence(JSON.parse(res.body.toString('utf8')));
      },
- 
+
      /**
-@@ -248,4 +264,4 @@
-         */
-         throw new Error('csvTableTemplateAminoacidsequence is not implemented');
-     }
--}
-\ No newline at end of file
-+}

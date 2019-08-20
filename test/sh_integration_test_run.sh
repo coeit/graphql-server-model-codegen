@@ -31,8 +31,8 @@ patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_sr
 # Add simple sequalize validation to the Individual model (deprecated solution)
 # patch -V never ./docker/integration_test_run/models/individual.js ./test/integration_test_misc/individual_validate_sequelize.patch
 
-# Add monkey-patching validation with Joi
-patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate_joi.patch
+# Add monkey-patching validation with AJV
+patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
 
 # Setup and launch the generated GraphQL web-server
 docker-compose -f ./docker/docker-compose-test.yml up -d
