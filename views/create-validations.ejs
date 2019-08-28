@@ -16,15 +16,11 @@ module.exports.validator_patch = function(<%- nameLc -%>){
     )
 
     <%- nameLc -%>.prototype.validateForCreate = async function(record) {
-
         return await <%- nameLc -%>.prototype.asyncValidate(record)
-
     }
 
     <%- nameLc -%>.prototype.validateForUpdate = async function(record) {
-
         return await <%- nameLc -%>.prototype.asyncValidate(record)
-
     }
 
     <%- nameLc -%>.prototype.validateForDelete = async function(record) {
@@ -33,8 +29,6 @@ module.exports.validator_patch = function(<%- nameLc -%>){
         // validation checks are available.
 
         return {error: null}
-
     }
-
     return <%- nameLc -%>
 }

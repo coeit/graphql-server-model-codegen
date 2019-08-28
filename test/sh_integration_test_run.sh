@@ -26,7 +26,9 @@ TARGET_DIR="./docker/integration_test_run"
 node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
 
 # Patch the resolver for web-server
-patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+#patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+#patch -V never ${TARGET_DIR}/models-webservice/aminoacidsequence.js ./docker/ncbi_sim_srv/aminoacid.patch
+patch -V never ${TARGET_DIR}/models-webservice/aminoacidsequence.js ./docker/ncbi_sim_srv/model_aminoacidsequence.patch
 
 # Add simple sequalize validation to the Individual model (deprecated solution)
 # patch -V never ./docker/integration_test_run/models/individual.js ./test/integration_test_misc/individual_validate_sequelize.patch

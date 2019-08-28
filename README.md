@@ -79,9 +79,9 @@ For each model we need to specify the following fields in the json file:
 
 Name | Type | Description
 ------- | ------- | --------------
-*name* | String | Name of the model (it is recommended uppercase for the initial character).
+*model* | String | Name of the model (it is recommended uppercase for the initial character).
 *storageType* | String | Type of storage where the model is stored. So far can be one of __sql__ or __Webservice__
-*attributes* | Object | The key of each entry is the name of the attribute and the value should be the a string indicating the type of the attribute. See [table](types-spec) below for allowed types. Example: ```{ "attribute1" : "String", "attribute2: "Int" }```
+*attributes* | Object | The key of each entry is the name of the attribute and theres two options for the value . Either can be a string indicating the type of the attribute or an object where the user can indicates the type of the attribute(in the _type_ field) but also can indicates an attribute's description (in the _description_ field). See the [table](#types-spec) below for allowed types. Example of option one: ```{ "attribute1" : "String", "attribute2: "Int" }``` Example of option two: ``` { "attribute1" : {"type" :"String", "description": "Some description"}, "attribute2: "Int ```
 *associations* | Object | The key of each entry is the name of the association and the value should be an object describing the associations. See [Associations Spec](associations-spec) section below for the specifications of the associations.
 
 EXAMPLES OF VALID JSON FILES
@@ -152,29 +152,24 @@ Example:
 
 ### Associations Spec
 
-We will consider six possible type of associations depending on the Storage:
-1. sql_belongsTo
-2. sql_hasOne
-3. sql_hasMany
-4. sql_belongsToMany
-5. cross_hasOne
-6. cross_hasMany
+We will consider four possible types of associations:
+1. belongsTo
+2. hasOne
+3. hasMany
+4. belongsToMany
 
-First four type of associations explain them selves and they are intended to be used when both, source and target models, are stored in SQL databases.
-Last two type of associations are intended to be used when at least one of the models involved is stored in a WebService.
-
-For all type of association, except for association  of type 4 (sql_belongsToMany), the necessary arguments would be:
+For all type of association, except for association of type 4 (belongsToMany), the necessary arguments would be:
 
 name | Type | Description
 ------- | ------- | --------------
-*type* | String | Type of association (one of the six described above).
-*target* | String | Name of model to which the current model will be associated with
-*targetKey* | String | Key to identify the field in the target
-*targetStorageType* | String | Type of storage where the target model is stored. So far can be one of __sql__ or __Webservice__
-*label* | String | Name of the column in the target model to be used as a display name in the GUI
-*sublabel* | String | Optional name of the column in the target model to be used as a sub-label in the GUI
+*type* | String | Type of association (like belongsTo, etc.)
+*target* | String | Name of model to which the current model will be associated with.
+*targetKey* | String | A unique identifier of the association for the case where there appear more than one association with the same model.
+*targetStorageType* | String | Type of storage where the target model is stored. So far can be one of __sql__ or __Webservice__.
+*label* | String | Name of the column in the target model to be used as a display name in the GUI.
+*sublabel* | String | Optional name of the column in the target model to be used as a sub-label in the GUI.
 
-When the association is of the type 4, it's necessary to describe a couple of two extra arguments given that the association is made with a cross table. The extra two arguments will be:
+When association is of type 4, it's necessary to describe two extra arguments given that the association is made with a cross table. These arguments are:
 
 name | Type | Description
 ------- | ------- | --------------
