@@ -25,7 +25,6 @@ describe(
     });
 
 
-/*
     it('02. Individual add', function() {
         let res = itHelpers.request_graph_ql_post('mutation { addIndividual(name: "First") { id } }');
         let resBody = JSON.parse(res.body.toString('utf8'));
@@ -665,6 +664,6 @@ describe(
                     }
                   }
               })
-          });*/
+          });
           
   });

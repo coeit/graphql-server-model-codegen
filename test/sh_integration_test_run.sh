@@ -72,8 +72,9 @@ CODEGEN_DIRS=("./docker/integration_test_run/models" \
               "./docker/integration_test_run/resolvers" \
               "./docker/integration_test_run/validations" \
               "./docker/integration_test_run/patches")
-T1=60
+T1=120
 KEEP_RUNNING=false
+NUM_ARGS=$#
 
 #
 # Functions
@@ -166,7 +167,6 @@ waitForGql() {
     if [ $waited == $T1 ]; then
       # Msg: error
       echo -e "!!ERROR: science-db graphql web server does not start, the wait time limit was reached ($T1).\n"
-      cleanup
       exit 1
     fi
     sleep 2
@@ -187,10 +187,12 @@ genCode() {
   echo "@@ Generating code..."
   npm install
   node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
+
   # Patch the resolver for web-server
   patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
   # Add monkey-patching validation with AJV
   patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
+
   # Msg
   echo "@@ Generating code: done"
 }
@@ -216,6 +218,10 @@ upContainers() {
 # Do the mocha integration tests.
 #
 doTests() {
+
+  # Wait for graphql server
+  waitForGql
+
   # Msg
   echo "@@ Starting mocha tests"
   mocha ./test/mocha_integration_test.js
@@ -230,22 +236,27 @@ doTests() {
 # argument -k or --keep-running is found. 
 #
 consumeArgs() {
-  while [[ $# -gt 0 ]]
+
+  while [[ $NUM_ARGS -gt 0 ]]
   do
       a="$1"
+
+      # Msg
+      echo "@debug@ consuming arg: $a"
 
       case $a in
         -k|--keep-running)
           # set flag
           KEEP_RUNNING=true
 
-          # past argument
-          shift
+          # done
+          let "NUM_ARGS=0"
         ;;
         
         *)
           # past argument
           shift
+          let "NUM_ARGS--"
         ;;
       esac
   done
@@ -256,7 +267,7 @@ consumeArgs() {
 #
 if [ $# -gt 0 ]; then
     #Processes comand line arguments.
-    while [[ $# -gt 0 ]]
+    while [[ $NUM_ARGS -gt 0 ]]
     do
         key="$1"
 
@@ -299,7 +310,9 @@ if [ $# -gt 0 ]; then
               doTests
 
               # consume remaining arguments
-              consumeArgs
+              consumeArgs $@
+
+              echo "@@@debug: NUM_ARGS: $NUM_ARGS"
             ;;
 
             -T|--generate-code-and-run-tests)
@@ -313,7 +326,7 @@ if [ $# -gt 0 ]; then
               doTests
 
               # consume remaining arguments
-              consumeArgs
+              consumeArgs $@
             ;;
 
             -c|--cleanup)
@@ -334,8 +347,8 @@ if [ $# -gt 0 ]; then
     done
 else
 #default: no arguments
-  # Light cleanup
-  lightCleanup
+  # cleanup
+  cleanup
   # Generate code
   genCode
   # Ups containers
@@ -349,7 +362,13 @@ fi
 #
 if [ $KEEP_RUNNING = false ]; then
 
-  ##debug
-  echo "@debug@ Doing final: cleanup()"
+  # Msg
+  echo "@@ Doing final cleanup"
+  # Cleanup
   cleanup
+else
+  # Msg
+  echo "@@ Keeping containers running..."
+  # List
+  docker-compose -f ./docker/docker-compose-test.yml ps
 fi
