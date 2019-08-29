@@ -16,46 +16,340 @@
 
 # -------------------------------------------------------------------------------------
 
-# Stop the Docker-Compose, cleanup all generated data and delete selected docker images
-PWD=`pwd`
-bash -C "${PWD}/test/sh_integration_test_clear.sh" "$@"
 
-# Generate the code for the integration test models
+#
+# NAME
+#     sh_integration_test_run.sh
+#
+# SYNOPSIS
+#
+#   Direct execution:
+#     ./sh_integration_test_run.sh [OPTION]
+#
+#   Execution via npm:
+#     npm run test-integration [OPTION]
+#
+# DESCRIPTION
+#     Bash script utility to perform integration test operations.
+#
+#     Note: This utility uses docker and docker-compose commands, so it needs to be running with sudo if user is not in the docker's group.
+#
+#     The options are as follows:
+#
+#     -r, --restart-containers
+#         ##description
+#
+#     -g, --generate-code
+#         ##description
+#
+#     -t, --run-test-only
+#         ##description
+#
+#     -T, --generate-code-and-run-tests
+#         ##description
+#
+#     -k, --keep-running
+#         ##description
+#
+#     -c, --cleanup
+#         ##description    
+#
+
+# exit on first error
+set -e
+
+#
+# Constants
+#
+DOCKER_SERVICES=(gql_postgres \
+                 gql_science_db_graphql_server \
+                 gql_ncbi_sim_srv)
 TARGET_DIR="./docker/integration_test_run"
-#TARGET_DIR="/home/morrigan/WebstormProjects/graphql-server/"
-node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
+CODEGEN_DIRS=("./docker/integration_test_run/models" \
+              "./docker/integration_test_run/models-webservice" \
+              "./docker/integration_test_run/migrations" \
+              "./docker/integration_test_run/schemas" \
+              "./docker/integration_test_run/resolvers" \
+              "./docker/integration_test_run/validations" \
+              "./docker/integration_test_run/patches")
+T1=60
+KEEP_RUNNING=false
 
-# Patch the resolver for web-server
-patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+#
+# Functions
+#
 
-# Add simple sequalize validation to the Individual model (deprecated solution)
-# patch -V never ./docker/integration_test_run/models/individual.js ./test/integration_test_misc/individual_validate_sequelize.patch
+#
+# Function: deleteGenCode()
+#
+# Delete generated code.
+#
+deleteGenCode() {
+  # Msg
+  echo "@@ Deleting generated code..."
+  # Remove generated code.
+  for i in "${CODEGEN_DIRS[@]}"
+  do
+    if [ -d $i ]; then
+      rm -rf $i
+      if [ $? -eq 0 ]; then
+          echo "@removed: $i"
+      else
+          echo "!ERROR: trying to remove: $i"
+      fi
+    fi
+  done
+  # Msg
+  echo "@@ Generated code deleted: done"
+}
 
-# Add monkey-patching validation with AJV
-patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
+#
+# Function: restartContainers()
+#
+# Downs and ups containers
+#
+restartContainers() {
+  # Msg
+  echo "@@ Restarting services..."
+  docker-compose -f ./docker/docker-compose-test.yml down
+  npm install
+  docker-compose -f ./docker/docker-compose-test.yml up -d
+  docker-compose -f ./docker/docker-compose-test.yml ps
+  # Msg
+  echo "@@ Restart: done"
+}
 
-# Setup and launch the generated GraphQL web-server
-docker-compose -f ./docker/docker-compose-test.yml up -d
+#
+# Function: cleanup()
+#
+# Default actions (without --keep-running):
+#   Remove docker items (containers, images, etc.).
+#   Remove generated code.
+#
+cleanup() {
+  # Msg
+  echo "@@ Cleanup: start"
+  docker-compose -f ./docker/docker-compose-test.yml down -v --rmi all
+  deleteGenCode
+  # Msg
+  echo "@@ Cleanup: done"
+}
 
-# Wait until the Science-DB GraphQL web-server is up and running
-waited=0
-until curl 'localhost:3000/graphql' > /dev/null 2>&1
-do
-  if [ $waited == 240 ]; then
-    echo -e '\nERROR: While awaiting dockerized start-up of the Science-DB GraphQL web server, the time out limit was reached.\n'
-    cleanup
-    exit 1
-  fi
-  sleep 2
-  waited=$(expr $waited + 2)
-done
+#
+# Function: lightCleanup()
+#
+# restart & removeCodeGen
+#
+lightCleanup() {
+  # Msg
+  echo "@@ Light cleanup: start"
+  docker-compose -f ./docker/docker-compose-test.yml down
+  docker-compose -f ./docker/docker-compose-test.yml ps
+  deleteGenCode
+  # Msg
+  echo "@@ Light cleanup: done"
+}
 
+#
+# Function: waitForGql()
+#
+# Waits for GraphQL Server to start, for a maximum amount of T1 seconds.
+#
+waitForGql() {
+  # Msg
+  echo "@@ Waiting for GraphQL server: start"
 
-# Run tests automatically and cleanup docker or keep docker running (suitable for debugging purposes)
-PARAMS="$@"
-if ! [[ "$@" =~ "--run-docker-only" ]]; then
+  # Wait until the Science-DB GraphQL web-server is up and running
+  waited=0
+  until curl 'localhost:3000/graphql' > /dev/null 2>&1
+  do
+    if [ $waited == $T1 ]; then
+      # Msg: error
+      echo -e "!!ERROR: science-db graphql web server does not start, the wait time limit was reached ($T1).\n"
+      cleanup
+      exit 1
+    fi
+    sleep 2
+    waited=$(expr $waited + 2)
+  done
 
- mocha ./test/mocha_integration_test.js
- bash -C "${PWD}/test/sh_integration_test_clear.sh" "$@"
+  # Msg
+  echo "@@ GraphQL server is up!: done"
+}
 
+#
+# Function: genCode()
+#
+# Generate code.
+#
+genCode() {
+  # Msg
+  echo "@@ Generating code..."
+  npm install
+  node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
+  # Patch the resolver for web-server
+  patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+  # Add monkey-patching validation with AJV
+  patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
+  # Msg
+  echo "@@ Generating code: done"
+}
+
+#
+# Function: upContainers()
+#
+# Up docker containers.
+#
+upContainers() {
+  # Msg
+  echo "@@ Rising up containers..."
+  npm install
+  docker-compose -f ./docker/docker-compose-test.yml up -d
+  docker-compose -f ./docker/docker-compose-test.yml ps
+  # Msg
+  echo "@@ Containers up: done"
+}
+
+#
+# Function: doTests()
+#
+# Do the mocha integration tests.
+#
+doTests() {
+  # Msg
+  echo "@@ Starting mocha tests"
+  mocha ./test/mocha_integration_test.js
+  # Msg
+  echo "@@ Tests: done"
+}
+
+#
+# Function: consumeArgs()
+#
+# Shift the remaining arguments on $# list, and sets the flag KEEP_RUNNING=true if
+# argument -k or --keep-running is found. 
+#
+consumeArgs() {
+  while [[ $# -gt 0 ]]
+  do
+      a="$1"
+
+      case $a in
+        -k|--keep-running)
+          # set flag
+          KEEP_RUNNING=true
+
+          # past argument
+          shift
+        ;;
+        
+        *)
+          # past argument
+          shift
+        ;;
+      esac
+  done
+}
+
+#
+# Main
+#
+if [ $# -gt 0 ]; then
+    #Processes comand line arguments.
+    while [[ $# -gt 0 ]]
+    do
+        key="$1"
+
+        ##debug
+        echo "@debug@ Doing: $1"
+
+        case $key in
+            -k|--keep-running)
+              # set flag
+              KEEP_RUNNING=true
+              
+              # past argument
+              shift
+            ;;
+
+            -r|--restart-containers)
+              # Restart containers
+              restartContainers
+
+              # done
+              exit
+            ;;
+
+            -g|--generate-code)
+              # Light cleanup
+              lightCleanup
+              # Generate code
+              genCode
+              # Ups containers
+              upContainers
+
+              # done
+              exit
+            ;;
+
+            -t|--run-tests-only)
+              # Restart containers
+              restartContainers
+              # Do the tests
+              doTests
+
+              # consume remaining arguments
+              consumeArgs
+            ;;
+
+            -T|--generate-code-and-run-tests)
+              # Light cleanup
+              lightCleanup
+              # Generate code
+              genCode
+              # Up containers
+              upContainers
+              # Do the tests
+              doTests
+
+              # consume remaining arguments
+              consumeArgs
+            ;;
+
+            -c|--cleanup)
+              # Cleanup
+              cleanup
+
+              #done
+              exit
+            ;;
+
+            *)
+              # Show warning
+              echo "@@ Unknown option_ $key"
+              echo "unknown option: $key"
+              exit 1
+            ;;
+        esac
+    done
+else
+#default: no arguments
+  # Light cleanup
+  lightCleanup
+  # Generate code
+  genCode
+  # Ups containers
+  upContainers
+  # Do the tests
+  doTests
+fi
+
+#
+# Clean up
+#
+if [ $KEEP_RUNNING = false ]; then
+
+  ##debug
+  echo "@debug@ Doing final: cleanup()"
+  cleanup
 fi
