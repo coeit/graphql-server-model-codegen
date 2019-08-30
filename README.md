@@ -22,34 +22,39 @@ To run the integration-test case
 $ npm run test-integration [-- OPTIONS]
 ```
 Note:
-Intergation-test case creates a docker-compose ambient with three servers: 
-     
-    `gql_postgres
+Intergation-test case creates a docker-compose ambient with three servers:
+
+    gql_postgres
     gql_science_db_graphql_server
-    gql_ncbi_sim_srv`
+    gql_ncbi_sim_srv
 
-    By default, after the test run, all corresponding Docker images will be completely removed from the docker, this cleanup step can be skiped with `-k` option.
+By default, after the test run, all corresponding Docker images will be completely removed from the docker, this cleanup step can be skiped with __-k__ option.
 
-    Please run this utility with `-h` option to see the man page
+Please run this utility with __-h__ option to see the full documentation in manpage style.
 
-## Examples:
-```
+## Examples of use - Test integration:
 To see full test-integration info:
+```
 $ npm run test-integration -- -h
-
+```
 To restart containers:
+```
 $ npm run test-integration -- -r
-
+```
 To generate code and start containers:
+```
 $ npm run test-integration -- -g
-
+```
 To do the tests only and keep the containers running at end:
+```
 $ npm run test-integration -- -t -k
-
+```
 To generate code and do the tests, removing all Docker images at end:
+```
 $ npm run test-integration -- -T
-
+```
 To do a full clean up (removes containers, images and code):
+```
 $ npm run test-integration -- -T
 ```
 
@@ -71,7 +76,7 @@ This command will create(if doesn't exist) four folders containing the generated
 * migrations ----> create and delete table migration file
 
 
-## Example of use:
+## Examples of use - Code generator:
 In the same directory of this repository run:
 
 ```
