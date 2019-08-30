@@ -19,15 +19,38 @@ $ npm run test-unit
 
 To run the integration-test case
 ```
-$ npm run test-integration <-- params>
+$ npm run test-integration [-- OPTIONS]
 ```
-Note: intergation-test case creates a docker-compose ambient with three servers `gql_postgres`,
-`gql_science_db_graphql_server` and `gql_ncbi_sim_srv`. By default, after the test run, all
-corresponding images will be completely removed from the docker. However, to speed-up the
-development process it is possible to not remove the selected images. Each of the images that
-wou prefer to keep alive shell be preceeded with the `-k` or `--keep-image` key. For example:
+Note:
+Intergation-test case creates a docker-compose ambient with three servers: 
+     
+    `gql_postgres
+    gql_science_db_graphql_server
+    gql_ncbi_sim_srv`
+
+    By default, after the test run, all corresponding Docker images will be completely removed from the docker, this cleanup step can be skiped with `-k` option.
+
+    Please run this utility with `-h` option to see the man page
+
+## Examples:
 ```
-$ npm run test-integration -- -k gql_ncbi_sim_srv -k gql_science_db_graphql_server
+To see full test-integration info:
+$ npm run test-integration -- -h
+
+To restart containers:
+$ npm run test-integration -- -r
+
+To generate code and start containers:
+$ npm run test-integration -- -g
+
+To do the tests only and keep the containers running at end:
+$ npm run test-integration -- -t -k
+
+To generate code and do the tests, removing all Docker images at end:
+$ npm run test-integration -- -T
+
+To do a full clean up (removes containers, images and code):
+$ npm run test-integration -- -T
 ```
 
 

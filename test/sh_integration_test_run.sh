@@ -1,21 +1,7 @@
 #!/bin/bash
 
-
-# Intergation-test case creates a docker-compose ambient with three servers
-# gql_postgres, gql_science_db_graphql_server and gql_ncbi_sim_srv. By default, after the test run,
-# all corresponding images will be completely removed from the docker. However, to speed-up the development
-# process it is possible to not remove the selected images. Each of the images that wou prefer to keep alive
-# shell be preceeded with the -k or --keep-image key. For example:
-
-#$ npm run test-integration -- -k gql_postgres -k gql_science_db_graphql_server -k gql_ncbi_sim_srv
-
-# Also this script can take an optional  "--run-docker-only" parameter. In this case
-# a docker will stay running and no tests will be executed automatically. This mode is useful for
-# debugging purposes.
-
-
 # -------------------------------------------------------------------------------------
-
+# sh_integration_test_run.sh
 
 #
 # NAME
@@ -29,7 +15,7 @@
 #
 #   Execution via npm:
 #
-#     npm run test-integration -- [OPTIONS]
+#     npm run test-integration [-- OPTIONS]
 #
 #   cleaup:
 #     npm run test-integration-clear
@@ -39,16 +25,28 @@
 # DESCRIPTION
 #     Command line utility to perform graphql server's integration-test.
 #
-#     By default, this utility performs the following actions:
+#     Intergation-test case creates a docker-compose ambient with three servers: 
+#     
+#     gql_postgres
+#     gql_science_db_graphql_server
+#     gql_ncbi_sim_srv
+#
+#     By default, after the test run, all corresponding Docker images will be completely removed from the docker, this cleanup step can be skiped with -k option as described below.
+#
+#     Default behavior performs the following actions:
 #
 #         1) Stop and removes Docker containers with docker-compose down command, also removes Docker images (--rmi) and named or anonymous volumes (-v). 
 #         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
 #         3) Re-generates the code from the test models located on current project's local directory: ./test/integration_test_models. The code is generated on local directory: ./docker/integration_test_run.
 #         4) Creates and start containers with docker-compose up command.
 #         5) Excecutes integration tests. The code should exists, otherwise the integration tests are not executed. 
-#         6) Do cleanup as described on 1) and 2) steps.
+#         6) Do cleanup as described on 1) and 2) steps (use -k option to skip this step).
 #       
 #     The options are as follows:
+#
+#     -h, --help
+#
+#         Display this help and exit.
 #
 #     -r, --restart-containers
 #
@@ -105,6 +103,34 @@
 #         1) Stops and removes Docker containers with docker-compose down command, also removes Docker images (--rmi) and named or anonymous volumes (-v).
 #         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
 #
+# EXAMPLES
+#     Command line utility to perform graphql server's integration-test.
+#         
+#     To see full test-integration info:
+#     $ npm run test-integration -- -h
+# 
+#     To run default behavior (cleanup-genCode-doTests-cleanup):
+#     $ npm run test-integration
+# 
+#     To run default behavior but skip final cleanup (cleanup-genCode-doTests):
+#     $ npm run test-integration -- -k
+# 
+#     To restart containers:
+#     $ npm run test-integration -- -r
+# 
+#     To generate code and start containers:
+#     $ npm run test-integration -- -g
+# 
+#     To do the tests only and keep the containers running at end:
+#     $ npm run test-integration -- -t -k
+# 
+#     To generate code and do the tests, removing all Docker images at end:
+#     $ npm run test-integration -- -T
+
+#     To do a full clean up (removes containers, images and code):
+#     $ npm run test-integration -- -c
+# 
+# 
 
 # exit on first error
 set -e
@@ -124,6 +150,7 @@ CODEGEN_DIRS=("./docker/integration_test_run/models" \
               "./docker/integration_test_run/resolvers" \
               "./docker/integration_test_run/validations" \
               "./docker/integration_test_run/patches")
+MANPAGE="./man/sh_integration_test_run.man"
 T1=180
 DO_DEFAULT=true
 KEEP_RUNNING=false
@@ -404,8 +431,6 @@ consumeArgs() {
       case $a in
         -k|--keep-running)
 
-          # Msg
-          echo -e "@@ Doing option: $a"
           # set flag
           KEEP_RUNNING=true
           # Msg
@@ -426,12 +451,13 @@ consumeArgs() {
   done
 }
 #
-# Function: help()
+# Function: man()
 #
-# Print manual to use this script. 
+# Show man page of this script. 
 #
-help() {
-  echo "hola"
+man() {
+  # Show
+  more ${MANPAGE}
 }
 
 #
@@ -443,9 +469,6 @@ if [ $# -gt 0 ]; then
     do
         key="$1"
 
-        # Msg
-        echo -e "@@ Doing option: $1"
-
         case $key in
             -k|--keep-running)
               # Set flag
@@ -456,6 +479,14 @@ if [ $# -gt 0 ]; then
               # Past argument
               shift
               let "NUM_ARGS--"
+            ;;
+
+            -h|--help)
+              # show man page
+              man
+
+              # Done
+              exit 0
             ;;
 
             -r|--restart-containers)
