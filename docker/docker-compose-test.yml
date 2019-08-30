@@ -8,16 +8,12 @@ services:
     ports:
      - 1234:5432
 
-
-
   gql_science_db_graphql_server:
     depends_on:
       - gql_postgres
     build:
       context: .
       dockerfile: Dockerfile.graphql_server
-    ports:
-      - "3000:3000"
 
     volumes:
       - ./integration_test_run/schemas:/usr/src/app/schemas
@@ -28,22 +24,40 @@ services:
       - ./integration_test_run/validations:/usr/src/app/validations
       - ./integration_test_run/patches:/usr/src/app/patches
       - ./sequelize_config.json:/usr/src/app/config/config.json
-      
+    
+    ports:
+      - "3000:3000"
+
     environment:
       PORT: 3000
     # Await POSTGRES role and DB creation, migrate schema, then start web server:
-    command: bash -C './migrateDbAndStartServer.sh'
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npm install
+        ./migrateDbAndStartServer.sh
 
   gql_ncbi_sim_srv:
     depends_on:
-    - gql_postgres
-    - gql_science_db_graphql_server
+      - gql_postgres
+      - gql_science_db_graphql_server
     build:
       context: .
       dockerfile: Dockerfile.ncbi_sim_srv
+
+    volumes:
+      - ./ncbi_sim_srv:/usr/src/app
+
     ports:
-        - "3344:3344"
+      - "3344:3344"
     environment:
         PORT: 3344
         BASE_URL: /aminoAcidSequence
-    command: npm start
+    
+    command:
+      - /bin/sh
+      - -c
+      - |
+        npm install
+        npm start

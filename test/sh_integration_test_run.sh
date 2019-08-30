@@ -75,6 +75,10 @@ CODEGEN_DIRS=("./docker/integration_test_run/models" \
 T1=120
 KEEP_RUNNING=false
 NUM_ARGS=$#
+RED='\033[0;31m'
+LGREEN='\033[1;32m'
+YEL='\033[1;33m'
+NC='\033[0m'
 
 #
 # Functions
@@ -87,21 +91,21 @@ NUM_ARGS=$#
 #
 deleteGenCode() {
   # Msg
-  echo "@@ Deleting generated code..."
+  echo -e "@@ Deleting generated code..."
   # Remove generated code.
   for i in "${CODEGEN_DIRS[@]}"
   do
     if [ -d $i ]; then
       rm -rf $i
       if [ $? -eq 0 ]; then
-          echo "@removed: $i"
+          echo -e "@removed: $i"
       else
-          echo "!ERROR: trying to remove: $i"
+          echo -e "!!${RED}ERROR${NC}: trying to remove: $i fails"
       fi
     fi
   done
   # Msg
-  echo "@@ Generated code deleted: done"
+  echo -e "@@ Generated code deleted ... ${LGREEN}done${NC}"
 }
 
 #
@@ -111,13 +115,13 @@ deleteGenCode() {
 #
 restartContainers() {
   # Msg
-  echo "@@ Restarting services..."
+  echo -e "@@ Restarting containers..."
   docker-compose -f ./docker/docker-compose-test.yml down
   npm install
   docker-compose -f ./docker/docker-compose-test.yml up -d
   docker-compose -f ./docker/docker-compose-test.yml ps
   # Msg
-  echo "@@ Restart: done"
+  echo -e "@@ Containers restart ... ${LGREEN}done${NC}"
 }
 
 #
@@ -129,11 +133,11 @@ restartContainers() {
 #
 cleanup() {
   # Msg
-  echo "@@ Cleanup: start"
+  echo -e "@@ Starting cleanup..."
   docker-compose -f ./docker/docker-compose-test.yml down -v --rmi all
   deleteGenCode
   # Msg
-  echo "@@ Cleanup: done"
+  echo -e "@@ Cleanup ... ${LGREEN}done${NC}"
 }
 
 #
@@ -143,12 +147,12 @@ cleanup() {
 #
 lightCleanup() {
   # Msg
-  echo "@@ Light cleanup: start"
+  echo -e "@@ Starting light cleanup..."
   docker-compose -f ./docker/docker-compose-test.yml down
   docker-compose -f ./docker/docker-compose-test.yml ps
   deleteGenCode
   # Msg
-  echo "@@ Light cleanup: done"
+  echo -e "@@ Light cleanup ... ${LGREEN}done${NC}"
 }
 
 #
@@ -158,7 +162,7 @@ lightCleanup() {
 #
 waitForGql() {
   # Msg
-  echo "@@ Waiting for GraphQL server: start"
+  echo -e "@@ Waiting for GraphQL server to start..."
 
   # Wait until the Science-DB GraphQL web-server is up and running
   waited=0
@@ -166,7 +170,7 @@ waitForGql() {
   do
     if [ $waited == $T1 ]; then
       # Msg: error
-      echo -e "!!ERROR: science-db graphql web server does not start, the wait time limit was reached ($T1).\n"
+      echo -e "!!${RED}ERROR${NC}: science-db graphql web server does not start, the wait time limit was reached ($T1).\n"
       exit 1
     fi
     sleep 2
@@ -174,7 +178,7 @@ waitForGql() {
   done
 
   # Msg
-  echo "@@ GraphQL server is up!: done"
+  echo -e "@@ GraphQL server is up! ... ${LGREEN}done${NC}"
 }
 
 #
@@ -184,7 +188,7 @@ waitForGql() {
 #
 genCode() {
   # Msg
-  echo "@@ Generating code..."
+  echo -e "@@ Generating code..."
   npm install
   node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
 
@@ -194,7 +198,7 @@ genCode() {
   patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
 
   # Msg
-  echo "@@ Generating code: done"
+  echo -e "@@ Generating code: ... ${LGREEN}done${NC}"
 }
 
 #
@@ -204,12 +208,12 @@ genCode() {
 #
 upContainers() {
   # Msg
-  echo "@@ Rising up containers..."
+  echo -e "@@ Rising up containers..."
   npm install
   docker-compose -f ./docker/docker-compose-test.yml up -d
   docker-compose -f ./docker/docker-compose-test.yml ps
   # Msg
-  echo "@@ Containers up: done"
+  echo -e "@@ Containers up ... ${LGREEN}done${NC}"
 }
 
 #
@@ -223,10 +227,10 @@ doTests() {
   waitForGql
 
   # Msg
-  echo "@@ Starting mocha tests"
+  echo -e "@@ Starting mocha tests..."
   mocha ./test/mocha_integration_test.js
   # Msg
-  echo "@@ Tests: done"
+  echo -e "@@ Tests ... ${LGREEN}done${NC}"
 }
 
 #
@@ -241,20 +245,24 @@ consumeArgs() {
   do
       a="$1"
 
-      # Msg
-      echo "@debug@ consuming arg: $a"
-
       case $a in
         -k|--keep-running)
+
+          # Msg
+          echo -e "@@ Doing option: $a"
           # set flag
           KEEP_RUNNING=true
-
-          # done
-          let "NUM_ARGS=0"
+          # Msg
+          echo -e "@@ Keep containers running at end: $KEEP_RUNNING"
+          # Past argument
+          shift
+          let "NUM_ARGS--"
         ;;
         
         *)
-          # past argument
+          # Msg
+          echo -e "@@ Discarting option: ${RED}$a${NC}"
+          # Past argument
           shift
           let "NUM_ARGS--"
         ;;
@@ -271,23 +279,26 @@ if [ $# -gt 0 ]; then
     do
         key="$1"
 
-        ##debug
-        echo "@debug@ Doing: $1"
+        # Msg
+        echo -e "@@ Doing option: $1"
 
         case $key in
             -k|--keep-running)
-              # set flag
+              # Set flag
               KEEP_RUNNING=true
+              # Msg
+              echo -e "@@ keep containers running at end: $KEEP_RUNNING"
               
-              # past argument
+              # Past argument
               shift
+              let "NUM_ARGS--"
             ;;
 
             -r|--restart-containers)
               # Restart containers
               restartContainers
 
-              # done
+              # Done
               exit
             ;;
 
@@ -299,7 +310,7 @@ if [ $# -gt 0 ]; then
               # Ups containers
               upContainers
 
-              # done
+              # Done
               exit
             ;;
 
@@ -309,10 +320,12 @@ if [ $# -gt 0 ]; then
               # Do the tests
               doTests
 
-              # consume remaining arguments
-              consumeArgs $@
+              # Past argument
+              shift
+              let "NUM_ARGS--"
 
-              echo "@@@debug: NUM_ARGS: $NUM_ARGS"
+              # Consume remaining arguments
+              consumeArgs $@
             ;;
 
             -T|--generate-code-and-run-tests)
@@ -325,7 +338,11 @@ if [ $# -gt 0 ]; then
               # Do the tests
               doTests
 
-              # consume remaining arguments
+              # Past argument
+              shift
+              let "NUM_ARGS--"
+
+              # Consume remaining arguments
               consumeArgs $@
             ;;
 
@@ -333,21 +350,20 @@ if [ $# -gt 0 ]; then
               # Cleanup
               cleanup
 
-              #done
+              # Done
               exit
             ;;
 
             *)
-              # Show warning
-              echo "@@ Unknown option_ $key"
-              echo "unknown option: $key"
+              # Msg
+              echo -e "@@ Bad option: ... ${RED}$key${NC} ... ${YEL}exit${NC}"
               exit 1
             ;;
         esac
     done
 else
-#default: no arguments
-  # cleanup
+# Default: no arguments
+  # Cleanup
   cleanup
   # Generate code
   genCode
@@ -363,12 +379,12 @@ fi
 if [ $KEEP_RUNNING = false ]; then
 
   # Msg
-  echo "@@ Doing final cleanup"
+  echo -e "@@ Doing final cleanup..."
   # Cleanup
   cleanup
 else
   # Msg
-  echo "@@ Keeping containers running..."
+  echo -e "@@ Keeping containers running ... ${LGREEN}done${NC}"
   # List
   docker-compose -f ./docker/docker-compose-test.yml ps
 fi
