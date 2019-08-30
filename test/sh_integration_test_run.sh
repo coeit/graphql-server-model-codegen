@@ -21,38 +21,89 @@
 # NAME
 #     sh_integration_test_run.sh
 #
-# SYNOPSIS
+# USAGE
 #
 #   Direct execution:
-#     ./sh_integration_test_run.sh [OPTION]
+#
+#     ./sh_integration_test_run.sh [OPTIONS]
 #
 #   Execution via npm:
-#     npm run test-integration [OPTION]
+#
+#     npm run test-integration -- [OPTIONS]
+#
+#   cleaup:
+#     npm run test-integration-clear
+#   or
+#     npm run test-integration -- -c
 #
 # DESCRIPTION
-#     Bash script utility to perform integration test operations.
+#     Command line utility to perform graphql server's integration-test.
 #
-#     Note: This utility uses docker and docker-compose commands, so it needs to be running with sudo if user is not in the docker's group.
+#     By default, this utility performs the following actions:
 #
+#         1) Stop and removes Docker containers with docker-compose down command, also removes Docker images (--rmi) and named or anonymous volumes (-v). 
+#         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
+#         3) Re-generates the code from the test models located on current project's local directory: ./test/integration_test_models. The code is generated on local directory: ./docker/integration_test_run.
+#         4) Creates and start containers with docker-compose up command.
+#         5) Excecutes integration tests. The code should exists, otherwise the integration tests are not executed. 
+#         6) Do cleanup as described on 1) and 2) steps.
+#       
 #     The options are as follows:
 #
 #     -r, --restart-containers
-#         ##description
+#
+#         This option performs the following actions:
+#
+#         1) Stop and removes containers with docker-compose down command (without removing images).
+#         2) Creates and start containers with docker-compose up command.
+#         
+#         Because the containers that manages the test-suite's databases do not use docker named volumes, but transient ones, the databases will be re-initialized by this command, too.
 #
 #     -g, --generate-code
-#         ##description
+#         
+#         This option performs the following actions:
+#         
+#         1) Stop and removes containers with docker-compose down command (without removing images).
+#         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
+#         3) Re-generates the code from the test models located on current project's local directory: ./test/integration_test_models. The code is generated on local directory: ./docker/integration_test_run.
+#         4) Creates and start containers with docker-compose up command.
 #
 #     -t, --run-test-only
-#         ##description
+#
+#         This option performs the following actions:
+#         
+#         1) Stops and removes containers with docker-compose down command (without removing images).
+#         2) Creates and starts containers with docker-compose up command.
+#         3) Excecutes integration tests. The code should exists, otherwise the integration tests are not executed.
+#
+#         If option -k is also specified, then cleanup step is skipped at the end of the integration-test-suite, otherwise, the cleanup step is performed at the end of the tests (see -c option).
 #
 #     -T, --generate-code-and-run-tests
-#         ##description
+#
+#         This option performs the following actions:
+#         
+#         1) Stops and removes containers with docker-compose down command (without removing images).
+#         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
+#         3) Re-generates the code from the test models located on current project's local directory: ./test/integration_test_models. The code is generated on local directory: ./docker/integration_test_run.
+#         4) Creates and starts containers with docker-compose up command.
+#         5) Excecutes integration tests. The code should exists, otherwise the integration tests are not executed. 
+#
+#         If option -k is also specified, then cleanup step is skipped at the end of the integration-test-suite, otherwise, the cleanup step is performed at the end of the tests (see -c option).
 #
 #     -k, --keep-running
-#         ##description
+#
+#         This option skips the cleanup step at the end of the integration-test-suite and keeps the Docker containers running.
+#         
+#         This option can be used alone, or in conjunction with the options -t or -T.
+#
+#         If this option is not specified, then, by default, the cleanup step is performed at the end of the tests (see -c option).
 #
 #     -c, --cleanup
-#         ##description    
+#
+#         This option performs the following actions:
+#         
+#         1) Stops and removes Docker containers with docker-compose down command, also removes Docker images (--rmi) and named or anonymous volumes (-v).
+#         2) Removes any previously generated code located on current project's local directory: ./docker/integration_test_run.
 #
 
 # exit on first error
@@ -64,6 +115,7 @@ set -e
 DOCKER_SERVICES=(gql_postgres \
                  gql_science_db_graphql_server \
                  gql_ncbi_sim_srv)
+TEST_MODELS="./test/integration_test_models"
 TARGET_DIR="./docker/integration_test_run"
 CODEGEN_DIRS=("./docker/integration_test_run/models" \
               "./docker/integration_test_run/models-webservice" \
@@ -72,12 +124,14 @@ CODEGEN_DIRS=("./docker/integration_test_run/models" \
               "./docker/integration_test_run/resolvers" \
               "./docker/integration_test_run/validations" \
               "./docker/integration_test_run/patches")
-T1=120
+T1=180
+DO_DEFAULT=true
 KEEP_RUNNING=false
 NUM_ARGS=$#
 RED='\033[0;31m'
 LGREEN='\033[1;32m'
 YEL='\033[1;33m'
+LGRAY='\033[38;5;242m'
 NC='\033[0m'
 
 #
@@ -91,21 +145,62 @@ NC='\033[0m'
 #
 deleteGenCode() {
   # Msg
-  echo -e "@@ Deleting generated code..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Removing generated code...${NC}"
+
   # Remove generated code.
   for i in "${CODEGEN_DIRS[@]}"
   do
     if [ -d $i ]; then
       rm -rf $i
       if [ $? -eq 0 ]; then
-          echo -e "@removed: $i"
+          echo -e "@ Removed: $i ... ${LGREEN}done${NC}"
       else
-          echo -e "!!${RED}ERROR${NC}: trying to remove: $i fails"
+          echo -e "!!${RED}ERROR${NC}: trying to remove: ${RED}$i${NC} fails ... ${YEL}exit${NC}"
+          exit 0
       fi
     fi
   done
+
   # Msg
-  echo -e "@@ Generated code deleted ... ${LGREEN}done${NC}"
+  echo -e "@@ All code removed ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
+}
+
+#
+# Function: checkCode()
+#
+# Check if generated code exists.
+#
+checkCode() {
+  # Msg
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Check generated code...${NC}"
+
+  # Remove generated code.
+  for i in "${CODEGEN_DIRS[@]}"
+  do
+    # Check if directory exists
+    if [ -d $i ]; then
+
+      # Check if directory is empty
+      if [ -n "$(ls -A ${i} 2>/dev/null)" ]; then
+        echo -e "@@ Code at: $i ... ${LGREEN}ok${NC}"
+      else
+        echo -e "!!${RED}ERROR${NC}: Code directory: ${RED}$i${NC} exists but is empty!, please try -T option ... ${YEL}exit${NC}"
+        echo -e "${LGRAY}---------------------------- @@${NC}\n"
+        exit 0
+      fi
+    else
+      echo -e "!!${RED}ERROR${NC}: Code directory: ${RED}$i${NC} does not exists!, please try -T option ... ${YEL}exit${NC}"
+      echo -e "${LGRAY}---------------------------- @@${NC}\n"
+      exit 0
+    fi
+  done
+
+  # Msg
+  echo -e "@@ Code check ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -115,13 +210,30 @@ deleteGenCode() {
 #
 restartContainers() {
   # Msg
-  echo -e "@@ Restarting containers..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Restarting containers...${NC}"
+  
+  # Soft down
   docker-compose -f ./docker/docker-compose-test.yml down
-  npm install
-  docker-compose -f ./docker/docker-compose-test.yml up -d
-  docker-compose -f ./docker/docker-compose-test.yml ps
   # Msg
-  echo -e "@@ Containers restart ... ${LGREEN}done${NC}"
+  echo -e "@@ Containers down ... ${LGREEN}done${NC}"
+
+  # Install
+  npm install
+  # Msg
+  echo -e "@@ Installing ... ${LGREEN}done${NC}"
+  
+  # Up
+  docker-compose -f ./docker/docker-compose-test.yml up -d
+  # Msg
+  echo -e "@@ Containers up ... ${LGREEN}done${NC}"
+  
+  # List
+  docker-compose -f ./docker/docker-compose-test.yml ps
+
+  # Msg
+  echo -e "@@ Containers restarted ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -133,26 +245,42 @@ restartContainers() {
 #
 cleanup() {
   # Msg
-  echo -e "@@ Starting cleanup..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Starting cleanup...${NC}"
+
+  # Hard down
   docker-compose -f ./docker/docker-compose-test.yml down -v --rmi all
+  
+  # Delete code
   deleteGenCode
+  
   # Msg
   echo -e "@@ Cleanup ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
+  
 }
 
 #
-# Function: lightCleanup()
+# Function: softCleanup()
 #
 # restart & removeCodeGen
 #
-lightCleanup() {
+softCleanup() {
   # Msg
-  echo -e "@@ Starting light cleanup..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Starting soft cleanup...${NC}"
+
+  # Down
   docker-compose -f ./docker/docker-compose-test.yml down
-  docker-compose -f ./docker/docker-compose-test.yml ps
-  deleteGenCode
   # Msg
-  echo -e "@@ Light cleanup ... ${LGREEN}done${NC}"
+  echo -e "@@ Containers down ... ${LGREEN}done${NC}"
+
+  # Delete code
+  deleteGenCode
+
+  # Msg
+  echo -e "@@ Soft cleanup ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -162,8 +290,9 @@ lightCleanup() {
 #
 waitForGql() {
   # Msg
-  echo -e "@@ Waiting for GraphQL server to start..."
-
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Waiting for GraphQL server to start...${NC}"
+  
   # Wait until the Science-DB GraphQL web-server is up and running
   waited=0
   until curl 'localhost:3000/graphql' > /dev/null 2>&1
@@ -171,7 +300,8 @@ waitForGql() {
     if [ $waited == $T1 ]; then
       # Msg: error
       echo -e "!!${RED}ERROR${NC}: science-db graphql web server does not start, the wait time limit was reached ($T1).\n"
-      exit 1
+      echo -e "${LGRAY}---------------------------- @@${NC}\n"
+      exit 0
     fi
     sleep 2
     waited=$(expr $waited + 2)
@@ -179,6 +309,7 @@ waitForGql() {
 
   # Msg
   echo -e "@@ GraphQL server is up! ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -188,9 +319,16 @@ waitForGql() {
 #
 genCode() {
   # Msg
-  echo -e "@@ Generating code..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Generating code...${NC}"
+
+  # Install
   npm install
-  node ./index.js -f ./test/integration_test_models -o ${TARGET_DIR}
+  # Msg
+  echo -e "@@ Installing ... ${LGREEN}done${NC}"
+
+  # Generate
+  node ./index.js -f ${TEST_MODELS} -o ${TARGET_DIR}
 
   # Patch the resolver for web-server
   patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
@@ -198,7 +336,8 @@ genCode() {
   patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
 
   # Msg
-  echo -e "@@ Generating code: ... ${LGREEN}done${NC}"
+  echo -e "@@ Code generated on ${TARGET_DIR}: ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -208,12 +347,25 @@ genCode() {
 #
 upContainers() {
   # Msg
-  echo -e "@@ Rising up containers..."
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Starting up containers...${NC}"
+  
+  # Install
   npm install
+  # Msg
+  echo -e "@@ Installing ... ${LGREEN}done${NC}"
+  
+  # Up
   docker-compose -f ./docker/docker-compose-test.yml up -d
-  docker-compose -f ./docker/docker-compose-test.yml ps
   # Msg
   echo -e "@@ Containers up ... ${LGREEN}done${NC}"
+  
+  # List
+  docker-compose -f ./docker/docker-compose-test.yml ps
+
+  # Msg
+  echo -e "@@ Containers up ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -222,15 +374,19 @@ upContainers() {
 # Do the mocha integration tests.
 #
 doTests() {
+ # Msg
+  echo -e "\n${LGRAY}@@ ----------------------------${NC}"
+  echo -e "${LGRAY}@@ Starting mocha tests...${NC}"
 
   # Wait for graphql server
   waitForGql
 
-  # Msg
-  echo -e "@@ Starting mocha tests..."
+  # Do tests
   mocha ./test/mocha_integration_test.js
+  
   # Msg
-  echo -e "@@ Tests ... ${LGREEN}done${NC}"
+  echo -e "@@ Mocha tests ... ${LGREEN}done${NC}"
+  echo -e "${LGRAY}---------------------------- @@${NC}\n"
 }
 
 #
@@ -269,6 +425,14 @@ consumeArgs() {
       esac
   done
 }
+#
+# Function: help()
+#
+# Print manual to use this script. 
+#
+help() {
+  echo "hola"
+}
 
 #
 # Main
@@ -299,22 +463,24 @@ if [ $# -gt 0 ]; then
               restartContainers
 
               # Done
-              exit
+              exit 0
             ;;
 
             -g|--generate-code)
               # Light cleanup
-              lightCleanup
+              softCleanup
               # Generate code
               genCode
               # Ups containers
               upContainers
 
               # Done
-              exit
+              exit 0
             ;;
 
             -t|--run-tests-only)
+              # Check code
+              checkCode
               # Restart containers
               restartContainers
               # Do the tests
@@ -326,11 +492,14 @@ if [ $# -gt 0 ]; then
 
               # Consume remaining arguments
               consumeArgs $@
+
+              # Clear flag
+              DO_DEFAULT=false
             ;;
 
             -T|--generate-code-and-run-tests)
               # Light cleanup
-              lightCleanup
+              softCleanup
               # Generate code
               genCode
               # Up containers
@@ -344,6 +513,9 @@ if [ $# -gt 0 ]; then
 
               # Consume remaining arguments
               consumeArgs $@
+
+              # Clear flag
+              DO_DEFAULT=false
             ;;
 
             -c|--cleanup)
@@ -351,30 +523,35 @@ if [ $# -gt 0 ]; then
               cleanup
 
               # Done
-              exit
+              exit 0
             ;;
 
             *)
               # Msg
               echo -e "@@ Bad option: ... ${RED}$key${NC} ... ${YEL}exit${NC}"
-              exit 1
+              exit 0
             ;;
         esac
     done
-else
-# Default: no arguments
-  # Cleanup
-  cleanup
-  # Generate code
-  genCode
-  # Ups containers
-  upContainers
-  # Do the tests
-  doTests
 fi
 
 #
-# Clean up
+# Default
+#
+if [ $DO_DEFAULT = true ]; then
+  # Default: no arguments
+    # Cleanup
+    cleanup
+    # Generate code
+    genCode
+    # Ups containers
+    upContainers
+    # Do the tests
+    doTests
+fi
+
+#
+# Last cleanup
 #
 if [ $KEEP_RUNNING = false ]; then
 
