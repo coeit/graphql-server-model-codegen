@@ -177,6 +177,93 @@ name | Type | Description
 *keysIn* | String | Name of the cross table
 
 ## NOTE:
+Be aware that in the case of an association _belongsToMany_ the user is required to describe the cross table used in the field _keysIn_ as a model in its own. For example, if we have a model `User` and a model `Role` and they are associated in a _manytomany_ way, then we also need to describe the `role_to_user` model:
+
+```
+//User model
+{
+  "model" : "User",
+  "storageType" : "SQL",
+  "attributes" : {
+    "email" : "String",
+    "password" : "String"
+  },
+  "associations" :{
+    "roles" : {
+      "type" : "belongsToMany",
+      "target" : "Role",
+      "targetKey" : "role_Id",
+      "sourceKey" : "user_Id",
+      "keysIn" : "role_to_user",
+      "targetStorageType" : "sql",
+      "label": "name"
+    }
+  }
+
+}
+```
+
+```
+//Role model
+{
+  "model" : "Role",
+  "storageType" : "SQL",
+  "attributes" : {
+    "name" : "String",
+    "description" : "String"
+  },
+  "associations" : {
+    "users" : {
+      "type" : "belongsToMany",
+      "target" : "User",
+      "targetKey" : "user_Id",
+      "sourceKey" : "role_Id",
+      "keysIn" : "role_to_user",
+      "targetStorageType" : "sql",
+      "label": "email"
+    }
+  }
+}
+```
+
+```
+//role_to_user model
+{
+  "model" : "role_to_user",
+  "storageType" : "SQL",
+  "attributes" : {
+    "user_Id" : "Int",
+    "role_Id" : "Int"
+  }
+}
+
+```
+
+## NOTE:
+ It's important to notice that when a model involves a _belongsTo_ association then foreign key that refers remote elements should be explicitly written into the attributes field of the given local model.
+
+Example:
+```
+{
+  "model" : "book",
+  "storageType" : "sql",
+  "attributes" : {
+    "title" : {"type":"String", "description": "The book's title"},
+    "publisher_id": "Int"
+  },
+  "associations":{
+      "publisher" : {
+        "type" : "belongsTo", // FK to publisher will be stored in the Book model
+        "target" : "publisher", // Model's name is `publisher`
+        "targetKey" : "publisher_id", // Local alias for this association
+        "targetStorageType" : Webservice", //  It's a remote database
+        "label" : "name" // Show in GUI the name of the publisher taken from external DB
+        }
+  }
+}
+```
+
+## NOTE:
 THE SAME DATA MODELS DESCRIPTION(.json files) WILL BE USEFUL FOR GENERATING BOTH, THE BACKEND DESCRIBED HERE AND [THE FRONTEND OR GUI](https://github.com/ScienceDb/single-page-app-codegen).
 
 Fields *`label`* and *`sublabel`* in the specification are only needed by the GUI generator, but backend generator will only read required information, therefore extra fields such as *`label`* and *`sublabel`* will be ignored by the backend generator.
@@ -188,7 +275,7 @@ Example:
  "storageType" : "SQL",
  "attributes" : {
         "id" : Int,
-        "title": String,
+        "title" : {"type":"String", "description": "The book's title"},
         "ISBN": Int
     },
  "associations" : {
