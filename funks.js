@@ -141,18 +141,15 @@ attributesToJsonSchemaProperties = function(attributes) {
       }
     } else if (jsonSchemaProps[key] === "Date") {
       jsonSchemaProps[key] = {
-        "type": "string",
-        "format": "date"
+        "isoDate": true
       }
     } else if (jsonSchemaProps[key] === "Time") {
       jsonSchemaProps[key] = {
-        "type": "string",
-        "format": "time"
+        "isoTime": true
       }
     } else if (jsonSchemaProps[key] === "DateTime") {
       jsonSchemaProps[key] = {
-        "type": "string",
-        "format": "date-time"
+        "isoDateTime": true
       }
     } else {
       throw new Error(`Unsupported attribute type: ${jsonSchemaProps[key]}`);
