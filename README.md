@@ -98,7 +98,7 @@ EXAMPLES OF VALID JSON FILES
 
   "associations" : {
     "person" : {
-      "type" : "sql_belongsTo",
+      "type" : "belongsTo",
       "target" : "Person",
       "targetKey" : "personId",
       "targetStorageType" : "sql"
@@ -119,7 +119,7 @@ EXAMPLES OF VALID JSON FILES
   },
   "associations":{
       "books" : {
-          "type" : "cross_hasMany",
+          "type" : "hasMany",
           "target" : "Book",
           "targetKey" : "publisherId",
           "targetStorageType" : "sql"
@@ -280,7 +280,7 @@ Example:
     },
  "associations" : {
         "authors" : {
-            "type" : "sql_belongsToMany",
+            "type" : "belongsToMany",
             "target" : "Person",
             "targetKey" : "person_id",
             "sourceKey" : "book_id",
