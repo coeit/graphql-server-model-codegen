@@ -387,6 +387,22 @@ module.exports.getOptions = function(dataModel){
 };
 
 
+  getSqlType = function(association, model_name){
+
+
+
+    if(association.type === 'to_one' && association.keyIn !== association.target){
+      return 'belongsTo';
+    }else if(association.type === 'to_one' && association.keyIn === association.target){
+      return 'hasOne';
+    }else if(association.type === 'to_many' && association.hasOwnProperty('sourceKey')){
+      return 'belongsToMany';
+    }else if(association.type === 'to_many' && association.keyIn === association.target){
+      return 'hasMany';
+    }
+  }
+
+
   /**
    * parseAssociations - Parse associations of a given data model.
    * Classification of associations will be accordingly to the type of association and storage type of target model.
@@ -413,17 +429,15 @@ module.exports.getOptions = function(dataModel){
     if(associations!==undefined){
       Object.entries(associations).forEach(([name, association]) => {
           association.targetStorageType = association.targetStorageType.toLowerCase();
-          //let target_schema = association.target;
           let type = association.type;
-          // if(type === "belongsTo" && storageType === 'sql' && association.targetStorageType === 'sql'){ //adds column and attribute to source model
-          //   associations_info.mutations_attributes[association.targetKey] = "Int";
-          // }
 
-          if(associations_type["many"].includes(association.type) )
+          //if(associations_type["many"].includes(association.type) )
+          if(association.type === 'to_many')
           {
             //associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target), capitalizeString(inflection.pluralize(association.target))];
             associations_info.schema_attributes["many"][name] = [ association.target, capitalizeString(association.target) ,capitalizeString(name)];
-          }else if(associations_type["one"].includes(association.type))
+          //}else if(associations_type["one"].includes(association.type))
+        }else if(association.type === 'to_one')
           {
             associations_info.schema_attributes["one"][name] = [association.target, capitalizeString(association.target) ];
           }else{
@@ -441,7 +455,9 @@ module.exports.getOptions = function(dataModel){
           assoc["target_cp"] = capitalizeString(association.target) ;//inflection.capitalize(association.target);
           assoc["target_cp_pl"] = capitalizeString(inflection.pluralize(association.target));//inflection.capitalize(inflection.pluralize(association.target));
 
-          associations_info[type].push(assoc);
+          let sql_type = getSqlType(assoc);
+          associations_info[sql_type].push(assoc);
+          //associations_info[type].push(assoc);
         });
 
       }
