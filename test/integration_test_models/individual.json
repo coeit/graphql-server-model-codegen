@@ -6,9 +6,10 @@
   },
   "associations": {
     "transcript_counts": {
-      "type" : "hasMany",
+      "type" : "to_many",
       "target" : "transcript_count",
       "targetKey" : "individual_id",
+      "keyIn": "transcript_count",
       "targetStorageType" : "sql"
     }
   }

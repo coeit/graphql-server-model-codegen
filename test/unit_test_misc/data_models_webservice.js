@@ -1,3 +1,31 @@
+// module.exports.book =
+// {
+//   "model": "book",
+//   "storageType": "webservice",
+//   "attributes": {
+//     "title": "String",
+//     "subject": "String",
+//     "Price": "Float",
+//     "publisher_id": "Int"
+//   },
+//   "associations": {
+//       "publisher" : {
+//         "type": "belongsTo",
+//         "target": "publi_sher",
+//         "targetKey": "publisher_id",
+//         "targetStorageType": "webservice"
+//       },
+//
+//       "authors": {
+//         "type": "belongsToMany",
+//         "target": "Person",
+//         "targetKey": "person_id",
+//         "sourceKey": "book_id",
+//         "targetStorageType": "webservice"
+//       }
+//   }
+// }
+
 module.exports.book =
 {
   "model": "book",
@@ -10,14 +38,15 @@ module.exports.book =
   },
   "associations": {
       "publisher" : {
-        "type": "belongsTo",
+        "type": "to_one",
         "target": "publi_sher",
         "targetKey": "publisher_id",
+        "keyIn": "book",
         "targetStorageType": "webservice"
       },
 
       "authors": {
-        "type": "belongsToMany",
+        "type": "to_many",
         "target": "Person",
         "targetKey": "person_id",
         "sourceKey": "book_id",
@@ -26,6 +55,35 @@ module.exports.book =
   }
 }
 
+// module.exports.person =
+// {
+//   "model": "Person",
+//   "storageType": "webservice",
+//   "attributes" :{
+//     "firstName": "String",
+//     "lastName": "String",
+//     "Age": "Int",
+//     "companyId": "Int"
+//   },
+//
+//   "associations" : {
+//     "works" : {
+//       "type": "belongsToMany",
+//       "target": "book",
+//       "targetKey": "book_id",
+//       "sourceKey": "person_id",
+//       "targetStorageType": "webservice"
+//     },
+//
+//     "company":{
+//       "type": "belongsTo",
+//       "target": "publi_sher",
+//       "targetKey": "companyId",
+//       "targetStorageType": "webservice"
+//     }
+//   }
+//
+// }
 
 module.exports.person =
 {
@@ -40,7 +98,7 @@ module.exports.person =
 
   "associations" : {
     "works" : {
-      "type": "belongsToMany",
+      "type": "to_many",
       "target": "book",
       "targetKey": "book_id",
       "sourceKey": "person_id",
@@ -48,15 +106,42 @@ module.exports.person =
     },
 
     "company":{
-      "type": "belongsTo",
+      "type": "to_one",
       "target": "publi_sher",
       "targetKey": "companyId",
+      "keyIn": "Person",
       "targetStorageType": "webservice"
     }
   }
 
 }
 
+
+// module.exports.publisher =
+// {
+//   "model" : "publi_sher",
+//   "storageType" : "webservice",
+//   "attributes": {
+//     "name" : "String",
+//     "phone" : "String"
+//   },
+//
+//   "associations": {
+//     "publications" : {
+//       "type": "hasMany",
+//       "target": "book",
+//       "targetKey": "publisher_id",
+//       "targetStorageType": "webservice"
+//     },
+//
+//     "director":{
+//       "type":"hasOne",
+//       "target": "Person",
+//       "targetKey": "companyId",
+//       "targetStorageType": "webservice"
+//     }
+//   }
+// }
 
 module.exports.publisher =
 {
@@ -69,16 +154,18 @@ module.exports.publisher =
 
   "associations": {
     "publications" : {
-      "type": "hasMany",
+      "type": "to_many",
       "target": "book",
       "targetKey": "publisher_id",
+      "keyIn": "book",
       "targetStorageType": "webservice"
     },
 
     "director":{
-      "type":"hasOne",
+      "type":"to_one",
       "target": "Person",
       "targetKey": "companyId",
+      "keyIn": "Person",
       "targetStorageType": "webservice"
     }
   }
