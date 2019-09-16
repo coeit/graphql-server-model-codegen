@@ -6,19 +6,6 @@ WORKDIR /usr/src/app
 # Clone the skeleton project and install dependencies
 RUN apt-get update && apt-get install -y git && apt-get install -y procps &&\
   git clone https://github.com/ScienceDb/graphql-server.git . && \
-  chmod u+x ./migrateDbAndStartServer.sh && \
-  npm install
-
-# Copy generated code into the skeleton GraphQL-Server
-COPY ./integration_test_run/schemas ./schemas
-COPY ./integration_test_run/resolvers ./resolvers
-COPY ./integration_test_run/models ./models
-COPY ./integration_test_run/models-webservice ./models-webservice
-COPY ./integration_test_run/migrations ./migrations
-COPY ./integration_test_run/validations ./validations
-COPY ./integration_test_run/patches ./patches
-
-# Configure the database connections
-COPY sequelize_config.json ./config/config.json
+  chmod u+x ./migrateDbAndStartServer.sh
 
 EXPOSE 3000

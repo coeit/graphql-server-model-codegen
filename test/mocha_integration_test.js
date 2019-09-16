@@ -17,6 +17,9 @@ describe(
         let res = itHelpers.request_graph_ql_post('{ countIndividuals }');
         let resBody = JSON.parse(res.body.toString('utf8'));
 
+        console.log("res: ", res);
+        console.log("resBody: ", resBody);
+
         expect(res.statusCode).to.equal(200);
         expect(resBody.data.countIndividuals).equal(0);
     });
@@ -318,6 +321,7 @@ describe(
   });
 
 });
+
 
 describe(
     'Web service model',
@@ -660,4 +664,5 @@ describe(
                   }
               })
           });
+          
   });
