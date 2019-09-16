@@ -1,16 +1,16 @@
---- ./validations/individual.js 2019-08-19 23:43:34.000000000 +0000
-+++ ./validations/individual_mod.js     2019-08-19 23:47:20.117693361 +0000
-@@ -9,7 +9,8 @@
+--- individual.js.orig	2019-08-29 13:55:31.039574947 -0500
++++ individual.js	2019-08-29 13:55:49.607776131 -0500
+@@ -10,7 +10,8 @@
          "$async": true,
          "properties": {
              "name": {
 -                "type": "string"
-+                "type": "string",
-+                "pattern": "^[a-zA-Z0-9]+$"
++               "type": "string",
++               "pattern": "^[a-zA-Z0-9]+$"
              }
          }
      }
-@@ -32,14 +33,12 @@
+@@ -29,12 +30,9 @@
 
      individual.prototype.validateForDelete = async function(record) {
 
@@ -20,14 +20,10 @@
 -        return {
 -            error: null
 +        if (record.name === 'Undeletable') {
-+          throw new Ajv.ValidationError('Record with name "Undeletable" can\'t be deleted')
++            throw new Ajv.ValidationError('Record with name "Undeletable" can\'t be deleted')
          }
-
      }
-
      return individual
 -}
 \ No newline at end of file
 +}
-+
-

@@ -6,9 +6,9 @@
  const resolvers = require('./index');
 +const request = require('sync-request');
 +const baseUrl = 'http://gql_ncbi_sim_srv:3344/aminoAcidSequence/';
- 
- 
- 
+
+
+
 @@ -113,10 +115,25 @@
          order,
          pagination
@@ -37,21 +37,7 @@
 +
 +        return unfiltered;
      },
- 
-     /**
-@@ -129,10 +146,9 @@
-     readOneAminoacidsequence: function({
-         id
-     }, context) {
--        /*
--        YOUR CODE GOES HERE
--        */
--        throw new Error('readOneAminoacidsequence is not implemented');
-+        let res = request('get', baseUrl + id);
-+        if(res.statusCode !== 200) throw new Error(`Remote service response status code for ${id}: ${res.statusCode}`);
-+        return new aminoacidsequence(JSON.parse(res.body.toString('utf8')));
-     },
- 
+
      /**
 @@ -248,4 +264,4 @@
          */

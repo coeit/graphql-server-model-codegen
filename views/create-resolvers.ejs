@@ -4,18 +4,10 @@
 
 const path = require('path');
 const <%-  nameLc  -%> = require(path.join(__dirname, '..', 'models_index.js')).<%- nameLc -%>;
-const searchArg = require('../utils/search-argument');
-const fileTools =  require('../utils/file-tools');
 const helper = require('../utils/helper');
-const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
 const fs = require('fs');
-const uuidv4 = require('uuidv4');
-const resolvers = require('./index');
 const {handleError} = require('../utils/errors');
-const email = require('../utils/email');
-const helpersAcl = require('../utils/helpers-acl');
-const validatorUtil = require('../utils/validatorUtil');
 const os = require('os');
 
 <% associations_temp = associations["belongsToMany"]-%>
@@ -34,38 +26,8 @@ const os = require('os');
    */
   <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
 
-    let options = {};
-
-    if(search!== undefined){
-      let arg = new searchArg(search);
-      let arg_sequelize = arg.toSequelize();
-      options['where'] = arg_sequelize;
-    }
-
-    return this.count<%- associations_temp[i].name_cp%>(options).then( items => {
-      if(order !== undefined){
-        options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-      }else if(pagination !== undefined){
-        options['order'] = [ ["id", "ASC"] ];
-      }
-
-      if(pagination !== undefined){
-        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-      }else{
-        options['offset'] = 0;
-        options['limit'] = items;
-      }
-
-      if(globals.LIMIT_RECORDS < options['limit']){
-        throw new Error(`Request of total <%=associations_temp[i].name_lc%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
-      }
-      return this.get<%- associations_temp[i].name_cp%>(options);
-    }).catch(error =>{
-        handleError( error);
-    });
+    return this.<%=associations_temp[i].name%>FilterImpl({search, order, pagination});
   }
-
   /**
    * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
    *
@@ -74,18 +36,8 @@ const os = require('os');
    * @return {type}          Number of associated records that holds the conditions specified in the search argument
    */
   <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
-
-    let options = {};
-
-    if(search!== undefined){
-      let arg = new searchArg(search);
-      let arg_sequelize = arg.toSequelize();
-      options['where'] = arg_sequelize;
-    }
-
-    return this.count<%- associations_temp[i].name_cp%>(options);
+    return this.countFiltered<%=associations_temp[i].name_cp%>Impl({search});
   }
-
 <%}-%>
 
 
@@ -94,12 +46,12 @@ const os = require('os');
   /**
    * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
-   * @param  {string} _       First parameter is not used
+   * @param  {object} search       Search argument to match the associated record
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_one[i].target_cp%>({"id" : this.<%=associations_one[i].targetKey%>}, context);
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function({search}, context){
+    return this.<%=associations_one[i].name%>Impl(search);
   }
 <%}-%>
 
@@ -108,17 +60,12 @@ const os = require('os');
   /**
    * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
-   * @param  {string} _       First parameter is not used
+   * @param  {object} search       Search argument to match the associated record
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.<%=associations_one[i].target_lc_pl%>({"search":{"field" : "<%=associations_one[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
-    .then((res)=>{
-      return res[0];
-    }).catch( error => {
-        handleError( error);
-    });
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function({search}, context){
+    return this.<%=associations_one[i].name%>Impl(search);
   }
 <%}-%>
 
@@ -138,12 +85,7 @@ const os = require('os');
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
   <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
-    if(search === undefined)
-    {
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
-    }else{
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
-    }
+    return this.<%=associations_temp[i].name%>FilterImpl({search, order, pagination});
   }
 
   /**
@@ -155,12 +97,7 @@ const os = require('os');
    */
   <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
 
-    if(search === undefined)
-    {
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
-    }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
-    }
+    return this.countFiltered<%=associations_temp[i].name_cp%>Impl ({search});
   }
 
 <%}-%>
@@ -183,33 +120,7 @@ module.exports = {
   <%- namePl -%>: function({search, order, pagination}, context){
     return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
         if (authorization === true) {
-        let options = {};
-        if(search!== undefined){
-          let arg = new searchArg(search);
-          let arg_sequelize = arg.toSequelize();
-          options['where'] = arg_sequelize;
-        }
-
-        return <%- nameLc -%>.count(options).then( items => {
-          if(order !== undefined){
-            options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-          }else if(pagination !== undefined){
-            options['order'] = [ ["id", "ASC"] ];
-          }
-
-          if(pagination !== undefined){
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-          }else{
-            options['offset'] = 0;
-            options['limit'] = items;
-          }
-
-          if(globals.LIMIT_RECORDS < options['limit']){
-            throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
-          }
-          return <%- nameLc -%>.findAll(options);
-        });
+          return <%- nameLc -%>.readAll(search, order, pagination);
       } else {
           return new Error("You don't have authorization to perform this action");
       }
@@ -228,7 +139,7 @@ module.exports = {
   readOne<%- nameCp -%>: function({id}, context){
     return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>.findOne({where: {id: id}});
+      return <%- nameLc -%>.readById(id);
     } else {
         return new Error("You don't have authorization to perform this action");
     }
@@ -247,20 +158,7 @@ module.exports = {
   add<%- nameCp -%>: function(input, context){
     return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
       if (authorization === true) {
-
-        return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', <%- nameLc -%>, input)
-        .then((valSuccess) => {
-            return <%- nameLc -%>.create(input)
-                .then( <%- nameLc -%> =>{
-                <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
-                <%for(let i=0; i < associations_temp.length; i++){-%>
-                  <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                    if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.set<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-                  <%}-%>
-            <%}-%>
-            return <%- nameLc -%>;
-            });
-        }).catch( (err) => { return err })
+          return <%- nameLc -%>.addOne(input);
     } else {
         return new Error("You don't have authorization to perform this action");
     }
@@ -268,26 +166,6 @@ module.exports = {
       handleError( error);
   })
   },
-
-  /**
-   * bulkAdd<%- nameCp -%>Xlsx - Load xlsx file of records NO STREAM
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   */
-  bulkAdd<%- nameCp -%>Xlsx: function(_, context){
-    return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
-      if (authorization === true) {
-    let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-    return <%- nameLc -%>.bulkCreate(xlsxObjs, {validate: true});
-      } else {
-          return new Error("You don't have authorization to perform this action");
-      }
-    }).catch( error =>{
-          handleError( error);
-    })
-  },
-
 
   /**
    * bulkAdd<%- nameCp -%>Csv - Load csv file of records
@@ -298,54 +176,7 @@ module.exports = {
   bulkAdd<%- nameCp -%>Csv: function(_, context) {
     return checkAuthorization(context, '<%- name -%>', 'create').then(authorization => {
         if (authorization === true) {
-
-            delim = context.request.body.delim;
-            cols = context.request.body.cols;
-            tmpFile = path.join(os.tmpdir(), uuidv4() + '.csv');
-
-            context.request.files.csv_file.mv(tmpFile).then(() => {
-
-                fileTools.parseCsvStream(tmpFile, <%- nameLc -%>, delim, cols).then((addedZipFilePath) => {
-                    try {
-                        console.log(`Sending ${addedZipFilePath} to the user.`);
-
-                        let attach = [];
-                        attach.push({
-                            filename: path.basename("added_data.zip"),
-                            path: addedZipFilePath
-                        });
-
-                        email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                        'ScienceDB batch add',
-                        'Your data has been successfully added to the database.',
-                        attach).then(function(info){
-                            fileTools.deleteIfExists(addedZipFilePath);
-                            console.log(info);
-                        }).catch(function(err){
-                            fileTools.deleteIfExists(addedZipFilePath);
-                            console.log(err);
-                        });
-
-                        }catch (error) {
-                            console.log(error.message);
-                        }
-
-                        fs.unlinkSync(tmpFile);
-                        }).catch((error) => {
-                            email.sendEmail(helpersAcl.getTokenFromContext(context).email,
-                            'ScienceDB batch add', `${error.message}`).then(function(info){
-                            console.log(info);
-                            }).catch(function(err){
-                            console.log(err);
-                        });
-
-                        fs.unlinkSync(tmpFile);
-                     });
-
-            }).catch((error) => {
-                return new Error(error);
-            });
-
+          return <%- nameLc -%>.bulkAddCsv(context);
         } else {
             return new Error("You don't have authorization to perform this action");
         }
@@ -364,22 +195,10 @@ module.exports = {
   delete<%- nameCp -%>: function({id}, context){
     return checkAuthorization(context, '<%- name -%>', 'delete').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>
-        .findByPk(id)
-        .then( <%- nameLc -%>_sqlz =>{
-
-            if(<%- nameLc -%>_sqlz === null) return new Error(`Record with ID = ${id} not exist`);
-
-            return validatorUtil.ifHasValidatorFunctionInvoke('validateForDelete', <%- nameLc -%>, <%- nameLc -%>_sqlz)
-            .then((valSuccess) => {
-                return <%- nameLc -%>_sqlz
-                .destroy()
-                .then(()=>{return 'Item successfully deleted';});
-            }).catch( (err) => { return err })
-          });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        return <%- nameLc -%>.deleteOne(id);
+      } else {
+        return new Error("You don't have authorization to perform this action");
+      }
       }).catch( error =>{
           handleError( error);
       })
@@ -395,23 +214,7 @@ module.exports = {
   update<%- nameCp-%>: function(input, context){
     return checkAuthorization(context, '<%- name -%>', 'update').then( authorization =>{
       if (authorization === true) {
-
-            return validatorUtil.ifHasValidatorFunctionInvoke('validateForUpdate', <%-  nameLc  -%>, input)
-            .then((valSuccess) => {
-                return <%- nameLc -%>
-                    .findByPk(input.id)
-                    .then( <%- nameLc -%> => {
-                    <%associations_temp = associations["hasMany"].concat(associations["belongsToMany"])-%>
-                    <%for(let i=0; i < associations_temp.length; i++){-%>
-                      <%if(associations_temp[i].targetStorageType === 'sql'){-%>
-                        if(input.add<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.add<%=associations_temp[i].name_cp-%>(input.add<%=associations_temp[i].name_cp-%>);}
-                        if(input.remove<%=associations_temp[i].name_cp-%>){<%- nameLc -%>.remove<%=associations_temp[i].name_cp-%>(input.remove<%=associations_temp[i].name_cp-%>);}
-                      <%}-%>
-                    <%}-%>
-                    return <%- nameLc -%>.update(input);
-                    });
-            }).catch( (err) => { return err })
-
+          return <%- nameLc -%>.updateOne(input);
         } else {
             return new Error("You don't have authorization to perform this action");
         }
@@ -421,7 +224,7 @@ module.exports = {
   },
 
   /**
-   * count<%-namePlCp-%> - Count number of records that holds the conditions specified in the search argument
+   * count<%-namePlCp-%> - Counts number of records that holds the conditions specified in the search argument
    *
    * @param  {object} {search} Search argument for filtering records
    * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
@@ -430,14 +233,7 @@ module.exports = {
   count<%-namePlCp-%>: function({search}, context){
     return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
         if (authorization === true) {
-          let options = {};
-          if(search!== undefined){
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-          }
-
-          return <%- nameLc -%>.count(options);
+          return <%- nameLc -%>.countRecords(search);
         } else {
             return new Error("You don't have authorization to perform this action");
         }
@@ -475,7 +271,7 @@ module.exports = {
   csvTableTemplate<%- nameCp-%>: function(_, context){
     return checkAuthorization(context, '<%- name -%>', 'read').then(authorization => {
         if (authorization === true) {
-            return helper.csvTableTemplate(<%- nameLc -%>);
+            return <%- nameLc -%>.csvTableTemplate();
         } else {
             return new Error("You don't have authorization to perform this action");
         }

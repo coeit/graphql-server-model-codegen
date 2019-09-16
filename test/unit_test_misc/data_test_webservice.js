@@ -67,6 +67,13 @@ module.exports = class book {
         this.publisher_id = publisher_id;
     }
 
+    static readById( id ){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('readOneBook is not implemented');
+    }
+
     static get definition() {
         return definition;
     }
@@ -269,10 +276,7 @@ module.exports = {
     readOneBook: function({
         id
     }, context) {
-        /*
-        YOUR CODE GOES HERE
-        */
-        throw new Error('readOneBook is not implemented');
+      return book.readById(id);
     },
 
     /**
@@ -446,6 +450,13 @@ module.exports = class publi_sher {
         this.id = id;
         this.name = name;
         this.phone = phone;
+    }
+
+    static readById( id ){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('readOnePubli_sher is not implemented');
     }
 
     static get definition() {
@@ -647,10 +658,7 @@ module.exports = {
     readOnePubli_sher: function({
         id
     }, context) {
-        /*
-        YOUR CODE GOES HERE
-        */
-        throw new Error('readOnePubli_sher is not implemented');
+        return publi_sher.readById(id );
     },
 
     /**
@@ -832,6 +840,13 @@ module.exports = class Person {
         this.lastName = lastName;
         this.Age = Age;
         this.companyId = companyId;
+    }
+
+    static readById( id ){
+      /*
+      YOUR CODE GOES HERE
+      */
+      throw new Error('readOnePerson is not implemented');
     }
 
     static get definition() {
@@ -1037,11 +1052,7 @@ module.exports = {
     readOnePerson: function({
         id
     }, context) {
-        /*
-        YOUR CODE GOES HERE
-        */
-
-        throw new Error('readOnePerson is not implemented');
+      return person.readById(id);
     },
 
     /**

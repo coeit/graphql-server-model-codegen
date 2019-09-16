@@ -189,6 +189,7 @@ deleteGenCode() {
     fi
   done
 
+
   # Msg
   echo -e "@@ All code removed ... ${LGREEN}done${NC}"
   echo -e "${LGRAY}---------------------------- @@${NC}\n"
@@ -358,7 +359,8 @@ genCode() {
   node ./index.js -f ${TEST_MODELS} -o ${TARGET_DIR}
 
   # Patch the resolver for web-server
-  patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+  #patch -V never ${TARGET_DIR}/resolvers/aminoacidsequence.js ./docker/ncbi_sim_srv/amino_acid_sequence_resolver.patch
+  patch -V never ${TARGET_DIR}/models-webservice/aminoacidsequence.js ./docker/ncbi_sim_srv/model_aminoacidsequence.patch
   # Add monkey-patching validation with AJV
   patch -V never ${TARGET_DIR}/validations/individual.js ./test/integration_test_misc/individual_validate.patch
 

@@ -11,7 +11,7 @@
      });
 @@ -24,12 +24,12 @@
  
-     individual.prototype.validatorForDelete = function(model) {
+     individual.prototype.validateForDelete = function(model) {
  
 -        //TODO: on the input you have the model to be deleted, no generic Joi checks are available
 -
