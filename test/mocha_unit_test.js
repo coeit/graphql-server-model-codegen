@@ -186,13 +186,6 @@ describe('Stream upload file', function(){
 
 describe('Migrations', function(){
   let data_test = require('./unit_test_misc/test-describe/migrations');
-  it('Migration cross table - project_to_researcher', async function(){
-    let assoc = models.assoc_through_project_researcher;
-    let generated_migration =await funks.generateJs('create-through-migration', assoc);
-    let g_migration = generated_migration.replace(/\s/g, '');
-    let test_migration = data_test.project_to_researcher_migration.replace(/\s/g, '');
-    expect(g_migration).to.have.string(test_migration);
-  });
 
   it('Migration - Person', async function(){
     let opts = funks.getOptions(models.person_indices);

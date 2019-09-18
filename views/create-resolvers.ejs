@@ -41,7 +41,7 @@ const os = require('os');
 <%}-%>
 
 
-<%let associations_one = associations["belongsTo"]-%>
+<%let associations_one = associations["belongsTo"].concat( associations["hasOne"])-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
   /**
    * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
@@ -54,21 +54,6 @@ const os = require('os');
     return this.<%=associations_one[i].name%>Impl(search);
   }
 <%}-%>
-
-<%associations_one = associations["hasOne"]-%>
-<% for(let i=0; i < associations_one.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
-   *
-   * @param  {object} search       Search argument to match the associated record
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function({search}, context){
-    return this.<%=associations_one[i].name%>Impl(search);
-  }
-<%}-%>
-
 
 <% associations_temp = associations["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
