@@ -98,7 +98,21 @@ module.exports = class <%- name -%>{
 
     <%=associations_one[i].name%>Impl (search){
         if(search === undefined){
-          return models.<%=associations_one[i].target_lc%>.readById(this.<%=associations_one[i].targetKey%>);
+          let simple_search = {
+            "field": "<%=associations_one[i].targetKey%>",
+            "value": {
+              "value": this.id
+            },
+            "operator": "eq"
+          }
+
+          return models.<%=associations_one[i].target_lc%>.readAll(simple_search)
+          .then( found => { if(found){
+            return found[0];
+          }
+            return found;
+          })
+
         }else{
           /*
           YOUR CODE GOES HERE
