@@ -121,12 +121,13 @@ EXAMPLES OF VALID JSON FILES
   "storageType" : "Sql",
   "attributes" : {
     "name" : "String",
-    "breed" : "String"
+    "breed" : "String",
+    "personId": "Int"
   },
 
   "associations" : {
     "person" : {
-      "type" : "belongsTo",
+      "type" : "to_one",
       "target" : "Person",
       "targetKey" : "personId",
       "targetStorageType" : "sql"
