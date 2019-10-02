@@ -4,11 +4,9 @@
   "author": "Yevgeniy Kolokoltsev <j.kolokoltsev@gmail.cmo>",
   "main": "index.js",
   "license": "UNLICENSED",
-
   "scripts": {
     "start": "node index.js"
   },
-
   "dependencies": {
     "express": "^4.16.4"
   }
