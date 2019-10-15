@@ -1,24 +1,3 @@
-// module.exports.transcript_count = {
-//   "model" : "transcript_count",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "gene" : "String",
-//     "variable" : "String",
-//     "count" : "Float",
-//     "tissue_or_condition": "String",
-//     "individual_id": "Int"
-//   },
-//   "associations":{
-//     "individual":{
-//       "type" : "belongsTo",
-//       "target" : "individual",
-//       "targetKey" : "individual_id",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
-
-
 module.exports.transcript_count = {
   "model" : "transcript_count",
   "storageType" : "SQL",
@@ -31,7 +10,7 @@ module.exports.transcript_count = {
   },
   "associations":{
     "individual":{
-      "type" : "to_one",//"belongsTo",
+      "type" : "to_one",
       "target" : "individual",
       "targetKey" : "individual_id",
       "keyIn": "transcript_count",
@@ -39,23 +18,6 @@ module.exports.transcript_count = {
     }
   }
 }
-
-
-// module.exports.individual = {
-//   "model" : "individual",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "name" : "String"
-//   },
-//   "associations": {
-//     "transcript_counts": {
-//       "type" : "hasMany",
-//       "target" : "transcript_count",
-//       "targetKey" : "individual_id",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
 
 module.exports.individual = {
   "model" : "individual",
@@ -93,33 +55,6 @@ module.exports.transcript_count_no_assoc =  {
   }
 }
 
-// module.exports.person = {
-//   "model" : "Person",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : "String",
-//     "lastName" : "String",
-//     "email" : "String"
-//   },
-//   "associations":{
-//     "dogs":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql"
-//     },
-//
-//     "books":{
-//       "type" : "belongsToMany",
-//       "target" : "Book",
-//       "targetKey" : "bookId",
-//       "sourceKey" : "personId",
-//       "keysIn" : "books_to_people",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
-
 module.exports.person = {
   "model" : "Person",
   "storageType" : "SQL",
@@ -147,34 +82,6 @@ module.exports.person = {
     }
   }
 }
-
-
-// module.exports.book = {
-//   "model" : "Book",
-//   "storageType" : "sql",
-//   "attributes" : {
-//     "title" : "String",
-//     "genre" : "String",
-//     "publisherId": "Int"
-//   },
-//   "associations":{
-//
-//       "people" : {
-//           "type" : "belongsToMany",
-//           "target" : "Person",
-//           "targetKey" : "personId",
-//           "sourceKey" : "bookId",
-//           "keysIn" : "books_to_people",
-//           "targetStorageType" : "sql"
-//         },
-//       "publisher" : {
-//         "type" : "belongsTo",
-//         "target" : "Publisher",
-//         "targetKey" : "publisherId",
-//         "targetStorageType" : "webservice"
-//         }
-//   }
-// }
 
 module.exports.book = {
   "model" : "Book",
@@ -204,32 +111,6 @@ module.exports.book = {
   }
 }
 
-// module.exports.researcher = {
-//   "model" : "Researcher",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : "String",
-//     "lastName" : "String",
-//     "email" : "String"
-//   },
-//   "associations":{
-//     "projects":{
-//       "type" : "belongsToMany",
-//       "target" : "Project",
-//       "targetKey" : "projectId",
-//       "sourceKey" : "researcherId",
-//       "keysIn" : "project_to_researcher",
-//       "targetStorageType" : "sql"
-//     },
-//     "dog":{
-//       "type": "hasOne",
-//       "target": "Dog",
-//       "targetKey": "researcherId",
-//       "targetStorageType": "sql"
-//     }
-//   }
-// }
-
 module.exports.researcher = {
   "model" : "Researcher",
   "storageType" : "SQL",
@@ -257,26 +138,6 @@ module.exports.researcher = {
   }
 }
 
-// module.exports.specie = {
-//   "model" : "Specie",
-//   "storageType" : "webservice",
-//   "attributes" : {
-//     "nombre" : "String",
-//     "e_nombre_comun_principal" : "String",
-//     "e_foto_principal" : "String",
-//     "nombre_cientifico" : "String"
-//   },
-//
-//   "associations":{
-//     "projects" : {
-//       "type" : "hasMany",
-//       "target" : "Project",
-//       "targetKey" : "specieId",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
-
 module.exports.specie = {
   "model" : "Specie",
   "storageType" : "webservice",
@@ -297,33 +158,6 @@ module.exports.specie = {
     }
   }
 }
-
-// module.exports.dog = {
-//   "model" : "Dog",
-//   "storageType" : "Sql",
-//   "attributes" : {
-//     "name" : "String",
-//     "breed" : "String"
-//   },
-//
-//   "associations" : {
-//     "person" : {
-//       "type" : "belongsTo",
-//       "target" : "Person",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql",
-//       "label": "firstName",
-//       "sublabel": "lastName"
-//     },
-//     "researcher":{
-//       "type" : "belongsTo",
-//       "target": "Researcher",
-//       "targetKey": "researcherId",
-//       "targetStorageType": "SQL",
-//       "label": "firstName"
-//     }
-//   }
-// }
 
 module.exports.dog = {
   "model" : "Dog",
@@ -413,28 +247,6 @@ module.exports.inDiVIdual_camelcase = {
   }
 }
 
-//upper an lower case models name
-// module.exports.transcriptCount_camelcase = {
-//   "model" : "transcriptCount",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "gene" : "String",
-//     "variable" : "String",
-//     "count" : "Float",
-//     "tissue_or_condition": "String",
-//     "individual_id": "Int"
-//   },
-//   "associations":{
-//     "inDiVIdual":{
-//       "type" : "belongsTo",
-//       "target" : "inDiVIdual",
-//       "targetKey" : "individual_id",
-//       "targetStorageType" : "sql",
-//       "label" : "name"
-//     }
-//   }
-// }
-
 module.exports.transcriptCount_camelcase = {
   "model" : "transcriptCount",
   "storageType" : "SQL",
@@ -457,28 +269,6 @@ module.exports.transcriptCount_camelcase = {
   }
 }
 
-
-//upper an lower case models name
-// module.exports.transcriptCount_indiv= {
-//   "model" : "transcriptCount",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "gene" : "String",
-//     "variable" : "String",
-//     "count" : "Float",
-//     "tissue_or_condition": "String"
-//   },
-//   "associations":{
-//     "individual":{
-//       "type" : "belongsTo",
-//       "target" : "Individual",
-//       "targetKey" : "individual_id",
-//       "targetStorageType" : "sql",
-//       "label" : "name"
-//     }
-//   }
-// }
-
 module.exports.transcriptCount_indiv= {
   "model" : "transcriptCount",
   "storageType" : "SQL",
@@ -499,35 +289,6 @@ module.exports.transcriptCount_indiv= {
     }
   }
 }
-
-// module.exports.dog_owner = {
-//   "model" : "Dog",
-//   "storageType" : "Sql",
-//   "attributes" : {
-//     "name" : "String",
-//     "breed" : "String",
-//     "owner_id_test": "Int",
-//     "keeperId": "Int"
-//   },
-//
-//   "associations" : {
-//     "owner" : {
-//       "type" : "belongsTo",
-//       "target" : "Person",
-//       "targetKey" : "owner_id_test",
-//       "targetStorageType" : "sql",
-//       "label": "firstName",
-//       "sublabel": "lastName"
-//     },
-//     "keeper":{
-//       "type" : "belongsTo",
-//       "target": "Researcher",
-//       "targetKey": "keeperId",
-//       "targetStorageType": "SQL",
-//       "label": "firstName"
-//     }
-//   }
-// }
 
 module.exports.dog_owner = {
   "model" : "Dog",
@@ -559,38 +320,6 @@ module.exports.dog_owner = {
     }
   }
 }
-
-// module.exports.person_indices = {
-//   "model" : "Person",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : "String",
-//     "lastName" : "String",
-//     "email" : "String",
-//     "phone" : "String"
-//   },
-//   "associations":{
-//     "dogs":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql",
-//       "label": "name"
-//     },
-//
-//     "books":{
-//       "type" : "belongsToMany",
-//       "target" : "Book",
-//       "targetKey" : "bookId",
-//       "sourceKey" : "personId",
-//       "keysIn" : "books_to_people",
-//       "targetStorageType" : "sql",
-//       "label" : "title"
-//     }
-//   },
-//
-//   "indices": ["email", "phone"]
-// }
 
 module.exports.person_indices = {
   "model" : "Person",
@@ -625,28 +354,6 @@ module.exports.person_indices = {
   "indices": ["email", "phone"]
 }
 
-
-// module.exports.academicTeam = {
-//   "model" : "academicTeam",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "name" : "String",
-//     "department" : "String",
-//     "subject": "String"
-//   },
-//   "associations":{
-//     "members":{
-//       "type" : "hasMany",
-//       "target" : "Researcher",
-//       "targetKey" : "academicTeamId",
-//       "targetStorageType" : "sql",
-//       "label": "firstName",
-//       "sublabel": "lastName"
-//     }
-//   }
-//
-// }
-
 module.exports.academicTeam = {
   "model" : "academicTeam",
   "storageType" : "SQL",
@@ -668,47 +375,6 @@ module.exports.academicTeam = {
   }
 
 }
-
-
-// module.exports.person_date = {
-//   "model" : "Person",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : "String",
-//     "lastName" : "String",
-//     "email" : "String",
-//     "birthday": "Date"
-//   },
-//   "associations":{
-//     "dogs":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql",
-//       "label": "name"
-//     },
-//
-//     "patients":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "doctor_Id",
-//       "targetStorageType" : "sql",
-//       "label": "name"
-//     },
-//
-//     "books":{
-//       "type" : "belongsToMany",
-//       "target" : "Book",
-//       "targetKey" : "book_Id",
-//       "sourceKey" : "person_Id",
-//       "keysIn" : "books_to_people",
-//       "targetStorageType" : "sql",
-//       "label" : "title"
-//     }
-//
-//   }
-// }
-
 
 module.exports.person_date = {
   "model" : "Person",
@@ -751,37 +417,6 @@ module.exports.person_date = {
   }
 }
 
-
-// module.exports.book_authors = {
-//   "model" : "Book",
-//   "storageType" : "sql",
-//   "attributes" : {
-//     "title" : "String",
-//     "genre" : "String",
-//     "publisherId": "Int"
-//   },
-//   "associations":{
-//
-//       "Authors" : {
-//           "type" : "belongsToMany",
-//           "target" : "Person",
-//           "targetKey" : "person_Id",
-//           "sourceKey" : "book_Id",
-//           "keysIn" : "books_to_people",
-//           "targetStorageType" : "sql",
-//           "label" : "firstName",
-//           "sublabel" : "email"
-//         },
-//       "publisher" : {
-//         "type" : "belongsTo",
-//         "target" : "Publisher",
-//         "targetKey" : "publisherId",
-//         "targetStorageType" : "webservice",
-//         "label" : "name"
-//         }
-//   }
-// }
-
 module.exports.book_authors = {
   "model" : "Book",
   "storageType" : "sql",
@@ -812,41 +447,6 @@ module.exports.book_authors = {
         }
   }
 }
-
-
-
-// module.exports.person_description = {
-//   "model" : "Person",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : {
-//         "type": "String",
-//         "description": "Indicates the given name for the person"
-//     },
-//     "lastName" : {
-//         "type": "String",
-//         "description": "Indicates the family name for the person"
-//     },
-//     "email" : "String"
-//   },
-//   "associations":{
-//     "dogs":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql"
-//     },
-//
-//     "books":{
-//       "type" : "belongsToMany",
-//       "target" : "Book",
-//       "targetKey" : "bookId",
-//       "sourceKey" : "personId",
-//       "keysIn" : "books_to_people",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
 
 module.exports.person_description = {
   "model" : "Person",
@@ -881,38 +481,6 @@ module.exports.person_description = {
     }
   }
 }
-
-// module.exports.person_description_optional = {
-//   "model" : "Person",
-//   "storageType" : "SQL",
-//   "attributes" : {
-//     "firstName" : {
-//         "type": "String"
-//     },
-//     "lastName" : {
-//         "type": "String",
-//         "description": "Indicates the family name for the person"
-//     },
-//     "email" : "String"
-//   },
-//   "associations":{
-//     "dogs":{
-//       "type" : "hasMany",
-//       "target" : "Dog",
-//       "targetKey" : "personId",
-//       "targetStorageType" : "sql"
-//     },
-//
-//     "books":{
-//       "type" : "belongsToMany",
-//       "target" : "Book",
-//       "targetKey" : "bookId",
-//       "sourceKey" : "personId",
-//       "keysIn" : "books_to_people",
-//       "targetStorageType" : "sql"
-//     }
-//   }
-// }
 
 module.exports.person_description_optional = {
   "model" : "Person",

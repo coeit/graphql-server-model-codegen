@@ -3,7 +3,6 @@ const expect = require('chai').expect;
 const models = require('./unit_test_misc/data_models');
 const funks = require('../funks');
 const models_webservice = require('./unit_test_misc/data_models_webservice');
-const test_webservice = require('./unit_test_misc/data_test_webservice');
 const requireFromString = require('require-from-string');
 
 //const components_code = require('./unit_test_misc/components_code');
