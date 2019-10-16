@@ -622,7 +622,7 @@ module.exports.generateCode = function(json_dir, dir_write){
 
         });
         //generateAssociationsMigrations(opts, dir_write);
-      }else if(opts.storageType === 'webservice'){
+      }else if(opts.storageType === 'webservice' || opts.storageType === 'cenz_server'){
           let file_name = "";
           file_name = dir_write + '/schemas/' + opts.nameLc + '.js';
           generateSection("schemas",opts,file_name).then( ()=>{
