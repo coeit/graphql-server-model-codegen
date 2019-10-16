@@ -24,6 +24,7 @@ services:
       - ./integration_test_run/validations:/usr/src/app/validations
       - ./integration_test_run/patches:/usr/src/app/patches
       - ./sequelize_config.json:/usr/src/app/config/config.json
+      - ./error_server.log:/usr/src/app/error_server.log
 
     ports:
       - "3000:3000"
