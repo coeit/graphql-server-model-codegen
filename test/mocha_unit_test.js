@@ -412,6 +412,14 @@ describe('All webservice models', function(){
     expect(g_model, 'Incorrect model').to.have.string(test_model);
   });
 
+  it('Model name class - person', async function(){
+    let opts = funks.getOptions(models_webservice.person);
+    let generated_model =await funks.generateJs('create-models-webservice', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.class_name_model_person.replace(/\s/g, '');
+    expect(g_model, 'Incorrect model').to.have.string(test_model);
+  });
+
 });
 
 // describe('Model definition', function(){
