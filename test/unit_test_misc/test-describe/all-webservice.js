@@ -113,3 +113,10 @@ person.prototype.worksFilter = function({
 }
 
 `
+
+module.exports.class_name_model_person = `
+static get name(){
+  return "person";
+}
+
+`

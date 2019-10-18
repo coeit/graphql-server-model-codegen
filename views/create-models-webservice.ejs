@@ -20,6 +20,10 @@ module.exports = class <%- name -%>{
         <%}-%>
   }
 
+  static get name(){
+    return "<%- nameLc -%>";
+  }
+
   static readById( id ){
     /*
     YOUR CODE GOES HERE
