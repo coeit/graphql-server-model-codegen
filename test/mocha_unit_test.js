@@ -3,6 +3,7 @@ const expect = require('chai').expect;
 const models = require('./unit_test_misc/data_models');
 const funks = require('../funks');
 const models_webservice = require('./unit_test_misc/data_models_webservice');
+const models_cenz = require('./unit_test_misc/data_models_cenz');
 const requireFromString = require('require-from-string');
 
 //const components_code = require('./unit_test_misc/components_code');
@@ -762,5 +763,20 @@ describe('Description for attributes', function(){
     let test_schema = data_test.person_schema_description_optional.replace(/\s/g, '');
     expect(g_schema,'Incorrect schema').to.have.string(test_schema);
   });
+
+});
+
+
+describe('Description for attributes', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/cenz-servers');
+
+  it('Set url  - book', async function(){
+    let opts = funks.getOptions(models_cenz.book);
+    let generated_model =await funks.generateJs('create-models-cenz', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.server_url.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
 
 });
