@@ -767,7 +767,7 @@ describe('Description for attributes', function(){
 });
 
 
-describe('Description for attributes', function(){
+describe('Cenz servers', function(){
 
   let data_test = require('./unit_test_misc/test-describe/cenz-servers');
 
@@ -776,6 +776,14 @@ describe('Description for attributes', function(){
     let generated_model =await funks.generateJs('create-models-cenz', opts);
     let g_model = generated_model.replace(/\s/g, '');
     let test_model = data_test.server_url.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
+  it('Read by id  - book', async function(){
+    let opts = funks.getOptions(models_cenz.book);
+    let generated_model =await funks.generateJs('create-models-cenz', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.read_by_id.replace(/\s/g, '');
     expect(g_model, 'No method found').to.have.string(test_model);
   })
 

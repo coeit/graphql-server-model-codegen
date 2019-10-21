@@ -28,10 +28,16 @@ module.exports = class <%- name -%>{
   }
 
   static readById( id ){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('readOne<%- nameCp -%> is not implemented');
+    let query = `query readOne<%- nameCp -%>{ readOne<%- nameCp -%>(id: ${id}){id <%for(var key in attributes){-%>
+       <%=key %>
+     <%}-%> } }`
+
+     return axios.post(url, {query:query}).then(res => {
+        let data = res.data.data.readOne<%- nameCp -%>;
+        return new <%- name -%>(data);
+     }).catch(error => {
+       handleError(error);
+     });
   }
 
   static countRecords(search){
