@@ -14,3 +14,24 @@ static readById(id) {
   });
 }
 `
+
+module.exports.read_all = `
+static readAll(search, order, pagination) {
+  let query = \`query
+  books($search: searchBookInput $pagination: paginationInput $order: [orderBookInput] )
+ {books(search:$search pagination:$pagination order:$order){id title genre publisher_id } }\`
+
+ return axios.post(url,{query:query, variables: {
+   search: search,
+   order: order,
+   pagination: pagination
+ }}).then( res => {
+    let data = res.data.data.books;
+    return data.map(item => {return new Book(item)});
+  }).catch( error =>{
+    handleError(error);
+  });
+
+}
+
+`

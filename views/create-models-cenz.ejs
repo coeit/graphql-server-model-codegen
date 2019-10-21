@@ -49,10 +49,17 @@ module.exports = class <%- name -%>{
   }
 
   static readAll(search, order, pagination){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('Read all <%- namePl -%> is not implemented');
+    let query = `query <%- namePl -%>($search: search<%- nameCp -%>Input $pagination: paginationInput $order: [order<%- nameCp -%>Input]){
+      <%- namePl -%>(search:$search pagination:$pagination order:$order){id <%for(var key in attributes){-%>
+         <%=key %>
+       <%}-%> } }`
+
+       return axios.post(url, {query:query, variables: {search: search, order:order, pagination: pagination}}).then(res =>{
+         let data = res.data.data.<%- namePl -%> ;
+         return data.map(item => {return new <%- name -%>(item) });
+       }).catch(error=>{
+         handleError(error);
+       });
 
   }
 
