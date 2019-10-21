@@ -68,10 +68,22 @@ module.exports = class <%- name -%>{
   }
 
   static addOne(input){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('add<%- nameCp -%> is not implemented');
+    let query = `mutation add<%- nameCp -%>( <%for(var key in attributes){-%>
+       $<%=key %>:<%= attributes[key]%>
+     <%}-%>){
+       add<%- nameCp -%>(<%for(var key in attributes){-%>
+          <%=key %>:$<%= key%>
+        <%}-%>){id <%for(var key in attributes){-%>
+           <%=key %>
+         <%}-%>}
+     }`;
+
+     return axios.post(url, {query:query, variables:input}).then(res =>{
+       let data = res.data.data.add<%- nameCp -%>;
+       return new <%- name -%>(data);
+     }).catch(error =>{
+       handleError(error);
+     });
   }
 
   static deleteOne(id){

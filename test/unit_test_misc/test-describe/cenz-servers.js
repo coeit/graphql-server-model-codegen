@@ -48,3 +48,18 @@ static countRecords(search) {
     });
 }
 `
+
+module.exports.add_one = `
+static addOne(input) {
+  let query = \`mutation addBook($title:String $genre:String $publisher_id:Int){
+    addBook(title:$title genre:$genre publisher_id:$publisher_id){id  title genre publisher_id   }
+  }\`;
+
+  return axios.post(url, {query: query, variables: input}).then( res =>{
+    let data = res.data.data.addBook;
+    return new Book(data);
+  }).catch(error =>{
+    handleError(error);
+  });
+}
+`
