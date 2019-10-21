@@ -33,5 +33,18 @@ static readAll(search, order, pagination) {
   });
 
 }
+`
+module.exports.count_records = `
+static countRecords(search) {
+  let query = \`query countBooks($search: searchBookInput ){
+    countBooks(search: $search) }\`
 
+    return axios.post(url, {query:query, variables:{
+      search: search
+    }}).then( res =>{
+      return res.data.data.countBooks;
+    }).catch(error =>{
+      handleError(error);
+    });
+}
 `
