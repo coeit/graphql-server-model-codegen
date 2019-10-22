@@ -73,5 +73,19 @@ static deleteOne(id) {
     handleError(error);
   });
 }
+`
 
+module.exports.update_one = `
+static updateOne(input) {
+  let query = \`mutation updateBook($id:ID! $title:String $genre:String $publisher_id:Int ){
+    updateBook(id:$id title:$title genre:$genre publisher_id:$publisher_id  ){id  title genre publisher_id  }
+  }\`
+
+  return axios.post(url, {query: query, variables: input}).then(res=>{
+    let data = res.data.data.updateBook;
+    return new Book(data);
+  }).catch(error =>{
+    handleError(error);
+  });
+}
 `

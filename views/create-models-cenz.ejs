@@ -98,10 +98,22 @@ module.exports = class <%- name -%>{
   }
 
   static updateOne(input){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('update<%- nameCp-%> is not implemented');
+    let query = `mutation update<%- nameCp-%>($id:ID! <%for(var key in attributes){-%>
+       $<%=key %>:<%= attributes[key]%>
+     <%}-%> ){
+       update<%- nameCp-%>(id:$id <%for(var key in attributes){-%>
+          <%=key %>:$<%= key%>
+        <%}-%> ){id <%for(var key in attributes){-%>
+           <%=key %>
+         <%}-%>}
+     }`
+
+     return axios.post(url, {query:query, variables:input}).then(res => {
+       let data = res.data.data.update<%- nameCp-%>;
+       return new <%- name -%>(data);
+     }).catch(error =>{
+       handleError(error);
+     });
   }
 
   static bulkAddCsv(context){
