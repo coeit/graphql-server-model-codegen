@@ -89,3 +89,14 @@ static updateOne(input) {
   });
 }
 `
+
+module.exports.csv_template = `
+static csvTableTemplate() {
+    let query = \`query {csvTableTemplateBook}\`;
+    return axios.post(url, {query: query}).then(res =>{
+      return res.data.data.csvTableTemplateBook;
+    }).catch(error =>{
+      handleError(error);
+    });
+}
+`

@@ -124,10 +124,12 @@ module.exports = class <%- name -%>{
   }
 
   static  csvTableTemplate(){
-      /*
-      YOUR CODE GOES HERE
-      */
-      throw new Error('csvTableTemplate<%- nameCp-%> is not implemented');
+      let query = `query { csvTableTemplate<%- nameCp-%> }`;
+      return axios.post(url, {query:query}).then(res =>{
+        return res.data.data.csvTableTemplate<%- nameCp-%>;
+      }).catch(error =>{
+        handleError(error);
+      });
     }
 
     <%let associations_one = associations["belongsTo"]-%>
