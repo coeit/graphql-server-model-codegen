@@ -811,4 +811,12 @@ describe('Cenz servers', function(){
     expect(g_model, 'No method found').to.have.string(test_model);
   })
 
+  it('Delete by id  - book', async function(){
+    let opts = funks.getOptions(models_cenz.book);
+    let generated_model =await funks.generateJs('create-models-cenz', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.delete_by_id.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
 });

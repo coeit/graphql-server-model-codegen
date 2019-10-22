@@ -87,10 +87,14 @@ module.exports = class <%- name -%>{
   }
 
   static deleteOne(id){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('delete<%- nameCp -%> is not implemented');
+    let query = `mutation delete<%- nameCp -%>{ delete<%- nameCp -%>(id: ${id}) }`;
+
+    return axios.post(url, {query: query}).then(res =>{
+      return res.data.data.delete<%- nameCp -%>;
+    }).catch(error =>{
+      handleError(error);
+    });
+
   }
 
   static updateOne(input){

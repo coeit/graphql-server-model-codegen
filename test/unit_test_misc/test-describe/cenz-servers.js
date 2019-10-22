@@ -63,3 +63,15 @@ static addOne(input) {
   });
 }
 `
+module.exports.delete_by_id = `
+static deleteOne(id) {
+  let query = \`mutation deleteBook{ deleteBook(id:\${id})}\`;
+
+  return axios.post(url, {query: query}).then(res =>{
+    return res.data.data.deleteBook;
+  }).catch(error => {
+    handleError(error);
+  });
+}
+
+`
