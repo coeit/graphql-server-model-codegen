@@ -592,6 +592,10 @@ module.exports.generateCode = function(json_dir, dir_write){
     fs.mkdirSync(dir_write+'/models-webservice');
   }
 
+  if(!fs.existsSync(dir_write+'/models-cenz-server'))
+  {
+    fs.mkdirSync(dir_write+'/models-cenz-server');
+  }
 
   //test
   fs.readdirSync(json_dir).forEach((json_file) => {
@@ -627,19 +631,27 @@ module.exports.generateCode = function(json_dir, dir_write){
           let file_name = "";
           file_name = dir_write + '/schemas/' + opts.nameLc + '.js';
           generateSection("schemas",opts,file_name).then( ()=>{
-            console.log(file_name + ' written successfully!(from webservice)');
+            console.log(file_name + ' written successfully!');
           });
 
 
-          file_name = dir_write + '/models-webservice/' + opts.nameLc + '.js';
-          generateSection("models-webservice",opts,file_name).then( ()=>{
-            console.log(file_name + ' written successfully!(from webservice)');
-          });
+          if(opts.storageType === 'webservice'){
+            file_name = dir_write + '/models-webservice/' + opts.nameLc + '.js';
+            generateSection("models-cenz",opts,file_name).then( ()=>{
+              console.log(file_name + ' written successfully!(from webservice)');
+            });
+          }else if(opts.storageType === 'cenz_server'){
+            file_name = dir_write + '/models-cenz-server/' + opts.nameLc + '.js';
+            generateSection("models-webservice",opts,file_name).then( ()=>{
+              console.log(file_name + ' written successfully!(from cenz server)');
+            });
+          }
+
 
 
           file_name = dir_write + '/resolvers/' + opts.nameLc + '.js';
           generateSection("resolvers",opts,file_name).then( ()=>{
-            console.log(file_name + ' written successfully!(from webservice)');
+            console.log(file_name + ' written successfully!');
           });
 
       }
