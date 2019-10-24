@@ -100,3 +100,26 @@ static csvTableTemplate() {
     });
 }
 `
+module.exports.bulk_add_csv = `
+static bulkAddCsv(context) {
+  let tmpFile = path.join(os.tmpdir(), uuidv4()+'.csv');
+
+  return context.request.files.csv_file.mv(tmpFile).then(() =>{
+    let query = \`mutation {bulkAddBookCsv{id}}\`;
+    let formData = new FormData();
+    formData.append('csv_file', fs.createReadStream(tmpFile));
+    formData.append('query', query);
+
+    axios.post(url, formData,  {
+      headers: formData.getHeaders()
+    }).then(res =>{
+        return res.data.data.bulkAddBookCsv;
+      }).catch(error =>{
+        handleError(error);
+      });
+
+  }).catch(error =>{
+    handleError(error);
+  });
+}
+`

@@ -2,6 +2,8 @@ const _ = require('lodash');
 const path = require('path');
 const models = require(path.join(__dirname, '..', 'models_index.js'));
 const axios = require('axios');
+const os = require('os');
+const uuidv4 = require('uuidv4');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
@@ -117,10 +119,27 @@ module.exports = class <%- name -%>{
   }
 
   static bulkAddCsv(context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('bulkAdd<%- nameCp -%>Csv is not implemented');
+    let tmpFile = path.join(os.tmpdir(), uuidv4()+'.csv');
+
+    return context.request.files.csv_file.mv(tmpFile).then(() =>{
+      let query = `mutation {bulkAdd<%- nameCp -%>Csv{id}}`;
+      let formData = new FormData();
+      formData.append('csv_file', fs.createReadStream(tmpFile));
+      formData.append('query', query);
+
+      axios.post(url, formData,  {
+        headers: formData.getHeaders()
+      }).then(res =>{
+          return res.data.data.bulkAdd<%- nameCp -%>Csv;
+        }).catch(error =>{
+          handleError(error);
+        });
+
+    }).catch(error =>{
+      handleError(error);
+    });
+  }
+
   }
 
   static  csvTableTemplate(){
