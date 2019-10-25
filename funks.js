@@ -637,12 +637,12 @@ module.exports.generateCode = function(json_dir, dir_write){
 
           if(opts.storageType === 'webservice'){
             file_name = dir_write + '/models-webservice/' + opts.nameLc + '.js';
-            generateSection("models-cenz",opts,file_name).then( ()=>{
+            generateSection("models-webservice",opts,file_name).then( ()=>{
               console.log(file_name + ' written successfully!(from webservice)');
             });
           }else if(opts.storageType === 'cenz_server'){
             file_name = dir_write + '/models-cenz-server/' + opts.nameLc + '.js';
-            generateSection("models-webservice",opts,file_name).then( ()=>{
+            generateSection("models-cenz",opts,file_name).then( ()=>{
               console.log(file_name + ' written successfully!(from cenz server)');
             });
           }
