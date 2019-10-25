@@ -29,3 +29,34 @@ module.exports.book = {
         }
   }
 }
+
+module.exports.person = {
+  "model" : "Person",
+  "storageType" : "cenz_server",
+  "url": "http://something.other:7000/graphql",
+  "attributes" : {
+    "firstName" : "String",
+    "lastName" : "String",
+    "email" : "String",
+    "companyId": "Int"
+  },
+  "associations":{
+    "works":{
+      "type" : "to_many",
+      "target" : "Book",
+      "targetKey" : "bookId",
+      "sourceKey" : "personId",
+      "keysIn" : "books_to_people",
+      "targetStorageType" : "cenz_server",
+      "label" : "title"
+    },
+
+    "company":{
+      "type": "to_one",
+      "target": "publi_sher",
+      "targetKey": "companyId",
+      "keyIn": "Person",
+      "targetStorageType": "webservice"
+    }
+  }
+}

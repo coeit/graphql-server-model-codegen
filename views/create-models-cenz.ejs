@@ -233,10 +233,21 @@ module.exports = class <%- name -%>{
         }
 
         countFiltered<%=associations_temp[i].name_cp%>Impl({search}){
-          /*
-          YOUR CODE GOES HERE
-          */
-          throw new Error('countFiltered<%=associations_temp[i].name_cp%>Impl is not implemented in the model');
+          let query = `query get<%=associations_temp[i].name_cp%>($search: search<%=associations_temp[i].target_cp%>Input){
+            readOne<%- nameCp -%>(id:${this.id}){countFiltered<%=associations_temp[i].name_cp%>(search: $search)}
+          }`;
+
+          return axios.post(url, {
+              query: query,
+              variables: {
+                search: search
+              }
+          }).then(res => {
+              return res.data.data.readOne<%- nameCp -%>.countFiltered<%=associations_temp[i].name_cp%>;
+          }).catch(error => {
+              handleError(error);
+          });
+
         }
       <%}-%>
 
