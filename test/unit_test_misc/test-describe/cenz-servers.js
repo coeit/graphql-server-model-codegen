@@ -128,7 +128,7 @@ module.exports.many_to_many_association = `
 countFilteredWorksImpl({
     search
 }) {
-    let query = \`query getWorks($search:searchBookInput){readOnePerson(id:\${this.id}){ countFilteredWorks(search: $search) } }\`;
+    let query = \`query countWorks($search:searchBookInput){readOnePerson(id:\${this.id}){ countFilteredWorks(search: $search) } }\`;
 
     return axios.post(url, {
         query: query,

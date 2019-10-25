@@ -233,7 +233,7 @@ module.exports = class <%- name -%>{
         }
 
         countFiltered<%=associations_temp[i].name_cp%>Impl({search}){
-          let query = `query get<%=associations_temp[i].name_cp%>($search: search<%=associations_temp[i].target_cp%>Input){
+          let query = `query count<%=associations_temp[i].name_cp%>($search: search<%=associations_temp[i].target_cp%>Input){
             readOne<%- nameCp -%>(id:${this.id}){countFiltered<%=associations_temp[i].name_cp%>(search: $search)}
           }`;
 
