@@ -1,9 +1,16 @@
 const _ = require('lodash');
 const path = require('path');
 const models = require(path.join(__dirname, '..', 'models_index.js'));
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
+const os = require('os');
+const uuidv4 = require('uuidv4');
 
 // An exact copy of the the model definition that comes from the .json file
 const definition = <%- definition -%>;
+
+const url = "<%- url -%>";
 
 module.exports = class <%- name -%>{
 
@@ -25,61 +32,123 @@ module.exports = class <%- name -%>{
   }
 
   static readById( id ){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('readOne<%- nameCp -%> is not implemented');
+    let query = `query readOne<%- nameCp -%>{ readOne<%- nameCp -%>(id: ${id}){id <%for(var key in attributes){-%>
+       <%=key %>
+     <%}-%> } }`
+
+     return axios.post(url, {query:query}).then(res => {
+        let data = res.data.data.readOne<%- nameCp -%>;
+        return new <%- name -%>(data);
+     }).catch(error => {
+       handleError(error);
+     });
   }
 
   static countRecords(search){
+    let query = `query count<%- namePlCp -%>($search: search<%- nameCp -%>Input){
+      count<%- namePlCp -%>(search: $search)
+    }`
 
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('count<%- namePlCp -%> is not implemented');
+    return axios.post(url, {query:query, variables:{search: search}}).then(res=>{
+      return res.data.data.count<%- namePlCp -%>;
+    }).catch(error =>{
+      handleError(error);
+    });
   }
 
   static readAll(search, order, pagination){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('Read all <%- namePl -%> is not implemented');
+    let query = `query <%- namePl -%>($search: search<%- nameCp -%>Input $pagination: paginationInput $order: [order<%- nameCp -%>Input]){
+      <%- namePl -%>(search:$search pagination:$pagination order:$order){id <%for(var key in attributes){-%>
+         <%=key %>
+       <%}-%> } }`
+
+       return axios.post(url, {query:query, variables: {search: search, order:order, pagination: pagination}}).then(res =>{
+         let data = res.data.data.<%- namePl -%> ;
+         return data.map(item => {return new <%- name -%>(item) });
+       }).catch(error=>{
+         handleError(error);
+       });
 
   }
 
   static addOne(input){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('add<%- nameCp -%> is not implemented');
+    let query = `mutation add<%- nameCp -%>( <%for(var key in attributes){-%>
+       $<%=key %>:<%= attributes[key]%>
+     <%}-%>){
+       add<%- nameCp -%>(<%for(var key in attributes){-%>
+          <%=key %>:$<%= key%>
+        <%}-%>){id <%for(var key in attributes){-%>
+           <%=key %>
+         <%}-%>}
+     }`;
+
+     return axios.post(url, {query:query, variables:input}).then(res =>{
+       let data = res.data.data.add<%- nameCp -%>;
+       return new <%- name -%>(data);
+     }).catch(error =>{
+       handleError(error);
+     });
   }
 
   static deleteOne(id){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('delete<%- nameCp -%> is not implemented');
+    let query = `mutation delete<%- nameCp -%>{ delete<%- nameCp -%>(id: ${id}) }`;
+
+    return axios.post(url, {query: query}).then(res =>{
+      return res.data.data.delete<%- nameCp -%>;
+    }).catch(error =>{
+      handleError(error);
+    });
+
   }
 
   static updateOne(input){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('update<%- nameCp-%> is not implemented');
+    let query = `mutation update<%- nameCp-%>($id:ID! <%for(var key in attributes){-%>
+       $<%=key %>:<%= attributes[key]%>
+     <%}-%> ){
+       update<%- nameCp-%>(id:$id <%for(var key in attributes){-%>
+          <%=key %>:$<%= key%>
+        <%}-%> ){id <%for(var key in attributes){-%>
+           <%=key %>
+         <%}-%>}
+     }`
+
+     return axios.post(url, {query:query, variables:input}).then(res => {
+       let data = res.data.data.update<%- nameCp-%>;
+       return new <%- name -%>(data);
+     }).catch(error =>{
+       handleError(error);
+     });
   }
 
   static bulkAddCsv(context){
-    /*
-    YOUR CODE GOES HERE
-    */
-    throw new Error('bulkAdd<%- nameCp -%>Csv is not implemented');
+    let tmpFile = path.join(os.tmpdir(), uuidv4()+'.csv');
+
+    return context.request.files.csv_file.mv(tmpFile).then(() =>{
+      let query = `mutation {bulkAdd<%- nameCp -%>Csv{id}}`;
+      let formData = new FormData();
+      formData.append('csv_file', fs.createReadStream(tmpFile));
+      formData.append('query', query);
+
+      axios.post(url, formData,  {
+        headers: formData.getHeaders()
+      }).then(res =>{
+          return res.data.data.bulkAdd<%- nameCp -%>Csv;
+        }).catch(error =>{
+          handleError(error);
+        });
+
+    }).catch(error =>{
+      handleError(error);
+    });
   }
 
   static  csvTableTemplate(){
-      /*
-      YOUR CODE GOES HERE
-      */
-      throw new Error('csvTableTemplate<%- nameCp-%> is not implemented');
+      let query = `query { csvTableTemplate<%- nameCp-%> }`;
+      return axios.post(url, {query:query}).then(res =>{
+        return res.data.data.csvTableTemplate<%- nameCp-%>;
+      }).catch(error =>{
+        handleError(error);
+      });
     }
 
     <%let associations_one = associations["belongsTo"]-%>
@@ -164,10 +233,21 @@ module.exports = class <%- name -%>{
         }
 
         countFiltered<%=associations_temp[i].name_cp%>Impl({search}){
-          /*
-          YOUR CODE GOES HERE
-          */
-          throw new Error('countFiltered<%=associations_temp[i].name_cp%>Impl is not implemented in the model');
+          let query = `query count<%=associations_temp[i].name_cp%>($search: search<%=associations_temp[i].target_cp%>Input){
+            readOne<%- nameCp -%>(id:${this.id}){countFiltered<%=associations_temp[i].name_cp%>(search: $search)}
+          }`;
+
+          return axios.post(url, {
+              query: query,
+              variables: {
+                search: search
+              }
+          }).then(res => {
+              return res.data.data.readOne<%- nameCp -%>.countFiltered<%=associations_temp[i].name_cp%>;
+          }).catch(error => {
+              handleError(error);
+          });
+
         }
       <%}-%>
 

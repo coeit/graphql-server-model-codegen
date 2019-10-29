@@ -1,0 +1,34 @@
+// Delete this file, if you do not want or need any validations.
+const validatorUtil = require('../utils/validatorUtil')
+const Ajv = require('ajv')
+const ajv = validatorUtil.addDateTimeAjvKeywords(new Ajv)
+
+// Dear user, edit the schema to adjust it to your model
+module.exports.validator_patch = function(<%- nameLc -%>){
+
+    <%- nameLc -%>.prototype.validatorSchema = {
+      "$async": true,
+      "properties": <%- JSON.stringify(jsonSchemaProperties) -%>
+    }
+
+    <%- nameLc -%>.prototype.asyncValidate = ajv.compile(
+      <%- nameLc -%>.prototype.validatorSchema
+    )
+
+    <%- nameLc -%>.prototype.validateForCreate = async function(record) {
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
+    }
+
+    <%- nameLc -%>.prototype.validateForUpdate = async function(record) {
+        return await <%- nameLc -%>.prototype.asyncValidate(record)
+    }
+
+    <%- nameLc -%>.prototype.validateForDelete = async function(record) {
+
+        //TODO: on the input you have the record to be deleted, no generic
+        // validation checks are available.
+
+        return {error: null}
+    }
+    return <%- nameLc -%>
+}

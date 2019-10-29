@@ -9,20 +9,27 @@
   "main": "index.js",
   "bin": "./index.js",
   "scripts": {
-    "test-unit": "mocha ./test/test-with-mocha.js",
-    "test-integration": "bash ./test/test-integration-run.sh"
+    "test-unit": "mocha ./test/mocha_unit_test.js",
+    "test-integration": "bash ./test/sh_integration_test_run.sh",
+    "test-integration-clear": "bash ./test/sh_integration_test_run.sh -c"
   },
   "author": "Science-DB team",
   "license": "GPL-3.0",
   "dependencies": {
+    "ajv": "^6.10.0",
     "commander": "^2.15.1",
     "ejs": "^2.5.8",
     "inflection": "^1.12.0",
     "js-beautify": "^1.7.5",
+    "stringify-object": "^3.3.0",
     "sync-request": "^6.0.0"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
     "chai": "^4.1.2",
-    "mocha": "^5.1.0"
+    "delay": "^4.1.0",
+    "jsonwebtoken": "^8.5.0",
+    "mocha": "^5.1.0",
+    "require-from-string": "^2.0.2"
   }
 }

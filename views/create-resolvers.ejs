@@ -2,56 +2,64 @@
     Resolvers for basic CRUD operations
 */
 
-const <%-  nameLc  -%> = require('../models/index').<%- nameLc -%>;
-const searchArg = require('../utils/search-argument');
-const fileTools =  require('../utils/file-tools');
+const path = require('path');
+const <%-  nameLc  -%> = require(path.join(__dirname, '..', 'models_index.js')).<%- nameLc -%>;
 const helper = require('../utils/helper');
-const globals = require('../config/globals');
 const checkAuthorization = require('../utils/check-authorization');
-const path = require('path')
-const fs = require('fs')
-const uuidv4 = require('uuidv4')
-const resolvers = require('./index');
+const fs = require('fs');
+const {handleError} = require('../utils/errors');
+const os = require('os');
 
-<%let associations_one = associations.implicit_associations["belongsTo"]-%>
+<% associations_temp = associations["belongsToMany"]-%>
+<% for(let i=0; i < associations_temp.length; i++){ -%>
+
+  /**
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * associated with the current instance, this records should also
+   * holds the condition of search argument, all of them sorted as specified by the order argument.
+   *
+   * @param  {object} search     Search argument for filtering associated records
+   * @param  {array} order       Type of sorting (ASC, DESC) for each field
+   * @param  {object} pagination Offset and limit to get the records from and to respectively
+   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
+   */
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
+
+    return this.<%=associations_temp[i].name%>FilterImpl({search, order, pagination});
+  }
+  /**
+   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
+   *
+   * @param  {object} {search} description
+   * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {type}          Number of associated records that holds the conditions specified in the search argument
+   */
+  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
+    return this.countFiltered<%=associations_temp[i].name_cp%>Impl({search});
+  }
+<%}-%>
+
+
+<%let associations_one = associations["belongsTo"].concat( associations["hasOne"])-%>
 <% for(let i=0; i < associations_one.length; i++){ -%>
   /**
    * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
    *
-   * @param  {string} _       First parameter is not used
+   * @param  {object} search       Search argument to match the associated record
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {type}         Associated record
    */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_one[i].target_cp%>({"id" : this.<%=associations_one[i].targetKey%>}, context);
+  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function({search}, context){
+    return this.<%=associations_one[i].name%>Impl(search);
   }
 <%}-%>
 
-<%associations_one = associations.implicit_associations["hasOne"]-%>
-<% for(let i=0; i < associations_one.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_one[i].name%> - Return associated record
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_one[i].name%> = function(_, context){
-    return resolvers.<%=associations_one[i].target_lc_pl%>({"search":{"field" : "<%=associations_one[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
-    .then((res)=>{
-      return res[0];
-    }).catch( error => {
-      throw new Error(error);
-    });
-  }
-<%}-%>
-
-
-<% let associations_temp = associations.implicit_associations["hasMany"]-%>
+<% associations_temp = associations["hasMany"]-%>
 <% for(let i=0; i < associations_temp.length; i++){ -%>
 
   /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
+   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
    * associated with the current instance, this records should also
    * holds the condition of search argument, all of them sorted as specified by the order argument.
    *
@@ -61,13 +69,8 @@ const resolvers = require('./index');
    * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
    */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order,pagination}, context){
-    if(search === undefined)
-    {
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination},context);
-    }else{
-      return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
-    }
+  <%- nameLc -%>.prototype.<%=associations_temp[i].name%>Filter = function({search,order,pagination}, context){
+    return this.<%=associations_temp[i].name%>FilterImpl({search, order, pagination});
   }
 
   /**
@@ -79,160 +82,13 @@ const resolvers = require('./index');
    */
   <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
 
-    if(search === undefined)
-    {
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
-    }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
-    }
+    return this.countFiltered<%=associations_temp[i].name_cp%>Impl ({search});
   }
 
 <%}-%>
 
-<% associations_temp = associations.implicit_associations["belongsToMany"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
 
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
-   * associated with the current instance, this records should also
-   * holds the condition of search argument, all of them sorted as specified by the order argument.
-   *
-   * @param  {object} search     Search argument for filtering associated records
-   * @param  {array} order       Type of sorting (ASC, DESC) for each field
-   * @param  {object} pagination Offset and limit to get the records from and to respectively
-   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
-   */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order,pagination}, context){
 
-    let options = {};
-
-    if(search!== undefined){
-      let arg = new searchArg(search);
-      let arg_sequelize = arg.toSequelize();
-      options['where'] = arg_sequelize;
-    }
-
-    return this.count<%- associations_temp[i].target_cp_pl%>(options).then( items => {
-      if(order !== undefined){
-        options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-      }
-
-      if(pagination !== undefined){
-        options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-        options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-      }else{
-        options['offset'] = 0;
-        options['limit'] = items;
-      }
-
-      if(globals.LIMIT_RECORDS < options['limit']){
-        throw new Error(`Request of total <%=associations_temp[i].name_lc%>Filter exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
-      }
-      return this.get<%- associations_temp[i].name_cp%>(options);
-    }).catch(error =>{
-      console.log("Catched the error in <%=associations_temp[i].name_lc%>Filter ", error);
-      return error;
-    });
-  }
-
-  /**
-   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
-   *
-   * @param  {object} {search} description
-   * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}          Number of associated records that holds the conditions specified in the search argument
-   */
-  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
-
-    let options = {};
-
-    if(search!== undefined){
-      let arg = new searchArg(search);
-      let arg_sequelize = arg.toSequelize();
-      options['where'] = arg_sequelize;
-    }
-
-    return this.count<%- associations_temp[i].name_cp%>(options);
-  }
-
-<%}-%>
-<% associations_temp = associations.explicit_resolvers["belongsTo"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
-
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.readOne<%=associations_temp[i].target_cp%>({"id" : this.<%=associations_temp[i].targetKey%>}, context);
-  }
-<%}-%>
-
-<% associations_temp = associations.explicit_resolvers["hasOne"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name%> - Return associated record
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}         Associated record
-   */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name%> = function(_, context){
-    return resolvers.<%=associations_temp[i].target_lc_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq" } },context)
-    .then((res)=>{
-      return res[0];
-    }).catch( error => {
-      throw new Error(error);
-    });
-  }
-<%}-%>
-
-<% associations_temp = associations.explicit_resolvers["hasMany"]-%>
-<% for(let i=0; i < associations_temp.length; i++){ -%>
-  /**
-   * <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter - Check user authorization and return certain number, specified in pagination argument, of records
-   * associated with the current instance, this records should also
-   * holds the condition of search argument, all of them sorted as specified by the order argument.
-   *
-   * @param  {object} search     Search argument for filtering associated records
-   * @param  {array} order       Type of sorting (ASC, DESC) for each field
-   * @param  {object} pagination Offset and limit to get the records from and to respectively
-   * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {array}             Array of associated records holding conditions specified by search, order and pagination argument
-   */
-  <%- nameLc -%>.prototype.<%=associations_temp[i].name_lc%>Filter = function({search,order, pagination}, context){
-
-    if(search === undefined)
-    {
-      return resolvers.<%=associations_temp[i].target_pl%>({"search":{"field" : <%=associations_temp[i].targetKey%>, "value":{"value":this.id }, "operator": "eq"}, order, pagination }, context);
-    }else{
-      return resolvers.<%=associations_temp[i].target_pl%>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination },context)
-    }
-
-  }
-
-  /**
-   * <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> - Count number of associated records that holds the conditions specified in the search argument
-   *
-   * @param  {object} {search} description
-   * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}          Number of associated records that holds the conditions specified in the search argument
-   */
-  <%- nameLc -%>.prototype.countFiltered<%=associations_temp[i].name_cp%> = function({search}, context){
-
-    if(search === undefined)
-    {
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>({"search":{"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} }, context);
-    }else{
-      return resolvers.count<%=associations_temp[i].target_cp_pl%>>({"search":{"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }},context)
-    }
-
-  }
-<%}-%>
 
 module.exports = {
 
@@ -247,60 +103,33 @@ module.exports = {
    * @return {array}             Array of records holding conditions specified by search, order and pagination argument
    */
   <%- namePl -%>: function({search, order, pagination}, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'read').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
         if (authorization === true) {
-        let options = {};
-        if(search!== undefined){
-          let arg = new searchArg(search);
-          let arg_sequelize = arg.toSequelize();
-          options['where'] = arg_sequelize;
-        }
-
-        return <%- nameLc -%>.count(options).then( items => {
-          if(order !== undefined){
-            options['order'] = order.map( (orderItem) => {return [ orderItem.field, orderItem.order]; } );
-          }
-
-          if(pagination !== undefined){
-            options['offset'] = pagination.offset === undefined ? 0 : pagination.offset;
-            options['limit'] = pagination.limit === undefined ? (items - options['offset']) : pagination.limit;
-          }else{
-            options['offset'] = 0;
-            options['limit'] = items;
-          }
-
-          if(globals.LIMIT_RECORDS < options['limit']){
-            throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
-          }
-          return <%- nameLc -%>.findAll(options);
-        }).catch(error =>{
-          console.log("Catched the error in <%- namePl -%> ", error);
-          return error;
-        });
+          return <%- nameLc -%>.readAll(search, order, pagination);
       } else {
           return new Error("You don't have authorization to perform this action");
       }
     }).catch( error =>{
-        return error;
+          handleError( error);
     })
   },
 
   /**
-   * readOne<%- nameCp -%> - Check user authorization and return one book with the specified id in the id argument.
+   * readOne<%- nameCp -%> - Check user authorization and return one record with the specified id in the id argument.
    *
    * @param  {number} {id}    Id of the record to retrieve
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {object}         Record with id requested
    */
   readOne<%- nameCp -%>: function({id}, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'read').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>.findOne({where: {id: id}});
+      return <%- nameLc -%>.readById(id);
     } else {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+        handleError( error);
   })
   },
 
@@ -312,41 +141,15 @@ module.exports = {
    * @return {object}         New record created
    */
   add<%- nameCp -%>: function(input, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'create').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'create').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>.create(input)
-      .then( <%- nameLc -%> =>{
-        <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
-        <%for(let i=0; i < associations_temp.length; i++){-%>
-            if(input.add<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.set<%=associations_temp[i].target_cp_pl-%>(input.add<%=associations_temp[i].target_cp_pl-%>);}
-          <%}-%>
-        return <%- nameLc -%>;
-      });
+          return <%- nameLc -%>.addOne(input);
     } else {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+      handleError( error);
   })
-  },
-
-  /**
-   * bulkAdd<%- nameCp -%>Xlsx - Load xlsx file of records NO STREAM
-   *
-   * @param  {string} _       First parameter is not used
-   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
-   */
-  bulkAdd<%- nameCp -%>Xlsx: function(_, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'create').then( authorization =>{
-      if (authorization === true) {
-    let xlsxObjs = fileTools.parseXlsx(context.request.files.xlsx_file.data.toString('binary'));
-    return <%- nameLc -%>.bulkCreate(xlsxObjs, {validate: true});
-      } else {
-          return new Error("You don't have authorization to perform this action");
-      }
-    }).catch( error =>{
-        return error;
-    })
   },
 
   /**
@@ -355,23 +158,14 @@ module.exports = {
    * @param  {string} _       First parameter is not used
    * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    */
-  bulkAdd<%- nameCp -%>Csv: function(_, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'create').then( authorization =>{
-      if (authorization === true) {
-        delim = context.request.body.delim;
-        cols = context.request.body.cols;
-        tmpFile = path.join(__dirname, uuidv4()+'.csv')
-        return context.request.files.csv_file.mv(tmpFile).then(() => {
-          return fileTools.parseCsvStream(tmpFile, <%- nameLc -%>, delim, cols)
-        }).catch((err) => {
-          return new Error(err);
-        }).then(() => {
-          fs.unlinkSync(tmpFile)
-        })
-      } else {
-          return new Error("You don't have authorization to perform this action");
-      }
-    }).catch( error =>{
+  bulkAdd<%- nameCp -%>Csv: function(_, context) {
+    return checkAuthorization(context, '<%- name -%>', 'create').then(authorization => {
+        if (authorization === true) {
+          return <%- nameLc -%>.bulkAddCsv(context);
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
         return error;
     })
   },
@@ -384,20 +178,14 @@ module.exports = {
    * @return {string}         Message indicating if deletion was successfull.
    */
   delete<%- nameCp -%>: function({id}, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'delete').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'delete').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>
-        .findById(id)
-        .then( <%- nameLc -%> =>{
-          return <%- nameLc -%>
-            .destroy()
-            .then(()=>{return 'Item succesfully deleted';});
-          });
-        } else {
-            return new Error("You don't have authorization to perform this action");
-        }
+        return <%- nameLc -%>.deleteOne(id);
+      } else {
+        return new Error("You don't have authorization to perform this action");
+      }
       }).catch( error =>{
-          return error;
+          handleError( error);
       })
   },
 
@@ -409,49 +197,33 @@ module.exports = {
    * @return {object}         Updated record
    */
   update<%- nameCp-%>: function(input, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'update').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'update').then( authorization =>{
       if (authorization === true) {
-      return <%- nameLc -%>
-        .findById(input.id)
-        .then( <%- nameLc -%> => {
-          <%associations_temp = associations.implicit_associations["hasMany"].concat(associations.implicit_associations["belongsToMany"])-%>
-          <%for(let i=0; i < associations_temp.length; i++){-%>
-              if(input.add<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.add<%=associations_temp[i].target_cp_pl-%>(input.add<%=associations_temp[i].target_cp_pl-%>);}
-              if(input.remove<%=associations_temp[i].target_cp_pl-%>){<%- nameLc -%>.remove<%=associations_temp[i].target_cp_pl-%>(input.remove<%=associations_temp[i].target_cp_pl-%>);}
-            <%}-%>
-            return <%- nameLc -%>.update(input);
-          });
+          return <%- nameLc -%>.updateOne(input);
         } else {
             return new Error("You don't have authorization to perform this action");
         }
       }).catch( error =>{
-          return error;
+            handleError( error);
       })
   },
 
   /**
-   * count<%-namePlCp-%> - Count number of records that holds the conditions specified in the search argument
+   * count<%-namePlCp-%> - Counts number of records that holds the conditions specified in the search argument
    *
    * @param  {object} {search} Search argument for filtering records
    * @param  {object} context  Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {number}          Number of records that holds the conditions specified in the search argument
    */
   count<%-namePlCp-%>: function({search}, context){
-    return checkAuthorization(context, '<%- namePl -%>', 'read').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
         if (authorization === true) {
-          let options = {};
-          if(search!== undefined){
-            let arg = new searchArg(search);
-            let arg_sequelize = arg.toSequelize();
-            options['where'] = arg_sequelize;
-          }
-
-          return <%- nameLc -%>.count(options);
+          return <%- nameLc -%>.countRecords(search);
         } else {
             return new Error("You don't have authorization to perform this action");
         }
       }).catch( error =>{
-          return error;
+            handleError( error);
       })
   },
 
@@ -459,34 +231,38 @@ module.exports = {
    * vueTable<%- nameCp-%> - Return table of records as needed for displaying a vuejs table
    *
    * @param  {string} _       First parameter is not used
-   * @param  {type} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
    * @return {object}         Records with format as needed for displaying a vuejs table
    */
   vueTable<%- nameCp-%>: function(_,context){
-    return checkAuthorization(context, '<%- namePl -%>', 'read').then( authorization =>{
+    return checkAuthorization(context, '<%- name -%>', 'read').then( authorization =>{
       if (authorization === true) {
       return helper.vueTable(context.request, <%- nameLc -%>, <%-  JSON.stringify(arrayAttributeString) -%>  );
     } else {
         return new Error("You don't have authorization to perform this action");
     }
   }).catch( error =>{
-      return error;
+        handleError( error);
   })
-  },
-
+},
 
   /**
-   * stubGet<%-namePlCp-%> - Stub for testing purposes of cursor based pagination
+   * csvTableTemplate<%- nameCp-%> - Returns table's template
    *
-   * @param  {type} search     Search argument for filtering records
-   * @param  {type} indexCursor Base64 encoded element where cursor is pointing currently
-   * @param  {type} limit     Number of maximum records to be fetched
-   * @param  {type} context     Provided to every resolver holds contextual information like the resquest query and user info.
-   * @return {type}             Set of records holding the conditions from search and pagination
+   * @param  {string} _       First parameter is not used
+   * @param  {object} context Provided to every resolver holds contextual information like the resquest query and user info.
+   * @return {Array}         Strings, one for header and one columns types
    */
-  stubGet<%-namePlCp-%>({search, indexCursor, limit}, context){
-    /*
-      CODE GOES HERE ...
-    */
+  csvTableTemplate<%- nameCp-%>: function(_, context){
+    return checkAuthorization(context, '<%- name -%>', 'read').then(authorization => {
+        if (authorization === true) {
+            return <%- nameLc -%>.csvTableTemplate();
+        } else {
+            return new Error("You don't have authorization to perform this action");
+        }
+    }).catch(error => {
+        handleError(error);
+    })
   }
+
 }

@@ -1,16 +1,34 @@
 
 module.exports = `
   type <%- name -%>
-  {
+{
+    """
+    @original-field
+    """
     id: ID
-  <%for(var key in attributes){-%>
-  <%= key %>: <%= attributes[key]%>
+
+  <%for(var key in attributes)
+{-%>
+  """
+    @original-field
+    <%= attributesDescription[key]%>
+    """
+    <%= key %>: <%= attributes[key]%>
+
   <%}-%>
   <%for(var key in associations.schema_attributes.one){-%>
-<%=key %>: <%= associations.schema_attributes.one[key]%>
+<%=key%>(search: search<%= associations.schema_attributes.one[key][1] -%>Input): <%= associations.schema_attributes.one[key][0]%>
   <%}-%>
   <%for(var key in associations.schema_attributes.many){-%>
-<%=key%>Filter(search: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]-%>]
+
+    """
+    @search-request
+    """
+    <%=key%>Filter(search: search<%= associations.schema_attributes.many[key][1] -%>Input, order: [ order<%= associations.schema_attributes.many[key][1] -%>Input ], pagination: paginationInput): [<%= associations.schema_attributes.many[key][0]-%>]
+
+    """
+    @count-request
+    """
     countFiltered<%= associations.schema_attributes.many[key][2]%>(search: search<%= associations.schema_attributes.many[key][1] -%>Input) : Int
   <%}-%>
 }
@@ -50,16 +68,20 @@ module.exports = `
     readOne<%- nameCp -%>(id: ID!): <%- name %>
     count<%- namePlCp -%>(search: search<%- nameCp -%>Input ): Int
     vueTable<%- nameCp -%> : VueTable<%- nameCp -%>
-    stubGet<%- namePlCp -%>(search: search<%- nameCp -%>Input, indexCursor: String, limit: Int): [<%- name -%>]
+    csvTableTemplate<%- nameCp -%>: [String]
   }
 
+    type Mutation {
   <% if(storageType === 'sql'){-%>
-  type Mutation {
-    add<%- nameCp -%>( <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID]<%}-%> ): <%- name %>
-    delete<%- nameCp -%>(id: ID!): String!
-    update<%- nameCp -%>(id: ID!, <%- attributesStr -%><% if (associations.mutations_attributes !==""){-%>, <%= associations.mutations_attributes %> <%}-%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID], remove<%= associations.schema_attributes.many[key][2]%>:[ID] <%}-%>): <%- name %>!
-    bulkAdd<%- nameCp -%>Xlsx: [<%- name -%>]
-    bulkAdd<%- nameCp -%>Csv: [<%- name -%>]
-}
+    add<%- nameCp -%>( <%- attributesStr -%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID]<%}-%> ): <%- name %>!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%> <%for(var key in associations.schema_attributes.many){-%>, add<%= associations.schema_attributes.many[key][2]%>:[ID], remove<%= associations.schema_attributes.many[key][2]%>:[ID] <%}-%>): <%- name %>!
+  <%}else{-%>
+    add<%- nameCp -%>( <%- attributesStr -%>): <%- name %>!
+    update<%- nameCp -%>(id: ID!, <%- attributesStr -%>): <%- name %>!
   <%}-%>
+
+
+  delete<%- nameCp -%>(id: ID!): String!
+  bulkAdd<%- nameCp -%>Csv: [<%- name -%>] }
+
 `;
