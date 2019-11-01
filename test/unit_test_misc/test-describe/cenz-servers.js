@@ -10,11 +10,8 @@ static readById(id) {
     let data = res.data.data.readOneBook;
     return new Book(data);
   }).catch( error =>{
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    error['url'] = url;
+    handleError(error);
   });
 }
 `
@@ -33,11 +30,8 @@ static readAll(search, order, pagination) {
     let data = res.data.data.books;
     return data.map(item => {return new Book(item)});
   }).catch( error =>{
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    error['url'] = url;
+    handleError(error);
   });
 
 }
@@ -52,11 +46,8 @@ static countRecords(search) {
     }}).then( res =>{
       return res.data.data.countBooks;
     }).catch(error =>{
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-      }else{
-          handleError(error);
-      }
+      error['url'] = url;
+      handleError(error);
     });
 }
 `
@@ -71,11 +62,8 @@ static addOne(input) {
     let data = res.data.data.addBook;
     return new Book(data);
   }).catch(error =>{
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    error['url'] = url;
+    handleError(error);
   });
 }
 `
@@ -86,11 +74,8 @@ static deleteOne(id) {
   return axios.post(url, {query: query}).then(res =>{
     return res.data.data.deleteBook;
   }).catch(error => {
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    error['url'] = url;
+    handleError(error);
   });
 }
 `
@@ -105,11 +90,8 @@ static updateOne(input) {
     let data = res.data.data.updateBook;
     return new Book(data);
   }).catch(error =>{
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    error['url'] = url;
+    handleError(error);
   });
 }
 `
@@ -120,11 +102,8 @@ static csvTableTemplate() {
     return axios.post(url, {query: query}).then(res =>{
       return res.data.data.csvTableTemplateBook;
     }).catch(error =>{
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-      }else{
-          handleError(error);
-      }
+      error['url'] = url;
+      handleError(error);
     });
 }
 `
@@ -143,15 +122,12 @@ static bulkAddCsv(context) {
     }).then(res =>{
         return res.data.data.bulkAddBookCsv;
       }).catch(error =>{
+        error['url'] = url;
         handleError(error);
       });
 
   }).catch(error =>{
-    if(error.code === 'ECONNABORTED'){
-       throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-    }else{
-        handleError(error);
-    }
+    handleError(error);
   });
 }
 `
@@ -170,11 +146,8 @@ countFilteredWorksImpl({
     }).then(res => {
         return res.data.data.readOnePerson.countFilteredWorks;
     }).catch(error => {
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(\`Time out exceeded trying to reach server \${url}\`);
-      }else{
-          handleError(error);
-      }
+      error['url'] = url;
+        handleError(error);
     });
 }
 `
