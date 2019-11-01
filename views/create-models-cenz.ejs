@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const path = require('path');
 const models = require(path.join(__dirname, '..', 'models_index.js'));
-const axios = require('axios');
+const axios_general = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const os = require('os');
@@ -11,6 +11,8 @@ const uuidv4 = require('uuidv4');
 const definition = <%- definition -%>;
 
 const url = "<%- url -%>";
+let axios = axios_general.create();
+axios.defaults.timeout = globals.MAX_TIME_OUT;
 
 module.exports = class <%- name -%>{
 
@@ -40,7 +42,11 @@ module.exports = class <%- name -%>{
         let data = res.data.data.readOne<%- nameCp -%>;
         return new <%- name -%>(data);
      }).catch(error => {
-       handleError(error);
+       if(error.code === 'ECONNABORTED'){
+          throw new Error(`Time out exceeded trying to reach server ${url}`);
+       }else{
+           handleError(error);
+       }
      });
   }
 
@@ -52,7 +58,11 @@ module.exports = class <%- name -%>{
     return axios.post(url, {query:query, variables:{search: search}}).then(res=>{
       return res.data.data.count<%- namePlCp -%>;
     }).catch(error =>{
-      handleError(error);
+      if(error.code === 'ECONNABORTED'){
+         throw new Error(`Time out exceeded trying to reach server ${url}`);
+      }else{
+          handleError(error);
+      }
     });
   }
 
@@ -66,7 +76,11 @@ module.exports = class <%- name -%>{
          let data = res.data.data.<%- namePl -%> ;
          return data.map(item => {return new <%- name -%>(item) });
        }).catch(error=>{
-         handleError(error);
+         if(error.code === 'ECONNABORTED'){
+            throw new Error(`Time out exceeded trying to reach server ${url}`);
+         }else{
+             handleError(error);
+         }
        });
 
   }
@@ -86,7 +100,11 @@ module.exports = class <%- name -%>{
        let data = res.data.data.add<%- nameCp -%>;
        return new <%- name -%>(data);
      }).catch(error =>{
-       handleError(error);
+       if(error.code === 'ECONNABORTED'){
+          throw new Error(`Time out exceeded trying to reach server ${url}`);
+       }else{
+           handleError(error);
+       }
      });
   }
 
@@ -96,7 +114,11 @@ module.exports = class <%- name -%>{
     return axios.post(url, {query: query}).then(res =>{
       return res.data.data.delete<%- nameCp -%>;
     }).catch(error =>{
-      handleError(error);
+      if(error.code === 'ECONNABORTED'){
+         throw new Error(`Time out exceeded trying to reach server ${url}`);
+      }else{
+          handleError(error);
+      }
     });
 
   }
@@ -116,7 +138,11 @@ module.exports = class <%- name -%>{
        let data = res.data.data.update<%- nameCp-%>;
        return new <%- name -%>(data);
      }).catch(error =>{
-       handleError(error);
+       if(error.code === 'ECONNABORTED'){
+          throw new Error(`Time out exceeded trying to reach server ${url}`);
+       }else{
+           handleError(error);
+       }
      });
   }
 
@@ -138,7 +164,11 @@ module.exports = class <%- name -%>{
         });
 
     }).catch(error =>{
-      handleError(error);
+      if(error.code === 'ECONNABORTED'){
+         throw new Error(`Time out exceeded trying to reach server ${url}`);
+      }else{
+          handleError(error);
+      }
     });
   }
 
@@ -147,7 +177,11 @@ module.exports = class <%- name -%>{
       return axios.post(url, {query:query}).then(res =>{
         return res.data.data.csvTableTemplate<%- nameCp-%>;
       }).catch(error =>{
-        handleError(error);
+        if(error.code === 'ECONNABORTED'){
+           throw new Error(`Time out exceeded trying to reach server ${url}`);
+        }else{
+            handleError(error);
+        }
       });
     }
 
@@ -245,7 +279,11 @@ module.exports = class <%- name -%>{
           }).then(res => {
               return res.data.data.readOne<%- nameCp -%>.countFiltered<%=associations_temp[i].name_cp%>;
           }).catch(error => {
-              handleError(error);
+            if(error.code === 'ECONNABORTED'){
+               throw new Error(`Time out exceeded trying to reach server ${url}`);
+            }else{
+                handleError(error);
+            }
           });
 
         }
