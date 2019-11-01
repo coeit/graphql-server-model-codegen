@@ -42,11 +42,8 @@ module.exports = class <%- name -%>{
         let data = res.data.data.readOne<%- nameCp -%>;
         return new <%- name -%>(data);
      }).catch(error => {
-       if(error.code === 'ECONNABORTED'){
-          throw new Error(`Time out exceeded trying to reach server ${url}`);
-       }else{
-           handleError(error);
-       }
+       error['url'] = url;
+       handleError(error);
      });
   }
 
@@ -58,11 +55,8 @@ module.exports = class <%- name -%>{
     return axios.post(url, {query:query, variables:{search: search}}).then(res=>{
       return res.data.data.count<%- namePlCp -%>;
     }).catch(error =>{
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(`Time out exceeded trying to reach server ${url}`);
-      }else{
-          handleError(error);
-      }
+      error['url'] = url;
+      handleError(error);
     });
   }
 
@@ -76,11 +70,8 @@ module.exports = class <%- name -%>{
          let data = res.data.data.<%- namePl -%> ;
          return data.map(item => {return new <%- name -%>(item) });
        }).catch(error=>{
-         if(error.code === 'ECONNABORTED'){
-            throw new Error(`Time out exceeded trying to reach server ${url}`);
-         }else{
-             handleError(error);
-         }
+         error['url'] = url;
+         handleError(error);
        });
 
   }
@@ -100,11 +91,8 @@ module.exports = class <%- name -%>{
        let data = res.data.data.add<%- nameCp -%>;
        return new <%- name -%>(data);
      }).catch(error =>{
-       if(error.code === 'ECONNABORTED'){
-          throw new Error(`Time out exceeded trying to reach server ${url}`);
-       }else{
-           handleError(error);
-       }
+       error['url'] = url;
+       handleError(error);
      });
   }
 
@@ -114,11 +102,8 @@ module.exports = class <%- name -%>{
     return axios.post(url, {query: query}).then(res =>{
       return res.data.data.delete<%- nameCp -%>;
     }).catch(error =>{
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(`Time out exceeded trying to reach server ${url}`);
-      }else{
-          handleError(error);
-      }
+      error['url'] = url;
+      handleError(error);
     });
 
   }
@@ -138,11 +123,8 @@ module.exports = class <%- name -%>{
        let data = res.data.data.update<%- nameCp-%>;
        return new <%- name -%>(data);
      }).catch(error =>{
-       if(error.code === 'ECONNABORTED'){
-          throw new Error(`Time out exceeded trying to reach server ${url}`);
-       }else{
-           handleError(error);
-       }
+       error['url'] = url;
+       handleError(error);
      });
   }
 
@@ -160,15 +142,12 @@ module.exports = class <%- name -%>{
       }).then(res =>{
           return res.data.data.bulkAdd<%- nameCp -%>Csv;
         }).catch(error =>{
+          error['url'] = url;
           handleError(error);
         });
 
     }).catch(error =>{
-      if(error.code === 'ECONNABORTED'){
-         throw new Error(`Time out exceeded trying to reach server ${url}`);
-      }else{
-          handleError(error);
-      }
+      handleError(error);
     });
   }
 
@@ -177,11 +156,8 @@ module.exports = class <%- name -%>{
       return axios.post(url, {query:query}).then(res =>{
         return res.data.data.csvTableTemplate<%- nameCp-%>;
       }).catch(error =>{
-        if(error.code === 'ECONNABORTED'){
-           throw new Error(`Time out exceeded trying to reach server ${url}`);
-        }else{
-            handleError(error);
-        }
+        error['url'] = url;
+        handleError(error);
       });
     }
 
@@ -279,11 +255,8 @@ module.exports = class <%- name -%>{
           }).then(res => {
               return res.data.data.readOne<%- nameCp -%>.countFiltered<%=associations_temp[i].name_cp%>;
           }).catch(error => {
-            if(error.code === 'ECONNABORTED'){
-               throw new Error(`Time out exceeded trying to reach server ${url}`);
-            }else{
-                handleError(error);
-            }
+              error['url'] = url;
+              handleError(error);
           });
 
         }
