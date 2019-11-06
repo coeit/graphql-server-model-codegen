@@ -851,3 +851,24 @@ describe('Cenz servers', function(){
     expect(g_model, 'No method found').to.have.string(test_model);
   })
 });
+
+describe('Cursor based pagination', function(){
+
+  let data_test = require('./unit_test_misc/test-describe/cursor-based-pagination');
+  it('Type connection - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.connection_book_schema.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  it('Connection query - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.connection_book_query.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+});

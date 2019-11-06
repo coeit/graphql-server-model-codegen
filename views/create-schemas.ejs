@@ -33,6 +33,16 @@ module.exports = `
   <%}-%>
 }
 
+type <%- nameCp -%>Connection{
+  edges: [<%- nameCp -%>Edge]
+  pageInfo: pageInfo!
+}
+
+type <%- nameCp -%>Edge{
+  cursor: String!
+  node: <%- name -%>!
+}
+
   type VueTable<%- nameCp -%>{
     data : [<%- name -%>]
     total: Int
@@ -69,6 +79,8 @@ module.exports = `
     count<%- namePlCp -%>(search: search<%- nameCp -%>Input ): Int
     vueTable<%- nameCp -%> : VueTable<%- nameCp -%>
     csvTableTemplate<%- nameCp -%>: [String]
+
+    <%- namePl -%>Connection(search:search<%- nameCp -%>Input, order: [ order<%- nameCp -%>Input ], pagination: paginationCursorInput ): <%- nameCp -%>Connection
   }
 
     type Mutation {

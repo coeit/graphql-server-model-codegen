@@ -81,6 +81,8 @@ type Query {
   readOnePerson(id: ID!): Person
   countPeople(search: searchPersonInput ): Int
   vueTablePerson : VueTablePerson    csvTableTemplatePerson: [String]
+
+  peopleConnection(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationCursorInput ): PersonConnection
 }
 
   type Mutation {

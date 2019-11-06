@@ -32,6 +32,7 @@ type Query {
   readOneAminoAcidSequence(id: ID!): aminoAcidSequence
   countAminoAcidSequences(search: searchAminoAcidSequenceInput ): Int
   vueTableAminoAcidSequence : VueTableAminoAcidSequence    csvTableTemplateAminoAcidSequence: [String]
+  aminoAcidSequencesConnection(search: searchAminoAcidSequenceInput, order: [ orderAminoAcidSequenceInput ], pagination: paginationCursorInput ): AminoAcidSequenceConnection
 }
 `
 
