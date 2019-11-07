@@ -116,6 +116,58 @@ module.exports = class <%- name -%> extends Sequelize.Model{
     });
   }
 
+  static readAllCursor(search, order, pagination){
+    let options = {};
+    options['where'] = {};
+    if(search !== undefined){
+      let arg = new searchArg(search);
+      let arg_sequelize = arg.toSequelize();
+      options['where'] = arg_sequelize;
+    }
+
+    return super.count(options).then( items =>{
+      options['offset'] = 0;
+
+      if(pagination!== undefined){
+          let decoded_cursor = pagination.cursor ? JSON.parse(this.base64Decode(pagination.cursor)) : { id: 0 };
+          options['where'] ={ ...options['where'], ...{
+              id:{
+                ['$gt']: decoded_cursor.id
+              }
+            }
+          }
+          options['limit'] = pagination.first;
+      }else{
+        options['order'] = [
+            ["id", "ASC"]
+        ];
+        options['limit'] = items;
+      }
+
+      if (globals.LIMIT_RECORDS < options['limit']) {
+          throw new Error(`Request of total <%- namePl -%> exceeds max limit of ${globals.LIMIT_RECORDS}. Please use pagination.`);
+      }
+      return super.findAll(options).then( records =>{
+        let edges = records.map( record=>{ return {
+          node: record,
+          cursor: record.base64Enconde()
+        }})
+        let last = options.limit;
+        delete options.limit;
+        let pageInfo = {
+          hasNextPage: super.count(options).then(num =>{return num > last}),
+          endCursor: edges[ edges.length - 1 ].cursor
+        }
+
+        return {
+          edges,
+          pageInfo
+        };
+      });
+
+    });
+  }
+
   static addOne(input){
     return validatorUtil.ifHasValidatorFunctionInvoke('validateForCreate', this, input)
         .then((valSuccess) => {
