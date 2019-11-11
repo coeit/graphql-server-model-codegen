@@ -26,22 +26,25 @@ static readAllCursor(search, order, pagination){
 
   return super.count(options).then( items =>{
     options['offset'] = 0;
+    options['order'] = [];
 
-    if(pagination!== undefined){
-        let decoded_cursor = pagination.cursor ? JSON.parse(this.base64Decode(pagination.cursor)) : { id: 0 };
-        options['where'] ={ ...options['where'], ...{
-            id:{
-              ['$gt']: decoded_cursor.id
-            }
-          }
-        }
-        options['limit'] = pagination.first;
-    }else{
-      options['order'] = [
-          ["id", "ASC"]
-      ];
-      options['limit'] = items;
+    if (order !== undefined) {
+        options['order'] = order.map((orderItem) => {
+            return [orderItem.field, orderItem.order];
+        });
     }
+
+    if( !options['order'].map( orderItem=>{return orderItem[0] }).includes("id") ){
+        options['order'] = [ ...options['order'], ...[ ["id", "ASC"] ]];
+    }
+
+    if(pagination!== undefined && pagination.cursor ){
+        let decoded_cursor = JSON.parse(this.base64Decode(pagination.cursor));
+        options['where'] = {...options['where'], ...helper.parseOrderCursor(options['order'], decoded_cursor) } ;
+    }
+
+    options['limit'] = (pagination !== undefined && pagination.first!==undefined) ? pagination.first : items;
+
 
     if (globals.LIMIT_RECORDS < options['limit']) {
         throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
@@ -62,6 +65,8 @@ static readAllCursor(search, order, pagination){
         edges,
         pageInfo
       };
+    }).catch(error =>{
+      console.log(error)
     });
 
   });
