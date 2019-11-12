@@ -871,7 +871,15 @@ describe('Cursor based pagination', function(){
     expect(g_schema,'Incorrect schema').to.have.string(test_schema);
   });
 
-  it('Connection read all - book', async function(){
+  it('Connection read all resolver - book', async function(){
+    let opts = funks.getOptions(models.book);
+    let generated_resolver =await funks.generateJs('create-resolvers', opts);
+    let g_resolver = generated_resolver.replace(/\s/g, '');
+    let test_resolver = data_test.resolver_read_all_connection.replace(/\s/g, '');
+    expect(g_resolver, 'No method found').to.have.string(test_resolver);
+  });
+
+  it('Connection read all model - book', async function(){
     let opts = funks.getOptions(models.book);
     let generated_model =await funks.generateJs('create-models', opts);
     let g_model = generated_model.replace(/\s/g, '');

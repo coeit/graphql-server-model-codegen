@@ -74,3 +74,31 @@ static readAllCursor(search, order, pagination){
 }
 
 `
+
+module.exports.resolver_read_all_connection = `
+/**
+ * booksConnection - Check user authorization and return certain number, specified in pagination argument, of records that
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Cursor and first(indicatig the number of records to retrieve) arguments to apply cursor-based pagination.
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of records as grapqhql connections holding conditions specified by search, order and pagination argument
+ */
+booksConnection: function({
+    search,
+    order,
+    pagination
+}, context) {
+  return checkAuthorization(context, 'Book', 'read').then(authorization => {
+      if (authorization === true) {
+          return book.readAllCursor(search, order, pagination);
+      } else {
+          return new Error("You don't have authorization to perform this action");
+      }
+  }).catch(error => {
+      handleError(error);
+  })
+}
+`
