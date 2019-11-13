@@ -161,10 +161,7 @@ module.exports = class <%- name -%> extends Sequelize.Model{
           endCursor: edges[ edges.length - 1 ].cursor
         }
 
-        return {
-          edges,
-          pageInfo
-        };
+        return {  edges, pageInfo };
       }).catch(error =>{
         console.log(error)
       });
@@ -476,10 +473,7 @@ module.exports = class <%- name -%> extends Sequelize.Model{
                 endCursor:  edges[edges.length - 1].cursor
               }
             }
-              return {
-                edges,
-                pageInfo
-              };
+              return {edges, pageInfo};
           }).catch(error =>{
             throw error;
           });
