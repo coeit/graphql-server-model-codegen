@@ -886,5 +886,30 @@ describe('Cursor based pagination', function(){
     let test_model = data_test.model_read_all_connection.replace(/\s/g, '');
     expect(g_model, 'No method found').to.have.string(test_model);
   })
+//////
+  it('Association connection query - person', async function(){
+    let opts = funks.getOptions(models.person);
+    let generated_schema =await funks.generateJs('create-schemas', opts);
+    let g_schema = generated_schema.replace(/\s/g, '');
+    let test_schema = data_test.schema_to_many_association.replace(/\s/g, '');
+    expect(g_schema,'Incorrect schema').to.have.string(test_schema);
+  });
+
+  // it('Association connection resolver - book', async function(){
+  //   let opts = funks.getOptions(models.book);
+  //   let generated_resolver =await funks.generateJs('create-resolvers', opts);
+  //   let g_resolver = generated_resolver.replace(/\s/g, '');
+  //   let test_resolver = data_test.resolver_to_many_association.replace(/\s/g, '');
+  //   expect(g_resolver, 'No method found').to.have.string(test_resolver);
+  // });
+  //
+  // it('Many-to-many connection model - book', async function(){
+  //   let opts = funks.getOptions(models.book);
+  //   let generated_model =await funks.generateJs('create-models', opts);
+  //   let g_model = generated_model.replace(/\s/g, '');
+  //   let test_model = data_test.model_many_to_many_association.replace(/\s/g, '');
+  //   expect(g_model, 'No method found').to.have.string(test_model);
+  // })
+
 
 });

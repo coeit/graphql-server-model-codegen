@@ -102,3 +102,101 @@ booksConnection: function({
   })
 }
 `
+
+module.exports.schema_to_many_association = `
+"""
+@search-request
+"""
+booksConnection(search: searchBookInput, order: [ orderBookInput ], pagination: paginationCursorInput): BookConnection
+
+`
+
+module.exports.resolver_to_many_association = `
+person.prototype.booksConnection = function({
+    search,
+    order,
+    pagination
+}, context) {
+
+    return this.booksConnectionImpl({
+        search,
+        order,
+        pagination
+    });
+}
+`
+
+module.exports.model_many_to_many_association =`
+booksConnectionImpl({
+    search,
+    order,
+    pagination
+}) {
+
+    let options = {};
+    options['where'] = {};
+
+    if (search !== undefined) {
+        let arg = new searchArg(search);
+        let arg_sequelize = arg.toSequelize();
+        options['where'] = arg_sequelize;
+    }
+
+    return this.countBooks(options).then(items => {
+
+      options['offset'] = 0;
+      options['order'] = [];
+
+        if (order !== undefined) {
+            options['order'] = order.map((orderItem) => {
+                return [orderItem.field, orderItem.order];
+            });
+        }
+
+        if( !options['order'].map( orderItem=>{return orderItem[0] }).includes("id") ){
+            options['order'] = [ ...options['order'], ...[ ["id", "ASC"] ]];
+        }
+
+        if (pagination !== undefined && pagination.cursor) {
+
+            let decoded_cursor = JSON.parse(this.base64Decode(pagination.cursor));
+            options['where'] = {...options['where'], ...helper.parseOrderCursor(options['order'], decoded_cursor) } ;
+        }
+
+        options['limit'] = (pagination !== undefined && pagination.first!==undefined) ? pagination.first : items;
+
+        if (globals.LIMIT_RECORDS < options['limit']) {
+            throw new Error(\`Request of total booksFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+        }
+        return this.getBooks(options).then( records =>{
+          let edges = [];
+          let pageInfo = {
+            hasNextPage: false,
+            endCursor: null
+          }
+
+          if(records){
+           edges = records.map(record=>{ return {
+              node: record,
+              cursor: record.base64Enconde()
+            }});
+            let last = options.limit;
+            delete options.limit;
+            delete options.order;
+             pageInfo = {
+              hasNextPage: this.countBooks(options).then(num =>{return num > last}),
+              endCursor:  edges[edges.length - 1].cursor
+            }
+          }
+            return {
+              edges,
+              pageInfo
+            };
+        }).catch(error =>{
+          throw error;
+        });
+    });
+}
+
+
+`

@@ -33,6 +33,11 @@ type book{
   authorsFilter(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationInput): [Person]
 
   """
+  @search-request
+  """
+  authorsConnection(search: searchPersonInput, order: [ orderPersonInput ], pagination: paginationCursorInput): PersonConnection
+
+  """
   @count-request
   """
   countFilteredAuthors(search: searchPersonInput) : Int
