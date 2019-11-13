@@ -149,6 +149,16 @@ module.exports = class <%- name -%>{
           }
 
         }
+
+        <%=associations_temp[i].name%>ConnectionImpl({search,order,pagination}){
+          if(search === undefined)
+          {
+            return models.<%=associations_temp[i].target_lc%>.readAllCursor({"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"}, order, pagination);
+          }else{
+            return models.<%=associations_temp[i].target_lc%>.readAllCursor({"operator":"and", "search":[ {"field" : "<%=associations_temp[i].targetKey%>", "value":{"value":this.id }, "operator": "eq"} , search] }, order, pagination )
+          }
+        }
+
       <%}-%>
 
 
@@ -168,6 +178,14 @@ module.exports = class <%- name -%>{
           YOUR CODE GOES HERE
           */
           throw new Error('countFiltered<%=associations_temp[i].name_cp%>Impl is not implemented in the model');
+        }
+
+        <%=associations_temp[i].name%>ConnectionImpl ({search,order,pagination}){
+          /*
+          YOUR CODE GOES HERE
+          */
+          throw new Error('<%=associations_temp[i].name%>ConnectionImpl is not implemented in the model');
+
         }
       <%}-%>
 
