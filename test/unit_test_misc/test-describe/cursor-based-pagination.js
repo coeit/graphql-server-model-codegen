@@ -50,21 +50,26 @@ static readAllCursor(search, order, pagination){
         throw new Error(\`Request of total books exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
     }
     return super.findAll(options).then( records =>{
-      let edges = records.map( record=>{ return {
-        node: record,
-        cursor: record.base64Enconde()
-      }})
-      let last = options.limit;
-      delete options.limit;
+      let edges = [];
       let pageInfo = {
-        hasNextPage: super.count(options).then(num =>{return num > last}),
-        endCursor: edges[ edges.length - 1 ].cursor
+        hasNextPage: false,
+        endCursor: null
+      }
+      if(records){
+        edges = records.map( record=>{ return {
+          node: record,
+          cursor: record.base64Enconde()
+        }})
+        let last = options.limit;
+        delete options.limit;
+        pageInfo = {
+          hasNextPage: super.count(options).then(num =>{return num > last}),
+          endCursor: edges[ edges.length - 1 ].cursor
+        }
       }
 
-      return {
-        edges,
-        pageInfo
-      };
+
+      return {edges,pageInfo};
     }).catch(error =>{
       console.log(error)
     });
