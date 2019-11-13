@@ -742,6 +742,15 @@ describe('Decouple association from resolvers', function(){
     let test_resolver = data_test.belongsToMany_resolver.replace(/\s/g, '');
     expect(g_resolvers, 'No method found').to.have.string(test_resolver);
   });
+
+  it('BelongsToMany count implementation in resolver - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_resolvers =await funks.generateJs('create-resolvers', opts);
+    let g_resolvers = generated_resolvers.replace(/\s/g, '');
+    let test_resolver = data_test.belongsToMany_resolver_count.replace(/\s/g, '');
+    expect(g_resolvers, 'No method found').to.have.string(test_resolver);
+  });
+
 });
 
 
@@ -895,13 +904,13 @@ describe('Cursor based pagination', function(){
     expect(g_schema,'Incorrect schema').to.have.string(test_schema);
   });
 
-  // it('Association connection resolver - book', async function(){
-  //   let opts = funks.getOptions(models.book);
-  //   let generated_resolver =await funks.generateJs('create-resolvers', opts);
-  //   let g_resolver = generated_resolver.replace(/\s/g, '');
-  //   let test_resolver = data_test.resolver_to_many_association.replace(/\s/g, '');
-  //   expect(g_resolver, 'No method found').to.have.string(test_resolver);
-  // });
+  it('Association connection resolver - person', async function(){
+    let opts = funks.getOptions(models.person);
+    let generated_resolver =await funks.generateJs('create-resolvers', opts);
+    let g_resolver = generated_resolver.replace(/\s/g, '');
+    let test_resolver = data_test.resolver_to_many_association.replace(/\s/g, '');
+    expect(g_resolver, 'No method found').to.have.string(test_resolver);
+  });
   //
   // it('Many-to-many connection model - book', async function(){
   //   let opts = funks.getOptions(models.book);

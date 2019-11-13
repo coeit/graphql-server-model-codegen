@@ -266,7 +266,9 @@ book.prototype.AuthorsFilter = function({
 
   return this.AuthorsFilterImpl({search, order, pagination});
 }
+`
 
+module.exports.belongsToMany_resolver_count = `
 /**
  * book.prototype.countFilteredAuthors - Count number of associated records that holds the conditions specified in the search argument
  *
@@ -280,5 +282,4 @@ book.prototype.countFilteredAuthors = function({
 
  return this.countFilteredAuthorsImpl({search});
 }
-
 `

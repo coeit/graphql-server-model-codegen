@@ -112,6 +112,17 @@ booksConnection(search: searchBookInput, order: [ orderBookInput ], pagination: 
 `
 
 module.exports.resolver_to_many_association = `
+/**
+ * person.prototype.booksConnection - Check user authorization and return certain number, specified in pagination argument, of records
+ * associated with the current instance, this records should also
+ * holds the condition of search argument, all of them sorted as specified by the order argument.
+ *
+ * @param  {object} search     Search argument for filtering associated records
+ * @param  {array} order       Type of sorting (ASC, DESC) for each field
+ * @param  {object} pagination Cursor and first(indicatig the number of records to retrieve) arguments to apply cursor-based pagination.
+ * @param  {object} context     Provided to every resolver holds contextual information like the resquest query and user info.
+ * @return {array}             Array of records as grapqhql connections holding conditions specified by search, order and pagination argument
+ */
 person.prototype.booksConnection = function({
     search,
     order,
