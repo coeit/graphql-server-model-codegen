@@ -735,6 +735,14 @@ describe('Decouple association from resolvers', function(){
     expect(g_model, 'No method found').to.have.string(test_model);
   })
 
+  it('BelongsToMany implementation in model count - book', async function(){
+    let opts = funks.getOptions(models.book_authors);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.belongsToMany_model_count.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
   it('BelongsToMany implementation in resolver - book', async function(){
     let opts = funks.getOptions(models.book_authors);
     let generated_resolvers =await funks.generateJs('create-resolvers', opts);
@@ -895,7 +903,7 @@ describe('Cursor based pagination', function(){
     let test_model = data_test.model_read_all_connection.replace(/\s/g, '');
     expect(g_model, 'No method found').to.have.string(test_model);
   })
-//////
+
   it('Association connection query - person', async function(){
     let opts = funks.getOptions(models.person);
     let generated_schema =await funks.generateJs('create-schemas', opts);
@@ -911,14 +919,14 @@ describe('Cursor based pagination', function(){
     let test_resolver = data_test.resolver_to_many_association.replace(/\s/g, '');
     expect(g_resolver, 'No method found').to.have.string(test_resolver);
   });
-  //
-  // it('Many-to-many connection model - book', async function(){
-  //   let opts = funks.getOptions(models.book);
-  //   let generated_model =await funks.generateJs('create-models', opts);
-  //   let g_model = generated_model.replace(/\s/g, '');
-  //   let test_model = data_test.model_many_to_many_association.replace(/\s/g, '');
-  //   expect(g_model, 'No method found').to.have.string(test_model);
-  // })
+
+  it('Many-to-many connection model - person', async function(){
+    let opts = funks.getOptions(models.person);
+    let generated_model =await funks.generateJs('create-models', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.model_many_to_many_association.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
 
 
 });

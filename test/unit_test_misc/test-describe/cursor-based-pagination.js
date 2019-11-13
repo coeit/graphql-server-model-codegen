@@ -177,7 +177,7 @@ booksConnectionImpl({
         options['limit'] = (pagination !== undefined && pagination.first!==undefined) ? pagination.first : items;
 
         if (globals.LIMIT_RECORDS < options['limit']) {
-            throw new Error(\`Request of total booksFilter exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
+            throw new Error(\`Request of total booksConnection exceeds max limit of \${globals.LIMIT_RECORDS}. Please use pagination.\`);
         }
         return this.getBooks(options).then( records =>{
           let edges = [];

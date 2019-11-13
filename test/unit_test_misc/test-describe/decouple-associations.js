@@ -228,9 +228,9 @@ AuthorsFilterImpl({
           return this.getAuthors(options);
       });
   }
-
-
-  countFilteredAuthorsImpl({
+`
+module.exports.belongsToMany_model_count = `
+countFilteredAuthorsImpl({
       search
   }) {
 
