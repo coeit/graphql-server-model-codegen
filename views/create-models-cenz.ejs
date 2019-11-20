@@ -79,12 +79,12 @@ module.exports = class <%- name -%>{
 
   static readAllCursor(search, order, pagination){
     let query = `query <%- namePl -%>Connection($search: search<%- nameCp -%>Input $pagination: paginationCursorInput $order: [order<%- nameCp -%>Input]){
-      <%- namePl -%>Connection(search:$search pagination:$pagination order:$order){ edges{ node{  id <%for(var key in attributes){-%> <%=key %>
-       <%}-%>} pageInfo{endCursor hasNextPage } } } }`
+      <%- namePl -%>Connection(search:$search pagination:$pagination order:$order){ edges{cursor node{  id <%for(var key in attributes){-%> <%=key %>
+       <%}-%>} } pageInfo{endCursor hasNextPage  } } }`
 
        return axios.post(url, {query:query, variables: {search: search, order:order, pagination: pagination}}).then(res =>{
-         let data_edges = res.data.data.<%- namePl -%>.edges ;
-         let page_info = res.data.data.<%- namePl -%>.pageInfo ;
+         let data_edges = res.data.data.<%- namePl -%>Connection.edges ;
+         let pageInfo = res.data.data.<%- namePl -%>Connection.pageInfo ;
 
          let edges = data_edges.map( e =>{
            return {

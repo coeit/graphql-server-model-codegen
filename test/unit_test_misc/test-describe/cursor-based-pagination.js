@@ -55,7 +55,7 @@ static readAllCursor(search, order, pagination){
         hasNextPage: false,
         endCursor: null
       }
-      if(records){
+      if(records.length > 0){
         edges = records.map( record=>{ return {
           node: record,
           cursor: record.base64Enconde()
@@ -191,7 +191,7 @@ booksConnectionImpl({
             endCursor: null
           }
 
-          if(records){
+          if(records.length > 0){
            edges = records.map(record=>{ return {
               node: record,
               cursor: record.base64Enconde()
@@ -215,4 +215,41 @@ booksConnectionImpl({
 }
 
 
+`
+
+module.exports.read_all_cenz_server = `
+static readAllCursor(search, order, pagination) {
+    let query = \`query booksConnection($search: searchBookInput $pagination: paginationCursorInput $order: [orderBookInput]){
+  booksConnection(search:$search pagination:$pagination order:$order){ edges{cursor node{  id  title
+    genre
+    publisher_id
+  }} pageInfo{endCursor hasNextPage  } } }\`
+
+    return axios.post(url, {
+        query: query,
+        variables: {
+            search: search,
+            order: order,
+            pagination: pagination
+        }
+    }).then(res => {
+        let data_edges = res.data.data.booksConnection.edges;
+        let pageInfo = res.data.data.booksConnection.pageInfo;
+        let edges = data_edges.map(e => {
+            return {
+                node: new Book(e.node),
+                cursor: e.cursor
+            }
+        })
+
+        return {
+            edges,
+            pageInfo
+        };
+    }).catch(error => {
+        error['url'] = url;
+        handleError(error);
+    });
+
+}
 `
