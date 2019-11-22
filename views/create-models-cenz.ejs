@@ -310,11 +310,32 @@ module.exports = class <%- name -%>{
         }
 
         <%=associations_temp[i].name%>ConnectionImpl ({search,order,pagination}){
-          /*
-          YOUR CODE GOES HERE
-          */
-          throw new Error('<%=associations_temp[i].name%>ConnectionImpl is not implemented in the model');
+          let association_attributes = models.<%=associations_temp[i].target_lc%>.definition.attributes;
+          let string_attrib = 'id';
+          for(let attrib in association_attributes){
+            string_attrib+= ' '+attrib;
+          }
 
+          let query = `query <%=associations_temp[i].name%>Connection($search: search<%=associations_temp[i].target_cp%>Input $order: [order<%=associations_temp[i].target_cp%>Input] $pagination: paginationCursorInput){
+            readOne<%- nameCp -%>(id:${this.id}){ <%=associations_temp[i].name%>Connection(search: $search, order:$order pagination:$pagination){
+              edges{cursor node{ ${string_attrib}}} pageInfo{endCursor hasNextPage} } }
+          }`
+
+          return axios.post(url, {query: query, variables:{ search: search, order: order, pagination: pagination }})
+          .then(res =>{
+            let data_edges = res.data.data.readOne<%- nameCp -%>.<%=associations_temp[i].name%>Connection.edges;
+            let pageInfo = res.data.data.readOne<%- nameCp -%>.<%=associations_temp[i].name%>Connection.pageInfo;
+            let edges = data_edges.map( e =>{
+              return {
+                node: new models.<%=associations_temp[i].target_lc%>(e.node),
+                cursor: e.cursor
+              }
+            });
+            return {edges,pageInfo};
+          }).catch( error=>{
+            error['url'] = url;
+            handleError(error);
+          });
         }
       <%}-%>
 

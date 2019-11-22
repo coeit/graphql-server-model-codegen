@@ -944,4 +944,12 @@ describe('Cursor based pagination', function(){
     expect(g_model, 'No method found').to.have.string(test_model);
   })
 
+  it('Many to many association connection in cenz server  - person-book', async function(){
+    let opts = funks.getOptions(models_cenz.person);
+    let generated_model =await funks.generateJs('create-models-cenz', opts);
+    let g_model = generated_model.replace(/\s/g, '');
+    let test_model = data_test.many_to_many_association_connection_cenz_server.replace(/\s/g, '');
+    expect(g_model, 'No method found').to.have.string(test_model);
+  })
+
 });

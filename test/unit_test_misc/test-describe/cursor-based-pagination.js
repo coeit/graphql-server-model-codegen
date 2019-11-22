@@ -253,3 +253,38 @@ static readAllCursor(search, order, pagination) {
 
 }
 `
+
+module.exports.many_to_many_association_connection_cenz_server = `
+worksConnectionImpl ({search,order,pagination}){
+
+  let association_attributes = models.book.definition.attributes;
+  let string_attrib = 'id';
+  for(let attrib in association_attributes){
+    string_attrib+= ' '+attrib;
+  }
+
+  let query = \`query worksConnection($search: searchBookInput $order: [orderBookInput] $pagination: paginationCursorInput ){
+    readOnePerson(id: \${this.id}){ worksConnection(search: $search, order:$order pagination:$pagination){
+      edges{ cursor node{ \${string_attrib}  } } pageInfo{endCursor hasNextPage  }} }
+  }\`
+
+  return axios.post(url, {query: query, variables:{ search: search, order: order, pagination: pagination }})
+  .then(res => {
+    let data_edges = res.data.data.readOnePerson.worksConnection.edges;
+    let pageInfo = res.data.data.readOnePerson.worksConnection.pageInfo;
+    let edges = data_edges.map(e =>{
+      return {
+        node: new models.book(e.node),
+        cursor: e.cursor
+      }
+    });
+
+    return {edges, pageInfo};
+
+  }).catch( error =>{
+      error['url'] = url;
+      handleError(error);
+  });
+
+}
+`
