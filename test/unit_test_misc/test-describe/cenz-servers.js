@@ -132,7 +132,39 @@ static bulkAddCsv(context) {
 }
 `
 
-module.exports.many_to_many_association = `
+module.exports.many_to_many_association=`
+worksFilterImpl({
+    search,
+    order,
+    pagination
+}) {
+    let association_attributes = models.book.definition.attributes;
+    let string_attrib = 'id';
+    for(let attrib in association_attributes){
+      string_attrib+= ' '+attrib;
+    }
+
+    let query = \`query worksFilter($search: searchBookInput $order: [orderBookInput] $pagination: paginationInput){
+        readOnePerson(id: \${this.id}){ worksFilter(search: $search, order:$order pagination:$pagination){
+          \${string_attrib}
+        }}
+    }\`
+
+    return axios.post(url, {query: query, variables:{ search: search, order: order, pagination: pagination }})
+    .then(res =>{
+
+      let data = res.data.data.readOnePerson.worksFilter;
+
+      return data.map(item => {return new models.book(item)});
+
+    }).catch( error =>{
+        error['url'] = url;
+        handleError(error);
+    });
+}
+`
+
+module.exports.many_to_many_association_count = `
 countFilteredWorksImpl({
     search
 }) {

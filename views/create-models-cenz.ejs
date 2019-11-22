@@ -269,10 +269,24 @@ module.exports = class <%- name -%>{
       <% for(let i=0; i < associations_temp.length; i++){ -%>
 
         <%=associations_temp[i].name%>FilterImpl ({search,order,pagination}){
-          /*
-          YOUR CODE GOES HERE
-          */
-          throw new Error('<%=associations_temp[i].name%>FilterImpl is not implemented in the model');
+
+          let association_attributes = models.<%=associations_temp[i].target_lc%>.definition.attributes;
+          let string_attrib = 'id';
+          for(let attrib in association_attributes){
+            string_attrib+= ' '+attrib;
+          }
+
+          let query = `query <%=associations_temp[i].name%>Filter($search: search<%=associations_temp[i].target_cp%>Input $order: [order<%=associations_temp[i].target_cp%>Input] $pagination: paginationInput){
+            readOne<%- nameCp -%>(id:${this.id}){ <%=associations_temp[i].name%>Filter(search: $search, order:$order pagination:$pagination){ ${string_attrib} } }
+          }`
+
+          return axios.post(url, {query: query, variables:{ search: search, order: order, pagination: pagination }})
+          .then(res => {let data = res.data.data.readOne<%- nameCp -%>.<%=associations_temp[i].name%>Filter;
+            return data.map(item => {return new models.<%=associations_temp[i].target_lc%>(item)});
+          }).catch( error =>{
+            error['url'] = url;
+            handleError(error);
+          });
 
         }
 
