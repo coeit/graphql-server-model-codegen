@@ -268,16 +268,6 @@ writeSchemaCommons = function(dir_write){
     offset: Int
   }
 
-  input paginationCursorInput{
-    first: Int
-    cursor: String
-  }
-
-  type pageInfo{
-    endCursor: String
-    hasNextPage: Boolean!
-  }
-
   scalar Date
   scalar Time
   scalar DateTime
@@ -380,15 +370,21 @@ module.exports.getOptions = function(dataModel){
       nameLc: uncapitalizeString(dataModel.model),
       namePl: inflection.pluralize(uncapitalizeString(dataModel.model)),
       namePlCp: inflection.pluralize(capitalizeString(dataModel.model)),
+      //attributes: dataModel.attributes,
       attributes: getOnlyTypeAttributes(dataModel.attributes),
+      //attributesStr: attributesToString(dataModel.attributes),
       attributesStr: attributesToString( getOnlyTypeAttributes(dataModel.attributes)),
+      //jsonSchemaProperties: attributesToJsonSchemaProperties(dataModel.attributes),
       jsonSchemaProperties: attributesToJsonSchemaProperties(getOnlyTypeAttributes(dataModel.attributes)),
       associations: parseAssociations(dataModel.associations, dataModel.storageType.toLowerCase()),
+      //arrayAttributeString: attributesArrayString(dataModel.attributes),
       arrayAttributeString: attributesArrayString( getOnlyTypeAttributes(dataModel.attributes) ),
       indices: dataModel.indices,
       definition : stringify_obj(dataModel),
       attributesDescription: getOnlyDescriptionAttributes(dataModel.attributes),
-      url: dataModel.url || ""
+      url: dataModel.url || "",
+      regex: dataModel.regex || "",
+      adapterName: dataModel.adapterName || ""
   };
   return opts;
 };
@@ -603,6 +599,11 @@ module.exports.generateCode = function(json_dir, dir_write){
     fs.mkdirSync(dir_write+'/models-cenz-server');
   }
 
+  if(!fs.existsSync(dir_write+'/models-CDA'))
+  {
+    fs.mkdirSync(dir_write+'/models-CDA');
+  }
+
   //test
   fs.readdirSync(json_dir).forEach((json_file) => {
       console.log("Reading...", json_file);
@@ -633,7 +634,7 @@ module.exports.generateCode = function(json_dir, dir_write){
 
         });
         //generateAssociationsMigrations(opts, dir_write);
-      }else if(opts.storageType === 'webservice' || opts.storageType === 'cenz_server'){
+      }else if(opts.storageType === 'webservice' || opts.storageType === 'cenz_server' || opts.storageType === 'cenzontle-web-service-adapter'){
           let file_name = "";
           file_name = dir_write + '/schemas/' + opts.nameLc + '.js';
           generateSection("schemas",opts,file_name).then( ()=>{
@@ -650,6 +651,11 @@ module.exports.generateCode = function(json_dir, dir_write){
             file_name = dir_write + '/models-cenz-server/' + opts.nameLc + '.js';
             generateSection("models-cenz",opts,file_name).then( ()=>{
               console.log(file_name + ' written successfully!(from cenz server)');
+            });
+          }else if(opts.storageType === 'cenzontle-web-service-adapter'){
+            file_name = dir_write + '/models-CDA/' + opts.nameLc + '.js';
+            generateSection("models-CDA",opts,file_name).then( ()=>{
+              console.log(file_name + ' written successfully!()');
             });
           }
 
